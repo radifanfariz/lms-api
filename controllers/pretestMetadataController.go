@@ -10,17 +10,21 @@ import (
 	"github.com/radifanfariz/lms-api/models"
 )
 
+type PretestMetadataBody struct {
+	ModuleID    int       `json:"ModuleID"`
+	Slug        string    `json:"Slug"`
+	Name        string    `json:"Name" binding:"required"`
+	Description string    `json:"Description" binding:"required"`
+	MaxAccess   int       `json:"MaxAccess" binding:"required"`
+	MinScore    float64   `json:"MinScore" binding:"required"`
+	CreatedBy   string    `json:"CreatedBy"`
+	CreatedAt   time.Time `json:"CreatedAt"`
+	UpdatedBy   string    `json:"UpdatedBy"`
+	UpdatedAt   time.Time `json:"UpdatedAt"`
+}
+
 func PreTestMetadataCreate(ctx *gin.Context) {
-	var body struct {
-		ModuleID    int       `json:"ModuleID"`
-		Slug        string    `json:"Slug"`
-		Name        string    `json:"Name" binding:"required"`
-		Description string    `json:"Description" binding:"required"`
-		MaxAccess   int       `json:"MaxAccess" binding:"required"`
-		MinScore    float64   `json:"MinScore" binding:"required"`
-		CreatedBy   string    `json:"CreatedBy"`
-		CreatedAt   time.Time `json:"CreatedAt"`
-	}
+	var body PretestMetadataBody
 
 	ctx.Bind(&body)
 
@@ -76,16 +80,7 @@ func PreTestMetadataFindAll(ctx *gin.Context) {
 }
 
 func PreTestMetadataUpdate(ctx *gin.Context) {
-	var body struct {
-		ModuleID    int       `json:"ModuleID"`
-		Slug        string    `json:"Slug"`
-		Name        string    `json:"Name" binding:"required"`
-		Description string    `json:"Description" binding:"required"`
-		MaxAccess   int       `json:"MaxAccess" binding:"required"`
-		MinScore    float64   `json:"MinScore" binding:"required"`
-		UpdatedBy   string    `json:"UpdatedBy"`
-		UpdatedAt   time.Time `json:"UpdatedAt"`
-	}
+	var body PretestMetadataBody
 
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

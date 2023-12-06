@@ -22,6 +22,12 @@ func main() {
 	/*------------------*/
 
 	/* PreTest Metadata Endpoint */
+	routers.ModuleMetadataRouter(r)
+	/*----------------------------*/
+	/* PreTest Data Endpoint */
+	routers.ModuleDataRouter(r)
+	/*----------------------------*/
+	/* PreTest Metadata Endpoint */
 	routers.PreTestMetadataRouter(r)
 	/*----------------------------*/
 	/* PreTest Metadata Endpoint */

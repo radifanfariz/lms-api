@@ -11,18 +11,22 @@ import (
 	"github.com/radifanfariz/lms-api/models"
 )
 
+type PretestResultData struct {
+	UserID           int              `json:"UserID"`
+	Score            float64          `json:"Score"`
+	Start            pgtype.Timestamp `json:"Start"`
+	End              pgtype.Timestamp `json:"End"`
+	Duration         models.Duration  `json:"Duration"`
+	Answer           models.JSONB     `json:"Answer" gorm:"type:jsonb"`
+	QuestionAnswered models.JSONB     `json:"QuestionAnswered" gorm:"type:jsonb"`
+	CreatedBy        string           `json:"CreatedBy"`
+	CreatedAt        time.Time        `json:"CreatedAt"`
+	UpdatedBy        string           `json:"UpdatedBy"`
+	UpdatedAt        time.Time        `json:"UpdatedAt"`
+}
+
 func PreTestResultDataCreate(ctx *gin.Context) {
-	var body struct {
-		UserID           int              `json:"UserID"`
-		Score            float64          `json:"Score"`
-		Start            pgtype.Timestamp `json:"Start"`
-		End              pgtype.Timestamp `json:"End"`
-		Duration         models.Duration  `json:"Duration"`
-		Answer           models.JSONB     `json:"Answer" gorm:"type:jsonb"`
-		QuestionAnswered models.JSONB     `json:"QuestionAnswered" gorm:"type:jsonb"`
-		CreatedBy        string           `json:"CreatedBy"`
-		CreatedAt        time.Time        `json:"CreatedAt"`
-	}
+	var body PretestResultData
 
 	ctx.Bind(&body)
 
@@ -81,17 +85,7 @@ func PreTestResultDataFindAll(ctx *gin.Context) {
 }
 
 func PreTestResultDataUpdate(ctx *gin.Context) {
-	var body struct {
-		UserID           int              `json:"UserID"`
-		Score            float64          `json:"Score"`
-		Start            pgtype.Timestamp `json:"Start"`
-		End              pgtype.Timestamp `json:"End"`
-		Duration         models.Duration  `json:"Duration"`
-		Answer           models.JSONB     `json:"Answer" gorm:"type:jsonb"`
-		QuestionAnswered models.JSONB     `json:"QuestionAnswered" gorm:"type:jsonb"`
-		CreatedBy        string           `json:"CreatedBy"`
-		CreatedAt        time.Time        `json:"CreatedAt"`
-	}
+	var body PretestResultData
 
 	if err := ctx.ShouldBind(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

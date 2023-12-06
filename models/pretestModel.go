@@ -27,6 +27,7 @@ type PreTestData struct {
 	PreTestMetaID int       `gorm:"column:n_pretest_meta_id"`
 	Slug          string    `gorm:"column:c_slug"`
 	Question      JSONB     `gorm:"type:jsonb;column:j_question"`
+	IsPublished   bool      `gorm:"column:b_ispublished"`
 	CreatedBy     string    `gorm:"column:c_created_by"`
 	UpdatedBy     string    `gorm:"column:c_updated_by"`
 	CreatedAt     time.Time `gorm:"default:now();column:d_created_at"`

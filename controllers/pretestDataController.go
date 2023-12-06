@@ -10,15 +10,20 @@ import (
 	"github.com/radifanfariz/lms-api/models"
 )
 
+type PretestDataBody struct {
+	ModuleID      int          `json:"ModuleID"`
+	PreTestMetaID int          `json:"PreTestMetaID"`
+	Slug          string       `json:"Slug"`
+	Question      models.JSONB `json:"Question" gorm:"type:jsonb"`
+	IsPublished   bool         `json:"IsPublished"`
+	CreatedBy     string       `json:"CreatedBy"`
+	CreatedAt     time.Time    `json:"CreatedAt"`
+	UpdatedBy     string       `json:"UpdatedBy"`
+	UpdatedAt     time.Time    `json:"UpdatedAt"`
+}
+
 func PreTestDataCreate(ctx *gin.Context) {
-	var body struct {
-		ModuleID      int          `json:"ModuleID"`
-		PreTestMetaID int          `json:"PreTestMetaID"`
-		Slug          string       `json:"Slug"`
-		Question      models.JSONB `json:"Question" gorm:"type:jsonb"`
-		CreatedBy     string       `json:"CreatedBy"`
-		CreatedAt     time.Time    `json:"CreatedAt"`
-	}
+	var body PretestDataBody
 
 	ctx.Bind(&body)
 
@@ -27,6 +32,7 @@ func PreTestDataCreate(ctx *gin.Context) {
 		PreTestMetaID: body.PreTestMetaID,
 		Slug:          body.Slug,
 		Question:      body.Question,
+		IsPublished:   body.IsPublished,
 		CreatedBy:     body.CreatedBy,
 		CreatedAt:     body.CreatedAt,
 	}
@@ -74,14 +80,7 @@ func PreTestDataFindAll(ctx *gin.Context) {
 }
 
 func PreTestDataUpdate(ctx *gin.Context) {
-	var body struct {
-		ModuleID      int          `json:"ModuleID"`
-		PreTestMetaID int          `json:"PreTestMetaID"`
-		Slug          string       `json:"Slug"`
-		Question      models.JSONB `json:"Question" gorm:"type:jsonb"`
-		UpdatedBy     string       `json:"UpdatedBy"`
-		UpdatedAt     time.Time    `json:"UpdatedAt"`
-	}
+	var body PretestDataBody
 
 	if err := ctx.ShouldBind(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -93,6 +92,7 @@ func PreTestDataUpdate(ctx *gin.Context) {
 		PreTestMetaID: body.PreTestMetaID,
 		Slug:          body.Slug,
 		Question:      body.Question,
+		IsPublished:   body.IsPublished,
 		UpdatedBy:     body.UpdatedBy,
 		UpdatedAt:     body.UpdatedAt,
 	}
