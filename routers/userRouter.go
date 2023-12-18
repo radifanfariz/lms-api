@@ -11,5 +11,6 @@ func UserDataRouter(r *gin.Engine) {
 	r.GET(UserMetadataEndpoint+"/:id", controllers.UserDataFindById)
 	r.GET(UserMetadataEndpoint+"/all", controllers.UserDataFindAll)
 	r.PUT(UserMetadataEndpoint+"/update/:id", controllers.UserDataUpdate)
+	r.PUT(UserMetadataEndpoint+"/upsert/:id", controllers.UserDataUpsert)
 	r.DELETE(UserMetadataEndpoint+"/delete/:id", controllers.UserDataDelete)
 }

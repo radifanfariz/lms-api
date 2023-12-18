@@ -5,32 +5,34 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/radifanfariz/lms-api/initializers"
 	"github.com/radifanfariz/lms-api/models"
+	"gorm.io/gorm"
 )
 
-type PretestMetadataBody struct {
-	ModuleID    int       `json:"ModuleID"`
-	Slug        string    `json:"Slug"`
-	Name        string    `json:"Name" binding:"required"`
-	Description string    `json:"Description" binding:"required"`
-	MaxAccess   int       `json:"MaxAccess" binding:"required"`
-	MinScore    float64   `json:"MinScore" binding:"required"`
-	CreatedBy   string    `json:"CreatedBy"`
-	CreatedAt   time.Time `json:"CreatedAt"`
-	UpdatedBy   string    `json:"UpdatedBy"`
-	UpdatedAt   time.Time `json:"UpdatedAt"`
+type PreTestMetadataBody struct {
+	ModuleID    int       `json:"module_id"`
+	GlobalID    string    `json:"global_id"`
+	Name        string    `json:"name" binding:"required"`
+	Description string    `json:"description" binding:"required"`
+	MaxAccess   int       `json:"max_access" binding:"required"`
+	MinScore    float64   `json:"min_score" binding:"required"`
+	CreatedBy   string    `json:"created_by"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedBy   string    `json:"updated_by"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func PreTestMetadataCreate(ctx *gin.Context) {
-	var body PretestMetadataBody
+	var body PreTestMetadataBody
 
 	ctx.Bind(&body)
 
 	post := models.PreTestMetadata{
 		ModuleID:    body.ModuleID,
-		Slug:        body.Slug,
+		GlobalID:    body.GlobalID,
 		Name:        body.Name,
 		Description: body.Description,
 		MaxAccess:   body.MaxAccess,
@@ -51,10 +53,17 @@ func PreTestMetadataCreate(ctx *gin.Context) {
 }
 
 func PreTestMetadataFindById(ctx *gin.Context) {
-	var PreTestMetadata models.PreTestMetadata
+	var preTestMetadata models.PreTestMetadata
 
-	id, _ := strconv.Atoi(ctx.Param("id"))
-	findByIdResult := initializers.DB.First(&PreTestMetadata, uint(id))
+	var findByIdResult *gorm.DB
+
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		findByIdResult = initializers.DB.First(&preTestMetadata, uint(id))
+	} else {
+		id := ctx.Param("id")
+		findByIdResult = initializers.DB.First(&preTestMetadata, "c_global_id = ?", id)
+	}
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -63,11 +72,11 @@ func PreTestMetadataFindById(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": PreTestMetadata})
+	ctx.JSON(http.StatusOK, gin.H{"data": preTestMetadata})
 }
 func PreTestMetadataFindAll(ctx *gin.Context) {
-	var PreTestMetadata []models.PreTestMetadata
-	result := initializers.DB.Find(&PreTestMetadata)
+	var preTestMetadata []models.PreTestMetadata
+	result := initializers.DB.Find(&preTestMetadata)
 
 	if result.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -76,11 +85,11 @@ func PreTestMetadataFindAll(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": PreTestMetadata})
+	ctx.JSON(http.StatusOK, gin.H{"data": preTestMetadata})
 }
 
 func PreTestMetadataUpdate(ctx *gin.Context) {
-	var body PretestMetadataBody
+	var body PreTestMetadataBody
 
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -89,7 +98,7 @@ func PreTestMetadataUpdate(ctx *gin.Context) {
 
 	updates := models.PreTestMetadata{
 		ModuleID:    body.ModuleID,
-		Slug:        body.Slug,
+		GlobalID:    body.GlobalID,
 		Name:        body.Name,
 		Description: body.Description,
 		MaxAccess:   body.MaxAccess,
@@ -99,9 +108,16 @@ func PreTestMetadataUpdate(ctx *gin.Context) {
 	}
 
 	var current models.PreTestMetadata
+	var findByIdResult *gorm.DB
+	var findByIdResultAfterUpdate *gorm.DB
 
-	id, _ := strconv.Atoi(ctx.Param("id"))
-	findByIdResult := initializers.DB.First(&current, uint(id))
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		findByIdResult = initializers.DB.First(&current, uint(id))
+	} else {
+		id := ctx.Param("id")
+		findByIdResult = initializers.DB.First(&current, "c_global_id = ?", id)
+	}
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -119,16 +135,124 @@ func PreTestMetadataUpdate(ctx *gin.Context) {
 		return
 	}
 
-	findByIdResultAfterUpdate := initializers.DB.First(&current, uint(id))
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		findByIdResultAfterUpdate = initializers.DB.First(&current, uint(id))
+	} else {
+		id := ctx.Param("id")
+		findByIdResultAfterUpdate = initializers.DB.First(&current, "c_global_id = ?", id)
+	}
 
 	if findByIdResultAfterUpdate.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "PreTest ResultData not found.(Something went wrong !)",
+			"message": "PreTest Metadata not found.(Something went wrong !)",
 		})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Metadata updated successfully.", "data": &current})
+}
+
+func PreTestMetadataUpsert(ctx *gin.Context) {
+	var body PreTestMetadataBody
+
+	if err := ctx.ShouldBind(&body); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var current models.PreTestMetadata
+	var upsertResult *gorm.DB
+	var findByIdResult *gorm.DB
+	var findByIdResultAfterUpdate *gorm.DB
+
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		findByIdResult = initializers.DB.First(&current, uint(id))
+	} else {
+		id := ctx.Param("id")
+		findByIdResult = initializers.DB.First(&current, "c_global_id = ?", id)
+	}
+
+	if findByIdResult.Error != nil { /* create */ /* if url params is id then global_id can be provided in JSON Body Req */
+		if govalidator.IsNumeric(ctx.Param("id")) {
+			upsert := models.PreTestMetadata{
+				GlobalID:    body.GlobalID,
+				ModuleID:    body.ModuleID,
+				Name:        body.Name,
+				Description: body.Description,
+				MaxAccess:   body.MaxAccess,
+				MinScore:    body.MinScore,
+				CreatedBy:   body.CreatedBy,
+				CreatedAt:   body.CreatedAt,
+			}
+			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
+			if upsertResult.Error != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"message": "Error updating PreTest Metadata.",
+				})
+				return
+			}
+			ctx.JSON(http.StatusOK, gin.H{"message": "PreTest Metadata created successfully.", "data": &upsert})
+		} else { /* create */ /* if url params is global_id then global_id automatic get from url params, so dont need to provide in JSON Body req */
+			id := ctx.Param("id")
+			upsert := models.PreTestMetadata{
+				GlobalID:    id,
+				ModuleID:    body.ModuleID,
+				Name:        body.Name,
+				Description: body.Description,
+				MaxAccess:   body.MaxAccess,
+				MinScore:    body.MinScore,
+				CreatedBy:   body.CreatedBy,
+				CreatedAt:   body.CreatedAt,
+			}
+			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
+			if upsertResult.Error != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"message": "Error updating PreTest Metadata.",
+				})
+				return
+			}
+			ctx.JSON(http.StatusOK, gin.H{"message": "PreTest Metadata created successfully.", "data": &upsert})
+		}
+	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
+		upsert := models.PreTestMetadata{
+			ID:          current.ID,
+			GlobalID:    body.GlobalID,
+			ModuleID:    body.ModuleID,
+			Name:        body.Name,
+			Description: body.Description,
+			MaxAccess:   body.MaxAccess,
+			MinScore:    body.MinScore,
+			UpdatedBy:   body.UpdatedBy,
+			UpdatedAt:   body.UpdatedAt,
+		}
+		upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
+
+		if upsertResult.Error != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Error updating PreTest Metadata.",
+			})
+			return
+		}
+
+		if govalidator.IsNumeric(ctx.Param("id")) {
+			id, _ := strconv.Atoi(ctx.Param("id"))
+			findByIdResultAfterUpdate = initializers.DB.First(&current, uint(id))
+		} else {
+			id := ctx.Param("id")
+			findByIdResultAfterUpdate = initializers.DB.First(&current, "c_global_id = ?", id)
+		}
+
+		if findByIdResultAfterUpdate.Error != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "PreTest Metadata not found.(Something went wrong !)",
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{"message": "PreTest Metadata updated successfully.", "data": &current})
+	}
 }
 
 func PreTestMetadataDelete(ctx *gin.Context) {

@@ -11,6 +11,7 @@ func PreTestMetadataRouter(r *gin.Engine) {
 	r.GET(PreTestMetadataEndpoint+"/:id", controllers.PreTestMetadataFindById)
 	r.GET(PreTestMetadataEndpoint+"/all", controllers.PreTestMetadataFindAll)
 	r.PUT(PreTestMetadataEndpoint+"/update/:id", controllers.PreTestMetadataUpdate)
+	r.PUT(PreTestMetadataEndpoint+"/upsert/:id", controllers.PreTestMetadataUpsert)
 	r.DELETE(PreTestMetadataEndpoint+"/delete/:id", controllers.PreTestMetadataDelete)
 }
 func PreTestDataRouter(r *gin.Engine) {
@@ -19,6 +20,7 @@ func PreTestDataRouter(r *gin.Engine) {
 	r.GET(PreTestDataEndpoint+"/:id", controllers.PreTestDataFindById)
 	r.GET(PreTestDataEndpoint+"/all", controllers.PreTestDataFindAll)
 	r.PUT(PreTestDataEndpoint+"/update/:id", controllers.PreTestDataUpdate)
+	r.PUT(PreTestDataEndpoint+"/upsert/:id", controllers.PreTestDataUpsert)
 	r.DELETE(PreTestDataEndpoint+"/delete/:id", controllers.PreTestDataDelete)
 }
 func PreTestResultDataRouter(r *gin.Engine) {
@@ -27,5 +29,6 @@ func PreTestResultDataRouter(r *gin.Engine) {
 	r.GET(PreTestDataEndpoint+"/:id", controllers.PreTestResultDataFindById)
 	r.GET(PreTestDataEndpoint+"/all", controllers.PreTestResultDataFindAll)
 	r.PUT(PreTestDataEndpoint+"/update/:id", controllers.PreTestResultDataUpdate)
+	r.PUT(PreTestDataEndpoint+"/upsert/:id", controllers.PreTestResultDataUpsert)
 	r.DELETE(PreTestDataEndpoint+"/delete/:id", controllers.PreTestResultDataDelete)
 }

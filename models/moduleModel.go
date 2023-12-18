@@ -3,30 +3,38 @@ package models
 import "time"
 
 type ModuleMetadata struct {
-	ID              int       `gorm:"primaryKey;column:n_id"`
-	Slug            string    `gorm:"column:c_slug"`
-	Name            string    `gorm:"column:c_name"`
-	Description     string    `gorm:"column:c_description"`
-	Src             string    `gorm:"column:c_src"`
-	LearningJourney string    `gorm:"column:c_learning_journey"`
-	Category        string    `gorm:"column:c_category"`
-	MaxMonth        int       `gorm:"column:n_max_month"`
-	CreatedBy       string    `gorm:"column:c_created_by"`
-	UpdatedBy       string    `gorm:"column:c_updated_by"`
-	CreatedAt       time.Time `gorm:"column:d_created_at"`
-	UpdatedAt       time.Time `gorm:"column:d_updated_at"`
+	ID              int       `gorm:"primaryKey;column:n_id" json:"id"`
+	GlobalID        string    `gorm:"column:c_global_id" json:"global_id"`
+	Name            string    `gorm:"column:c_name" json:"name"`
+	Description     string    `gorm:"column:c_description" json:"description"`
+	Src             string    `gorm:"column:c_src" json:"src"`
+	LearningJourney string    `gorm:"column:c_learning_journey" json:"learning_journey"`
+	Category        string    `gorm:"column:c_category" json:"category"`
+	MaxMonth        int       `gorm:"column:n_max_month" json:"max_month"`
+	CreatedBy       string    `gorm:"column:c_created_by" json:"created_by"`
+	UpdatedBy       string    `gorm:"column:c_updated_by" json:"updated_by"`
+	CreatedAt       time.Time `gorm:"column:d_created_at" json:"created_at"`
+	UpdatedAt       time.Time `gorm:"column:d_updated_at" json:"updated_at"`
 }
 
 type ModuleData struct {
-	ID             int    `gorm:"primaryKey;column:n_id"`
-	Slug           string `gorm:"column:c_slug"`
-	ModuleMetaID   int    `gorm:"column:n_module_meta_id"`
-	PretestMetaID  int    `gorm:"column:n_pretest_meta_id"`
-	PretestID      int    `gorm:"column:n_pretest_id"`
-	MateriMetaID   int    `gorm:"column:n_materi_meta_id"`
-	MateriID       int    `gorm:"column:n_materi_id"`
-	PosttestMetaID int    `gorm:"column:n_posttest_meta_id"`
-	PosttestID     int    `gorm:"column:n_posttest_id"`
-	UserID         int    `gorm:"column:n_user_id"`
-	GradeID        int    `gorm:"column:n_grade_id"`
+	ID               int              `gorm:"primaryKey;column:n_id" json:"id"`
+	GlobalID         string           `gorm:"column:c_global_id" json:"global_id"`
+	ModuleMetaID     int              `gorm:"column:n_module_meta_id" json:"module_meta_id"`
+	PreTestMetaID    int              `gorm:"column:n_pretest_meta_id" json:"pretest_meta_id"`
+	PreTestID        int              `gorm:"column:n_pretest_id" json:"pretest_id"`
+	MateriMetaID     int              `gorm:"column:n_materi_meta_id" json:"materi_meta_id"`
+	MateriID         int              `gorm:"column:n_materi_id" json:"materi_id"`
+	PostTestMetaID   int              `gorm:"column:n_posttest_meta_id" json:"posttest_meta_id"`
+	PostTestID       int              `gorm:"column:n_posttest_id" json:"posttest_id"`
+	UserID           int              `gorm:"column:n_user_id" json:"user_id"`
+	GradeID          int              `gorm:"column:n_grade_id" json:"grade_id"`
+	Metadata         ModuleMetadata   `gorm:"foreignKey:ModuleMetaID" json:"metadata"`
+	UserData         UserData         `gorm:"foreignKey:UserID" json:"user_data"`
+	PreTestMetadata  PreTestMetadata  `gorm:"foreignKey:PreTestMetaID" json:"pretest_metadata"`
+	MateriMetadata   MateriMetadata   `gorm:"foreignKey:MateriMetaID" json:"materi_metadata"`
+	PostTestMetadata PostTestMetadata `gorm:"foreignKey:PostTestMetaID" json:"posttest_metadata"`
+	PreTestData      PreTestData      `gorm:"foreignKey:PreTestID" json:"pretest_data"`
+	MateriData       MateriData       `gorm:"foreignKey:MateriID" json:"materi_data"`
+	PostTestData     PostTestData     `gorm:"foreignKey:PostTestID" json:"posttest_data"`
 }

@@ -12,31 +12,30 @@ import (
 	"gorm.io/gorm"
 )
 
-type PreTestDataBody struct {
-	ModuleID      int          `json:"module_id"`
-	PreTestMetaID int          `json:"pretest_meta_id"`
-	GlobalID      string       `json:"global_id"`
-	Question      models.JSONB `json:"question" gorm:"type:jsonb"`
-	IsPublished   bool         `json:"is_published"`
-	CreatedBy     string       `json:"created_by"`
-	CreatedAt     time.Time    `json:"created_at"`
-	UpdatedBy     string       `json:"updated_by"`
-	UpdatedAt     time.Time    `json:"updated_at"`
+type MateriMetadataBody struct {
+	ModuleID    int       `json:"module_id"`
+	GlobalID    string    `json:"global_id"`
+	Name        string    `json:"name" binding:"required"`
+	Description string    `json:"description" binding:"required"`
+	Src         string    `json:"src"`
+	CreatedBy   string    `json:"created_by"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedBy   string    `json:"updated_by"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-func PreTestDataCreate(ctx *gin.Context) {
-	var body PreTestDataBody
+func MateriMetadataCreate(ctx *gin.Context) {
+	var body MateriMetadataBody
 
 	ctx.Bind(&body)
 
-	post := models.PreTestData{
-		ModuleID:      body.ModuleID,
-		PreTestMetaID: body.PreTestMetaID,
-		GlobalID:      body.GlobalID,
-		Question:      body.Question,
-		IsPublished:   body.IsPublished,
-		CreatedBy:     body.CreatedBy,
-		CreatedAt:     body.CreatedAt,
+	post := models.MateriMetadata{
+		ModuleID:    body.ModuleID,
+		GlobalID:    body.GlobalID,
+		Name:        body.Name,
+		Description: body.Description,
+		// CreatedBy:   body.CreatedBy,
+		// CreatedAt:   body.CreatedAt,
 	}
 	result := initializers.DB.Create(&post)
 
@@ -47,36 +46,34 @@ func PreTestDataCreate(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "PreTest Data created successfully.", "data": &post})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Materi Metadata created successfully.", "data": post})
 }
 
-func PreTestDataFindById(ctx *gin.Context) {
-	var preTestData models.PreTestData
+func MateriMetadataFindById(ctx *gin.Context) {
+	var materiMetadata models.MateriMetadata
 
 	var findByIdResult *gorm.DB
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.First(&preTestData, uint(id))
+		findByIdResult = initializers.DB.First(&materiMetadata, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&preTestData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.First(&materiMetadata, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "PreTest Data not found.",
+			"message": "Materi Metadata not found.",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": preTestData})
+	ctx.JSON(http.StatusOK, gin.H{"data": materiMetadata})
 }
-func PreTestDataFindAll(ctx *gin.Context) {
-	var preTestData []models.PreTestData
-	result := initializers.DB.Find(&preTestData)
-
-	// fmt.Println(preTestData)
+func MateriMetadataFindAll(ctx *gin.Context) {
+	var materiMetadata []models.MateriMetadata
+	result := initializers.DB.Find(&materiMetadata)
 
 	if result.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -85,28 +82,28 @@ func PreTestDataFindAll(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": preTestData})
+	ctx.JSON(http.StatusOK, gin.H{"data": materiMetadata})
 }
 
-func PreTestDataUpdate(ctx *gin.Context) {
-	var body PreTestDataBody
+func MateriMetadataUpdate(ctx *gin.Context) {
+	var body MateriMetadataBody
 
-	if err := ctx.ShouldBind(&body); err != nil {
+	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	updates := models.PreTestData{
-		ModuleID:      body.ModuleID,
-		PreTestMetaID: body.PreTestMetaID,
-		GlobalID:      body.GlobalID,
-		Question:      body.Question,
-		IsPublished:   body.IsPublished,
-		UpdatedBy:     body.UpdatedBy,
-		UpdatedAt:     body.UpdatedAt,
+	updates := models.MateriMetadata{
+		ModuleID:    body.ModuleID,
+		GlobalID:    body.GlobalID,
+		Name:        body.Name,
+		Description: body.Description,
+		Src:         body.Src,
+		// UpdatedBy:   body.UpdatedBy,
+		// UpdatedAt:   body.UpdatedAt,
 	}
 
-	var current models.PreTestData
+	var current models.MateriMetadata
 	var findByIdResult *gorm.DB
 	var findByIdResultAfterUpdate *gorm.DB
 
@@ -120,7 +117,7 @@ func PreTestDataUpdate(ctx *gin.Context) {
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "PreTest Data not found.",
+			"message": "Materi Metadata not found.",
 		})
 		return
 	}
@@ -129,7 +126,7 @@ func PreTestDataUpdate(ctx *gin.Context) {
 
 	if updateResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error updating PreTest Data.",
+			"message": "Error updating Materi Metadata.",
 		})
 		return
 	}
@@ -144,22 +141,23 @@ func PreTestDataUpdate(ctx *gin.Context) {
 
 	if findByIdResultAfterUpdate.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "PreTest ResultData not found.(Something went wrong !)",
+			"message": "Materi ResultData not found.(Something went wrong !)",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Data updated successfully.", "data": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Metadata updated successfully.", "data": &current})
 }
-func PreTestDataUpsert(ctx *gin.Context) {
-	var body PreTestDataBody
+
+func MateriMetadataUpsert(ctx *gin.Context) {
+	var body MateriMetadataBody
 
 	if err := ctx.ShouldBind(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var current models.PreTestData
+	var current models.MateriMetadata
 	var upsertResult *gorm.DB
 	var findByIdResult *gorm.DB
 	var findByIdResultAfterUpdate *gorm.DB
@@ -174,59 +172,59 @@ func PreTestDataUpsert(ctx *gin.Context) {
 
 	if findByIdResult.Error != nil { /* create */ /* if url params is id then global_id can be provided in JSON Body Req */
 		if govalidator.IsNumeric(ctx.Param("id")) {
-			upsert := models.PreTestData{
-				GlobalID:      body.GlobalID,
-				ModuleID:      body.ModuleID,
-				PreTestMetaID: body.PreTestMetaID,
-				Question:      body.Question,
-				IsPublished:   body.IsPublished,
-				CreatedBy:     body.CreatedBy,
-				CreatedAt:     body.CreatedAt,
+			upsert := models.MateriMetadata{
+				GlobalID:    body.GlobalID,
+				ModuleID:    body.ModuleID,
+				Name:        body.Name,
+				Description: body.Description,
+				Src:         body.Src,
+				// CreatedBy:   body.CreatedBy,
+				// CreatedAt:   body.CreatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{
-					"message": "Error updating PreTest Data.",
+					"message": "Error updating Metadata Metadata.",
 				})
 				return
 			}
-			ctx.JSON(http.StatusOK, gin.H{"message": "PreTest Data created successfully.", "data": &upsert})
+			ctx.JSON(http.StatusOK, gin.H{"message": "Materi Metadata created successfully.", "data": &upsert})
 		} else { /* create */ /* if url params is global_id then global_id automatic get from url params, so dont need to provide in JSON Body req */
 			id := ctx.Param("id")
-			upsert := models.PreTestData{
-				GlobalID:      id,
-				ModuleID:      body.ModuleID,
-				PreTestMetaID: body.PreTestMetaID,
-				Question:      body.Question,
-				IsPublished:   body.IsPublished,
-				CreatedBy:     body.CreatedBy,
-				CreatedAt:     body.CreatedAt,
+			upsert := models.MateriMetadata{
+				GlobalID:    id,
+				ModuleID:    body.ModuleID,
+				Name:        body.Name,
+				Description: body.Description,
+				Src:         body.Src,
+				// CreatedBy:   body.CreatedBy,
+				// CreatedAt:   body.CreatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{
-					"message": "Error updating PreTest Data.",
+					"message": "Error updating Materi Metadata.",
 				})
 				return
 			}
-			ctx.JSON(http.StatusOK, gin.H{"message": "PreTest Data created successfully.", "data": &upsert})
+			ctx.JSON(http.StatusOK, gin.H{"message": "Materi Metadata created successfully.", "data": &upsert})
 		}
 	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
-		upsert := models.PreTestData{
-			ID:            current.ID,
-			GlobalID:      body.GlobalID,
-			ModuleID:      body.ModuleID,
-			PreTestMetaID: body.PreTestMetaID,
-			Question:      body.Question,
-			IsPublished:   body.IsPublished,
-			UpdatedBy:     body.UpdatedBy,
-			UpdatedAt:     body.UpdatedAt,
+		upsert := models.MateriMetadata{
+			ID:          current.ID,
+			GlobalID:    current.GlobalID,
+			ModuleID:    body.ModuleID,
+			Name:        body.Name,
+			Description: body.Description,
+			Src:         body.Src,
+			// UpdatedBy:   body.UpdatedBy,
+			// UpdatedAt:   body.UpdatedAt,
 		}
 		upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 
 		if upsertResult.Error != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Error updating PreTest Data.",
+				"message": "Error updating Materi Metadata.",
 			})
 			return
 		}
@@ -241,24 +239,24 @@ func PreTestDataUpsert(ctx *gin.Context) {
 
 		if findByIdResultAfterUpdate.Error != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"message": "PreTest Data not found.(Something went wrong !)",
+				"message": "Materi Metadata not found.(Something went wrong !)",
 			})
 			return
 		}
 
-		ctx.JSON(http.StatusOK, gin.H{"message": "PreTest Data updated successfully.", "data": &current})
+		ctx.JSON(http.StatusOK, gin.H{"message": "Materi Metadata updated successfully.", "data": &current})
 	}
 }
 
-func PreTestDataDelete(ctx *gin.Context) {
-	var current models.PreTestData
+func MateriMetadataDelete(ctx *gin.Context) {
+	var current models.MateriMetadata
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	findByIdResult := initializers.DB.First(&current, uint(id))
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "PreTest Data not found.",
+			"message": "Materi Metadata not found.",
 		})
 		return
 	}
@@ -267,11 +265,11 @@ func PreTestDataDelete(ctx *gin.Context) {
 
 	if deleteResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error deleting PreTest Data.",
+			"message": "Error deleting Materi Metadata.",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Data deleted successfully.", "deletedData": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Metadata deleted successfully.", "deletedData": &current})
 
 }

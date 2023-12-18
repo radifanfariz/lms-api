@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type PreTestResultDataBody struct {
+type PostTestResultDataBody struct {
 	UserID           int              `json:"user_id"`
 	GlobalID         string           `json:"global_id"`
 	Score            float64          `json:"score"`
@@ -21,19 +21,19 @@ type PreTestResultDataBody struct {
 	End              pgtype.Timestamp `json:"end"`
 	Duration         models.Duration  `json:"duration"`
 	Answer           models.JSONB     `json:"answer" gorm:"type:jsonb"`
-	QuestionAnswered models.JSONB     `json:"question_answered" gorm:"type:jsonb"`
+	QuestionAnswered models.JSONB     `json:"question_answer" gorm:"type:jsonb"`
 	CreatedBy        string           `json:"created_by"`
 	CreatedAt        time.Time        `json:"created_at"`
 	UpdatedBy        string           `json:"updated_by"`
 	UpdatedAt        time.Time        `json:"updated_at"`
 }
 
-func PreTestResultDataCreate(ctx *gin.Context) {
-	var body PreTestResultDataBody
+func PostTestResultDataCreate(ctx *gin.Context) {
+	var body PostTestResultDataBody
 
 	ctx.Bind(&body)
 
-	post := models.PreTestResultData{
+	post := models.PostTestResultData{
 		UserID:           body.UserID,
 		GlobalID:         body.GlobalID,
 		Score:            body.Score,
@@ -54,36 +54,36 @@ func PreTestResultDataCreate(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "PreTest ResultData created successfully.", "data": &post})
+	ctx.JSON(http.StatusOK, gin.H{"message": "PostTest ResultData created successfully.", "data": &post})
 }
 
-func PreTestResultDataFindById(ctx *gin.Context) {
-	var preTestResultData models.PreTestResultData
+func PostTestResultDataFindById(ctx *gin.Context) {
+	var postTestResultData models.PostTestResultData
 
 	var findByIdResult *gorm.DB
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.First(&preTestResultData, uint(id))
+		findByIdResult = initializers.DB.First(&postTestResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&preTestResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.First(&postTestResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "PreTest ResultData not found.",
+			"message": "PostTest ResultData not found.",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": preTestResultData})
+	ctx.JSON(http.StatusOK, gin.H{"data": postTestResultData})
 }
-func PreTestResultDataFindAll(ctx *gin.Context) {
-	var preTestResultData []models.PreTestResultData
-	result := initializers.DB.Find(&preTestResultData)
+func PostTestResultDataFindAll(ctx *gin.Context) {
+	var postTestResultData []models.PostTestResultData
+	result := initializers.DB.Find(&postTestResultData)
 
-	// fmt.Println(preTestResultData)
+	// fmt.Println(postTestResultData)
 
 	if result.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -92,18 +92,18 @@ func PreTestResultDataFindAll(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": preTestResultData})
+	ctx.JSON(http.StatusOK, gin.H{"data": postTestResultData})
 }
 
-func PreTestResultDataUpdate(ctx *gin.Context) {
-	var body PreTestResultDataBody
+func PostTestResultDataUpdate(ctx *gin.Context) {
+	var body PostTestResultDataBody
 
 	if err := ctx.ShouldBind(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	updates := models.PreTestResultData{
+	updates := models.PostTestResultData{
 		UserID:           body.UserID,
 		GlobalID:         body.GlobalID,
 		Score:            body.Score,
@@ -116,7 +116,7 @@ func PreTestResultDataUpdate(ctx *gin.Context) {
 		UpdatedAt:        body.CreatedAt,
 	}
 
-	var current models.PreTestResultData
+	var current models.PostTestResultData
 	var findByIdResult *gorm.DB
 	var findByIdResultAfterUpdate *gorm.DB
 
@@ -130,7 +130,7 @@ func PreTestResultDataUpdate(ctx *gin.Context) {
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "PreTest ResultData not found.",
+			"message": "PostTest ResultData not found.",
 		})
 		return
 	}
@@ -139,7 +139,7 @@ func PreTestResultDataUpdate(ctx *gin.Context) {
 
 	if updateResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error updating PreTest ResultData.",
+			"message": "Error updating PostTest ResultData.",
 		})
 		return
 	}
@@ -154,7 +154,7 @@ func PreTestResultDataUpdate(ctx *gin.Context) {
 
 	if findByIdResultAfterUpdate.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "PreTest ResultData not found.(Something went wrong !)",
+			"message": "PostTest ResultData not found.(Something went wrong !)",
 		})
 		return
 	}
@@ -162,15 +162,15 @@ func PreTestResultDataUpdate(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset ResultData updated successfully.", "data": &current})
 }
 
-func PreTestResultDataUpsert(ctx *gin.Context) {
-	var body PreTestResultDataBody
+func PostTestResultDataUpsert(ctx *gin.Context) {
+	var body PostTestResultDataBody
 
 	if err := ctx.ShouldBind(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var current models.PreTestResultData
+	var current models.PostTestResultData
 	var upsertResult *gorm.DB
 	var findByIdResult *gorm.DB
 	var findByIdResultAfterUpdate *gorm.DB
@@ -185,7 +185,7 @@ func PreTestResultDataUpsert(ctx *gin.Context) {
 
 	if findByIdResult.Error != nil { /* create */ /* if url params is id then global_id can be provided in JSON Body Req */
 		if govalidator.IsNumeric(ctx.Param("id")) {
-			upsert := models.PreTestResultData{
+			upsert := models.PostTestResultData{
 				GlobalID:         body.GlobalID,
 				UserID:           body.UserID,
 				Score:            body.Score,
@@ -200,14 +200,14 @@ func PreTestResultDataUpsert(ctx *gin.Context) {
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{
-					"message": "Error updating PreTest Data.",
+					"message": "Error updating PostTest Result Data.",
 				})
 				return
 			}
-			ctx.JSON(http.StatusOK, gin.H{"message": "PreTest Data created successfully.", "data": &upsert})
+			ctx.JSON(http.StatusOK, gin.H{"message": "PostTest Result Data created successfully.", "data": &upsert})
 		} else { /* create */ /* if url params is global_id then global_id automatic get from url params, so dont need to provide in JSON Body req */
 			id := ctx.Param("id")
-			upsert := models.PreTestResultData{
+			upsert := models.PostTestResultData{
 				GlobalID:         id,
 				UserID:           body.UserID,
 				Score:            body.Score,
@@ -222,14 +222,14 @@ func PreTestResultDataUpsert(ctx *gin.Context) {
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{
-					"message": "Error updating PreTest Data.",
+					"message": "Error updating PostTest Result Data.",
 				})
 				return
 			}
-			ctx.JSON(http.StatusOK, gin.H{"message": "PreTest Data created successfully.", "data": &upsert})
+			ctx.JSON(http.StatusOK, gin.H{"message": "PostTest Result Data created successfully.", "data": &upsert})
 		}
 	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
-		upsert := models.PreTestResultData{
+		upsert := models.PostTestResultData{
 			ID:               current.ID,
 			GlobalID:         body.GlobalID,
 			UserID:           body.UserID,
@@ -246,7 +246,7 @@ func PreTestResultDataUpsert(ctx *gin.Context) {
 
 		if upsertResult.Error != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Error updating PreTest Data.",
+				"message": "Error updating PostTest Result Data.",
 			})
 			return
 		}
@@ -261,24 +261,24 @@ func PreTestResultDataUpsert(ctx *gin.Context) {
 
 		if findByIdResultAfterUpdate.Error != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"message": "PreTest Data not found.(Something went wrong !)",
+				"message": "PostTest Result Data not found.(Something went wrong !)",
 			})
 			return
 		}
 
-		ctx.JSON(http.StatusOK, gin.H{"message": "PreTest Data updated successfully.", "data": &current})
+		ctx.JSON(http.StatusOK, gin.H{"message": "PostTest Result Data updated successfully.", "data": &current})
 	}
 }
 
-func PreTestResultDataDelete(ctx *gin.Context) {
-	var current models.PreTestResultData
+func PostTestResultDataDelete(ctx *gin.Context) {
+	var current models.PostTestResultData
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	findByIdResult := initializers.DB.First(&current, uint(id))
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "PreTest ResultData not found.",
+			"message": "PostTest ResultData not found.",
 		})
 		return
 	}
@@ -287,7 +287,7 @@ func PreTestResultDataDelete(ctx *gin.Context) {
 
 	if deleteResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error deleting PreTest ResultData.",
+			"message": "Error deleting PostTest ResultData.",
 		})
 		return
 	}
