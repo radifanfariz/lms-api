@@ -7,42 +7,39 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/radifanfariz/lms-api/initializers"
 	"github.com/radifanfariz/lms-api/models"
 	"gorm.io/gorm"
 )
 
-type MateriDataBody struct {
-	ModuleID     int       `json:"module_id"`
-	MateriMetaID int       `json:"materi_meta_id"`
-	GlobalID     string    `json:"global_id"`
-	Name         string    `json:"name" binding:"required"`
-	Description  string    `json:"description" binding:"required"`
-	Type         string    `json:"type"`
-	Src          string    `json:"src"`
-	IsPublished  bool      `json:"is_publishing"`
-	CreatedBy    string    `json:"created_by"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedBy    string    `json:"updated_by"`
-	UpdatedAt    time.Time `json:"updated_at"`
+type MateriResultDataBody struct {
+	UserID    int              `json:"user_id"`
+	GlobalID  string           `json:"global_id"`
+	Score     float64          `json:"score"`
+	Start     pgtype.Timestamp `json:"start"`
+	End       pgtype.Timestamp `json:"end"`
+	Duration  models.Duration  `json:"duration"`
+	CreatedBy string           `json:"created_by"`
+	CreatedAt time.Time        `json:"created_at"`
+	UpdatedBy string           `json:"updated_by"`
+	UpdatedAt time.Time        `json:"updated_at"`
 }
 
-func MateriDataCreate(ctx *gin.Context) {
-	var body MateriDataBody
+func MateriResultDataCreate(ctx *gin.Context) {
+	var body MateriResultDataBody
 
 	ctx.Bind(&body)
 
-	post := models.MateriData{
-		ModuleID:     body.ModuleID,
-		MateriMetaID: body.MateriMetaID,
-		GlobalID:     body.GlobalID,
-		Name:         body.Name,
-		Description:  body.Description,
-		Type:         body.Type,
-		Src:          body.Src,
-		IsPublished:  body.IsPublished,
-		// CreatedBy:    body.CreatedBy,
-		// CreatedAt:    body.CreatedAt,
+	post := models.MateriResultData{
+		UserID:    body.UserID,
+		GlobalID:  body.GlobalID,
+		Score:     body.Score,
+		Start:     body.Start,
+		End:       body.End,
+		Duration:  body.Duration,
+		CreatedBy: body.CreatedBy,
+		CreatedAt: body.CreatedAt,
 	}
 	result := initializers.DB.Create(&post)
 
@@ -53,36 +50,36 @@ func MateriDataCreate(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Materi Data created successfully.", "data": &post})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Materi ResultData created successfully.", "data": &post})
 }
 
-func MateriDataFindById(ctx *gin.Context) {
-	var materiData []models.MateriData
+func MateriResultDataFindById(ctx *gin.Context) {
+	var MateriResultData models.MateriResultData
 
 	var findByIdResult *gorm.DB
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.Find(&materiData, uint(id))
+		findByIdResult = initializers.DB.First(&MateriResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.Find(&materiData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.First(&MateriResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Materi Data not found.",
+			"message": "Materi ResultData not found.",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": materiData})
+	ctx.JSON(http.StatusOK, gin.H{"data": MateriResultData})
 }
-func MateriDataFindAll(ctx *gin.Context) {
-	var materiData []models.MateriData
-	result := initializers.DB.Find(&materiData)
+func MateriResultDataFindAll(ctx *gin.Context) {
+	var MateriResultData []models.MateriResultData
+	result := initializers.DB.Find(&MateriResultData)
 
-	// fmt.Println(materiData)
+	// fmt.Println(MateriResultData)
 
 	if result.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -91,31 +88,29 @@ func MateriDataFindAll(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": materiData})
+	ctx.JSON(http.StatusOK, gin.H{"data": MateriResultData})
 }
 
-func MateriDataUpdate(ctx *gin.Context) {
-	var body MateriDataBody
+func MateriResultDataUpdate(ctx *gin.Context) {
+	var body MateriResultDataBody
 
 	if err := ctx.ShouldBind(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	updates := models.MateriData{
-		ModuleID:     body.ModuleID,
-		MateriMetaID: body.MateriMetaID,
-		GlobalID:     body.GlobalID,
-		Name:         body.Name,
-		Description:  body.Description,
-		Type:         body.Type,
-		Src:          body.Src,
-		IsPublished:  body.IsPublished,
-		// UpdatedBy:    body.UpdatedBy,
-		// UpdatedAt:    body.UpdatedAt,
+	updates := models.MateriResultData{
+		UserID:    body.UserID,
+		GlobalID:  body.GlobalID,
+		Score:     body.Score,
+		Start:     body.Start,
+		End:       body.End,
+		Duration:  body.Duration,
+		UpdatedBy: body.CreatedBy,
+		UpdatedAt: body.CreatedAt,
 	}
 
-	var current models.MateriData
+	var current models.MateriResultData
 	var findByIdResult *gorm.DB
 	var findByIdResultAfterUpdate *gorm.DB
 
@@ -129,7 +124,7 @@ func MateriDataUpdate(ctx *gin.Context) {
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Materi Data not found.",
+			"message": "Materi ResultData not found.",
 		})
 		return
 	}
@@ -138,7 +133,7 @@ func MateriDataUpdate(ctx *gin.Context) {
 
 	if updateResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error updating Materi Data.",
+			"message": "Error updating Materi ResultData.",
 		})
 		return
 	}
@@ -158,18 +153,18 @@ func MateriDataUpdate(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Materi Data updated successfully.", "data": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Materi ResultData updated successfully.", "data": &current})
 }
 
-func MateriDataUpsert(ctx *gin.Context) {
-	var body MateriDataBody
+func MateriResultDataUpsert(ctx *gin.Context) {
+	var body MateriResultDataBody
 
 	if err := ctx.ShouldBind(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var current models.MateriData
+	var current models.MateriResultData
 	var upsertResult *gorm.DB
 	var findByIdResult *gorm.DB
 	var findByIdResultAfterUpdate *gorm.DB
@@ -184,35 +179,35 @@ func MateriDataUpsert(ctx *gin.Context) {
 
 	if findByIdResult.Error != nil { /* create */ /* if url params is id then global_id can be provided in JSON Body Req */
 		if govalidator.IsNumeric(ctx.Param("id")) {
-			upsert := models.MateriData{
-				GlobalID:     body.GlobalID,
-				ModuleID:     body.ModuleID,
-				MateriMetaID: body.MateriMetaID,
-				Name:         body.Name,
-				Description:  body.Description,
-				Type:         body.Type,
-				Src:          body.Src,
-				IsPublished:  body.IsPublished,
+			upsert := models.MateriResultData{
+				GlobalID:  body.GlobalID,
+				UserID:    body.UserID,
+				Score:     body.Score,
+				Start:     body.Start,
+				End:       body.End,
+				Duration:  body.Duration,
+				CreatedBy: body.CreatedBy,
+				CreatedAt: body.CreatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{
-					"message": "Error updating PreTest Data.",
+					"message": "Error updating Materi Data.",
 				})
 				return
 			}
 			ctx.JSON(http.StatusOK, gin.H{"message": "Materi Data created successfully.", "data": &upsert})
 		} else { /* create */ /* if url params is global_id then global_id automatic get from url params, so dont need to provide in JSON Body req */
 			id := ctx.Param("id")
-			upsert := models.MateriData{
-				GlobalID:     id,
-				ModuleID:     body.ModuleID,
-				MateriMetaID: body.MateriMetaID,
-				Name:         body.Name,
-				Description:  body.Description,
-				Type:         body.Type,
-				Src:          body.Src,
-				IsPublished:  body.IsPublished,
+			upsert := models.MateriResultData{
+				GlobalID:  id,
+				UserID:    body.UserID,
+				Score:     body.Score,
+				Start:     body.Start,
+				End:       body.End,
+				Duration:  body.Duration,
+				CreatedBy: body.CreatedBy,
+				CreatedAt: body.CreatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -224,16 +219,16 @@ func MateriDataUpsert(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, gin.H{"message": "Materi Data created successfully.", "data": &upsert})
 		}
 	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
-		upsert := models.MateriData{
-			ID:           current.ID,
-			GlobalID:     current.GlobalID,
-			ModuleID:     body.ModuleID,
-			MateriMetaID: body.MateriMetaID,
-			Name:         body.Name,
-			Description:  body.Description,
-			Type:         body.Type,
-			Src:          body.Src,
-			IsPublished:  body.IsPublished,
+		upsert := models.MateriResultData{
+			ID:        current.ID,
+			GlobalID:  body.GlobalID,
+			UserID:    body.UserID,
+			Score:     body.Score,
+			Start:     body.Start,
+			End:       body.End,
+			Duration:  body.Duration,
+			UpdatedBy: body.UpdatedBy,
+			UpdatedAt: body.UpdatedAt,
 		}
 		upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 
@@ -263,15 +258,15 @@ func MateriDataUpsert(ctx *gin.Context) {
 	}
 }
 
-func MateriDataDelete(ctx *gin.Context) {
-	var current models.MateriData
+func MateriResultDataDelete(ctx *gin.Context) {
+	var current models.MateriResultData
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	findByIdResult := initializers.DB.First(&current, uint(id))
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Materi Data not found.",
+			"message": "Materi ResultData not found.",
 		})
 		return
 	}
@@ -280,11 +275,11 @@ func MateriDataDelete(ctx *gin.Context) {
 
 	if deleteResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error deleting Materi Data.",
+			"message": "Error deleting Materi ResultData.",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Materi Data deleted successfully.", "deletedData": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Materi ResultData deleted successfully.", "deletedData": &current})
 
 }

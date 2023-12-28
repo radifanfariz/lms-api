@@ -29,6 +29,11 @@ func (MateriData) TableName() string {
 	return "t_materi_data"
 }
 
+// TableName overrides the table name used by MateriData to `t_materi_data`
+func (MateriResultData) TableName() string {
+	return "t_materi_result_data"
+}
+
 // TableName overrides the table name used by PostTestMetadata to `t_posttest_metadata`
 func (PostTestMetadata) TableName() string {
 	return "t_posttest_metadata"
@@ -57,6 +62,11 @@ func (ModuleData) TableName() string {
 // TableName overrides the table name used by User Data to `t_user_data`
 func (UserData) TableName() string {
 	return "t_user_data"
+}
+
+// TableName overrides the table name used by User Data to `t_user_action`
+func (UserActionData) TableName() string {
+	return "t_user_action_data"
 }
 
 // TableName overrides the table name used by Access Data to `t_access_data`

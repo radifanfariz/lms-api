@@ -24,11 +24,11 @@ func PostTestDataRouter(r *gin.Engine) {
 	r.DELETE(PostTestDataEndpoint+"/delete/:id", controllers.PostTestDataDelete)
 }
 func PostTestResultDataRouter(r *gin.Engine) {
-	PostTestDataEndpoint := "/api/posttest/result"
-	r.POST(PostTestDataEndpoint+"/create", controllers.PostTestResultDataCreate)
-	r.GET(PostTestDataEndpoint+"/:id", controllers.PostTestResultDataFindById)
-	r.GET(PostTestDataEndpoint+"/all", controllers.PostTestResultDataFindAll)
-	r.PUT(PostTestDataEndpoint+"/update/:id", controllers.PostTestResultDataUpdate)
-	r.PUT(PostTestDataEndpoint+"/upsert/:id", controllers.PostTestResultDataUpsert)
-	r.DELETE(PostTestDataEndpoint+"/delete/:id", controllers.PostTestResultDataDelete)
+	PostTestResultDataEndpoint := "/api/posttest/result"
+	r.POST(PostTestResultDataEndpoint+"/create", controllers.PostTestResultDataCreate)
+	r.GET(PostTestResultDataEndpoint+"/:id", controllers.PostTestResultDataFindById)
+	r.GET(PostTestResultDataEndpoint+"/all", controllers.PostTestResultDataFindAll)
+	r.PUT(PostTestResultDataEndpoint+"/update/:id", controllers.PostTestResultDataUpdate)
+	r.PUT(PostTestResultDataEndpoint+"/upsert/:id", controllers.PostTestResultDataUpsert)
+	r.DELETE(PostTestResultDataEndpoint+"/delete/:id", controllers.PostTestResultDataDelete)
 }

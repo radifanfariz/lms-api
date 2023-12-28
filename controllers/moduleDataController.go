@@ -72,7 +72,7 @@ func ModuleDataFindById(ctx *gin.Context) {
 			Preload("PreTestData").
 			Preload("MateriData").
 			Preload("PostTestData").
-			First(&moduleData, uint(id))
+			Find(&moduleData, uint(id))
 	} else {
 		id := ctx.Param("id")
 		findByIdResult = initializers.DB.
@@ -84,7 +84,7 @@ func ModuleDataFindById(ctx *gin.Context) {
 			Preload("PreTestData").
 			Preload("MateriData").
 			Preload("PostTestData").
-			First(&moduleData, "c_global_id = ?", id)
+			Find(&moduleData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {

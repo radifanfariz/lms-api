@@ -23,3 +23,12 @@ func MateriDataRouter(r *gin.Engine) {
 	r.PUT(MateriDataEndpoint+"/upsert/:id", controllers.MateriDataUpsert)
 	r.DELETE(MateriDataEndpoint+"/delete/:id", controllers.MateriDataDelete)
 }
+func MateriResultDataRouter(r *gin.Engine) {
+	MateriResultDataEndpoint := "/api/materi/result"
+	r.POST(MateriResultDataEndpoint+"/create", controllers.MateriResultDataCreate)
+	r.GET(MateriResultDataEndpoint+"/:id", controllers.MateriResultDataFindById)
+	r.GET(MateriResultDataEndpoint+"/all", controllers.MateriResultDataFindAll)
+	r.PUT(MateriResultDataEndpoint+"/update/:id", controllers.MateriResultDataUpdate)
+	r.PUT(MateriResultDataEndpoint+"/upsert/:id", controllers.MateriResultDataUpsert)
+	r.DELETE(MateriResultDataEndpoint+"/delete/:id", controllers.MateriResultDataDelete)
+}
