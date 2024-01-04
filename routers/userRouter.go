@@ -6,13 +6,13 @@ import (
 )
 
 func UserDataRouter(r *gin.Engine) {
-	UserMetadataEndpoint := "/api/user/data"
-	r.POST(UserMetadataEndpoint+"/create", controllers.UserDataCreate)
-	r.GET(UserMetadataEndpoint+"/:id", controllers.UserDataFindById)
-	r.GET(UserMetadataEndpoint+"/all", controllers.UserDataFindAll)
-	r.PUT(UserMetadataEndpoint+"/update/:id", controllers.UserDataUpdate)
-	r.PUT(UserMetadataEndpoint+"/upsert/:id", controllers.UserDataUpsert)
-	r.DELETE(UserMetadataEndpoint+"/delete/:id", controllers.UserDataDelete)
+	UserDataEndpoint := "/api/user/data"
+	r.POST(UserDataEndpoint+"/create", controllers.UserDataCreate)
+	r.GET(UserDataEndpoint+"/:id", controllers.UserDataFindById)
+	r.GET(UserDataEndpoint+"/all", controllers.UserDataFindAll)
+	r.PUT(UserDataEndpoint+"/update/:id", controllers.UserDataUpdate)
+	r.PUT(UserDataEndpoint+"/upsert/:id", controllers.UserDataUpsert)
+	r.DELETE(UserDataEndpoint+"/delete/:id", controllers.UserDataDelete)
 }
 
 func UserActionDataRouter(r *gin.Engine) {

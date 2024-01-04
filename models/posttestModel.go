@@ -26,7 +26,7 @@ type PostTestData struct {
 	PostTestMetaID int              `gorm:"column:n_posttest_meta_id" json:"posttest_meta_id"`
 	GlobalID       string           `gorm:"column:c_global_id" json:"global_id"`
 	Question       JSONB            `gorm:"column:j_question" json:"question"`
-	IsPublished    bool             `gorm:"column:b_ispublished" json:"is_published"`
+	IsPublished    *bool            `gorm:"column:b_ispublished" json:"is_published"`
 	CreatedBy      string           `gorm:"column:c_created_by" json:"created_by"`
 	UpdatedBy      string           `gorm:"column:c_updated_by" json:"updated_by"`
 	CreatedAt      time.Time        `gorm:"column:d_created_at;default:now()" json:"created_at"`

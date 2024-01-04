@@ -15,7 +15,7 @@ import (
 type UserActionDataBody struct {
 	UserID           int       `json:"user_id"`
 	GlobalID         string    `json:"global_id"`
-	IsStartCourse    bool      `json:"is_startcourse"`
+	IsStartCourse    *bool     `json:"is_startcourse"`
 	ModuleAccessed   int       `json:"module_accessed"`
 	PretestAccessed  int       `json:"pretest_accessed"`
 	MateriAccessed   int       `json:"materi_accessed"`

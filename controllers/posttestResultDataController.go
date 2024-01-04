@@ -58,16 +58,16 @@ func PostTestResultDataCreate(ctx *gin.Context) {
 }
 
 func PostTestResultDataFindById(ctx *gin.Context) {
-	var postTestResultData models.PostTestResultData
+	var postTestResultData []models.PostTestResultData
 
 	var findByIdResult *gorm.DB
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.First(&postTestResultData, uint(id))
+		findByIdResult = initializers.DB.Find(&postTestResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&postTestResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Find(&postTestResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {

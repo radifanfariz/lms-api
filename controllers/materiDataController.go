@@ -20,7 +20,7 @@ type MateriDataBody struct {
 	Description  string    `json:"description" binding:"required"`
 	Type         string    `json:"type"`
 	Src          string    `json:"src"`
-	IsPublished  bool      `json:"is_publishing"`
+	IsPublished  *bool     `json:"is_publishing"`
 	CreatedBy    string    `json:"created_by"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedBy    string    `json:"updated_by"`

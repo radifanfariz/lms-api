@@ -24,26 +24,29 @@ func main() {
 	// })
 	/*------------------*/
 
-	/* PreTest Metadata Endpoint */
+	/* Module Metadata Endpoint */
 	routers.ModuleMetadataRouter(r)
 	/*----------------------------*/
-	/* PreTest Data Endpoint */
+	/* Module Data Endpoint */
 	routers.ModuleDataRouter(r)
 	/*----------------------------*/
 	/* PreTest Metadata Endpoint */
 	routers.PreTestMetadataRouter(r)
 	/*----------------------------*/
-	/* PreTest Metadata Endpoint */
+	/* PreTest Data Endpoint */
 	routers.PreTestDataRouter(r)
 	/*----------------------------*/
-	/* PreTest Metadata Endpoint */
+	/* PreTest Result Data Endpoint */
 	routers.PreTestResultDataRouter(r)
 	/*----------------------------*/
 	/* Materi Metadata Endpoint */
 	routers.MateriMetadataRouter(r)
 	/*----------------------------*/
-	/* Materi Metadata Endpoint */
+	/* Materi Data Endpoint */
 	routers.MateriDataRouter(r)
+	/*----------------------------*/
+	/* Materi Result Data Endpoint */
+	routers.MateriResultDataRouter(r)
 	/*----------------------------*/
 	/* PostTest Metadata Endpoint */
 	routers.PostTestMetadataRouter(r)
@@ -51,11 +54,14 @@ func main() {
 	/* PostTest Metadata Endpoint */
 	routers.PostTestDataRouter(r)
 	/*----------------------------*/
-	/* PostTest Metadata Endpoint */
+	/* PostTest Result Data Endpoint */
 	routers.PostTestResultDataRouter(r)
 	/*----------------------------*/
 	/* User Data Endpoint */
 	routers.UserDataRouter(r)
+	/*----------------------------*/
+	/* User Action Data Endpoint */
+	routers.UserActionDataRouter(r)
 	/*----------------------------*/
 	/* Access Data Endpoint */
 	routers.AccessDataRouter(r)

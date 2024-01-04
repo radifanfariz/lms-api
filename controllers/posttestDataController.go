@@ -17,7 +17,7 @@ type PostTestDataBody struct {
 	PostTestMetaID int          `json:"posttest_meta_id"`
 	GlobalID       string       `json:"global_id"`
 	Question       models.JSONB `json:"question" gorm:"type:jsonb"`
-	IsPublished    bool         `json:"is_published"`
+	IsPublished    *bool        `json:"is_published"`
 	CreatedBy      string       `json:"created_by"`
 	CreatedAt      time.Time    `json:"created_at"`
 	UpdatedBy      string       `json:"updated_by"`

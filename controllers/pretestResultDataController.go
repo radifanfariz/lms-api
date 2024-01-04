@@ -58,16 +58,16 @@ func PreTestResultDataCreate(ctx *gin.Context) {
 }
 
 func PreTestResultDataFindById(ctx *gin.Context) {
-	var preTestResultData models.PreTestResultData
+	var preTestResultData []models.PreTestResultData
 
 	var findByIdResult *gorm.DB
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.First(&preTestResultData, uint(id))
+		findByIdResult = initializers.DB.Find(&preTestResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&preTestResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Find(&preTestResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -159,7 +159,7 @@ func PreTestResultDataUpdate(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset ResultData updated successfully.", "data": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Pretest ResultData updated successfully.", "data": &current})
 }
 
 func PreTestResultDataUpsert(ctx *gin.Context) {
@@ -292,6 +292,6 @@ func PreTestResultDataDelete(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset ResultData deleted successfully.", "deletedData": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Pretest ResultData deleted successfully.", "deletedData": &current})
 
 }

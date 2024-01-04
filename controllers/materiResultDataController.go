@@ -15,8 +15,8 @@ import (
 
 type MateriResultDataBody struct {
 	UserID    int              `json:"user_id"`
+	MateriID  int              `json:"materi_id"`
 	GlobalID  string           `json:"global_id"`
-	Score     float64          `json:"score"`
 	Start     pgtype.Timestamp `json:"start"`
 	End       pgtype.Timestamp `json:"end"`
 	Duration  models.Duration  `json:"duration"`
@@ -33,8 +33,8 @@ func MateriResultDataCreate(ctx *gin.Context) {
 
 	post := models.MateriResultData{
 		UserID:    body.UserID,
+		MateriID:  body.MateriID,
 		GlobalID:  body.GlobalID,
-		Score:     body.Score,
 		Start:     body.Start,
 		End:       body.End,
 		Duration:  body.Duration,
@@ -101,8 +101,8 @@ func MateriResultDataUpdate(ctx *gin.Context) {
 
 	updates := models.MateriResultData{
 		UserID:    body.UserID,
+		MateriID:  body.MateriID,
 		GlobalID:  body.GlobalID,
-		Score:     body.Score,
 		Start:     body.Start,
 		End:       body.End,
 		Duration:  body.Duration,
@@ -182,7 +182,7 @@ func MateriResultDataUpsert(ctx *gin.Context) {
 			upsert := models.MateriResultData{
 				GlobalID:  body.GlobalID,
 				UserID:    body.UserID,
-				Score:     body.Score,
+				MateriID:  body.MateriID,
 				Start:     body.Start,
 				End:       body.End,
 				Duration:  body.Duration,
@@ -202,7 +202,7 @@ func MateriResultDataUpsert(ctx *gin.Context) {
 			upsert := models.MateriResultData{
 				GlobalID:  id,
 				UserID:    body.UserID,
-				Score:     body.Score,
+				MateriID:  body.MateriID,
 				Start:     body.Start,
 				End:       body.End,
 				Duration:  body.Duration,
@@ -222,8 +222,8 @@ func MateriResultDataUpsert(ctx *gin.Context) {
 		upsert := models.MateriResultData{
 			ID:        current.ID,
 			GlobalID:  body.GlobalID,
+			MateriID:  body.MateriID,
 			UserID:    body.UserID,
-			Score:     body.Score,
 			Start:     body.Start,
 			End:       body.End,
 			Duration:  body.Duration,

@@ -28,7 +28,7 @@ type MateriData struct {
 	Description  string `gorm:"column:c_description" json:"description"`
 	Type         string `gorm:"column:c_type" json:"type"`
 	Src          string `gorm:"column:c_src" json:"src"`
-	IsPublished  bool   `gorm:"column:b_ispublished" json:"is_published"`
+	IsPublished  *bool  `gorm:"column:b_ispublished" json:"is_published"`
 	// CreatedBy    string         `gorm:"column:c_created_by"`
 	// UpdatedBy    string         `gorm:"column:c_updated_by"`
 	// CreatedAt    time.Time      `gorm:"default:now();column:d_created_at"`
@@ -38,8 +38,8 @@ type MateriData struct {
 type MateriResultData struct {
 	ID        int              `gorm:"primaryKey;column:n_id" json:"id"`
 	UserID    int              `gorm:"column:n_user_id" json:"user_id"`
+	MateriID  int              `gorm:"column:n_materi_id" json:"materi_id"`
 	GlobalID  string           `gorm:"column:c_global_id" json:"global_id"`
-	Score     float64          `gorm:"column:n_score" json:"score"`
 	Start     pgtype.Timestamp `gorm:"column:d_start" json:"start"`
 	End       pgtype.Timestamp `gorm:"column:d_end" json:"end"`
 	Duration  Duration         `gorm:"column:d_duration" json:"duration"`

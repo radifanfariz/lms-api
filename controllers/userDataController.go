@@ -13,15 +13,30 @@ import (
 )
 
 type UserDataBody struct {
-	EmployeeID int       `json:"employee_id"`
-	Name       string    `json:"name"`
-	NIK        string    `json:"nik"`
-	Level      string    `json:"level"`
-	LevelID    int       `json:"level_id"`
-	Grade      string    `json:"grade"`
-	GradeID    int       `json:"grade_id"`
-	CreatedBy  string    `json:"created_by"`
-	CreatedAt  time.Time `json:"created_at"`
+	EmployeeID        int       `json:"employee_id"`
+	Name              string    `json:"name"`
+	NIK               string    `json:"nik"`
+	Level             string    `json:"level"`
+	LevelID           int       `json:"level_id"`
+	Grade             string    `json:"grade"`
+	GradeID           int       `json:"grade_id"`
+	Department        string    `json:"department"`
+	DepartmentID      int       `json:"department_id"`
+	LearningJourney   string    `json:"learning_journey"`
+	LearningJourneyID int       `json:"learning_journey_id"`
+	Role              string    `json:"role"`
+	RoleID            int       `json:"role_id"`
+	Status            string    `json:"status"`
+	StatusID          int       `json:"status_id"`
+	IsActive          *bool     `json:"is_active"`
+	Position          string    `json:"position"`
+	PositionID        int       `json:"position_id"`
+	AlternativeID     string    `json:"alternative_id"`
+	Password          string    `json:"password"`
+	CreatedBy         string    `json:"created_by"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedBy         string    `json:"updated_by"`
+	UpdatedAt         time.Time `json:"updated_at"`
 }
 
 func UserDataCreate(ctx *gin.Context) {
@@ -30,15 +45,28 @@ func UserDataCreate(ctx *gin.Context) {
 	ctx.Bind(&body)
 
 	post := models.UserData{
-		EmployeeID: body.EmployeeID,
-		Name:       body.Name,
-		NIK:        body.NIK,
-		Level:      body.Level,
-		LevelID:    body.LevelID,
-		Grade:      body.Grade,
-		GradeID:    body.GradeID,
-		// CreatedBy:  body.CreatedBy,
-		// CreatedAt:  body.CreatedAt,
+		EmployeeID:        body.EmployeeID,
+		Name:              body.Name,
+		NIK:               body.NIK,
+		Level:             body.Level,
+		LevelID:           body.LevelID,
+		Grade:             body.Grade,
+		GradeID:           body.GradeID,
+		Department:        body.Department,
+		DepartmentID:      body.EmployeeID,
+		LearningJourney:   body.LearningJourney,
+		LearningJourneyID: body.LearningJourneyID,
+		Role:              body.Role,
+		RoleID:            body.RoleID,
+		Status:            body.Status,
+		StatusID:          body.StatusID,
+		IsActive:          body.IsActive,
+		Position:          body.Position,
+		PositionID:        body.PositionID,
+		AlternativeID:     body.AlternativeID,
+		Password:          body.Password,
+		CreatedBy:         body.CreatedBy,
+		CreatedAt:         body.CreatedAt,
 	}
 	result := initializers.DB.Create(&post)
 
@@ -62,7 +90,7 @@ func UserDataFindById(ctx *gin.Context) {
 		findByIdResult = initializers.DB.First(&userData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&userData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.First(&userData, "c_alternative_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -99,15 +127,28 @@ func UserDataUpdate(ctx *gin.Context) {
 	}
 
 	updates := models.UserData{
-		EmployeeID: body.EmployeeID,
-		Name:       body.Name,
-		NIK:        body.NIK,
-		Level:      body.Level,
-		LevelID:    body.LevelID,
-		Grade:      body.Grade,
-		GradeID:    body.GradeID,
-		// UpdatedBy:  body.UpdatedBy,
-		// UpdatedAt:  body.UpdatedAt,
+		EmployeeID:        body.EmployeeID,
+		Name:              body.Name,
+		NIK:               body.NIK,
+		Level:             body.Level,
+		LevelID:           body.LevelID,
+		Grade:             body.Grade,
+		GradeID:           body.GradeID,
+		Department:        body.Department,
+		DepartmentID:      body.EmployeeID,
+		LearningJourney:   body.LearningJourney,
+		LearningJourneyID: body.LearningJourneyID,
+		Role:              body.Role,
+		RoleID:            body.RoleID,
+		Status:            body.Status,
+		StatusID:          body.StatusID,
+		IsActive:          body.IsActive,
+		Position:          body.Position,
+		PositionID:        body.PositionID,
+		AlternativeID:     body.AlternativeID,
+		Password:          body.Password,
+		UpdatedBy:         body.UpdatedBy,
+		UpdatedAt:         body.UpdatedAt,
 	}
 
 	var current models.UserData
@@ -119,7 +160,7 @@ func UserDataUpdate(ctx *gin.Context) {
 		findByIdResult = initializers.DB.First(&current, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&current, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.First(&current, "c_alternative_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -143,7 +184,7 @@ func UserDataUpdate(ctx *gin.Context) {
 		findByIdResultAfterUpdate = initializers.DB.First(&current, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResultAfterUpdate = initializers.DB.First(&current, "c_global_id = ?", id)
+		findByIdResultAfterUpdate = initializers.DB.First(&current, "c_alternative_id = ?", id)
 	}
 
 	if findByIdResultAfterUpdate.Error != nil {
@@ -153,7 +194,7 @@ func UserDataUpdate(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Data updated successfully.", "data": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "User Data updated successfully.", "data": &current})
 }
 
 func UserDataUpsert(ctx *gin.Context) {
@@ -174,22 +215,37 @@ func UserDataUpsert(ctx *gin.Context) {
 		findByIdResult = initializers.DB.First(&current, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&current, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.First(&current, "c_alternative_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil { /* create */ /* if url params is id then global_id can be provided in JSON Body Req */
 		if govalidator.IsNumeric(ctx.Param("id")) {
 			upsert := models.UserData{
 				// GlobalID:   body.GlobalID,
-				EmployeeID: body.EmployeeID,
-				Name:       body.Name,
-				NIK:        body.NIK,
-				Level:      body.Level,
-				LevelID:    body.LevelID,
-				Grade:      body.Grade,
-				GradeID:    body.GradeID,
-				// CreatedBy:  body.CreatedBy,
-				// CreatedAt:  body.CreatedAt,
+				EmployeeID:        body.EmployeeID,
+				Name:              body.Name,
+				NIK:               body.NIK,
+				Level:             body.Level,
+				LevelID:           body.LevelID,
+				Grade:             body.Grade,
+				GradeID:           body.GradeID,
+				Department:        body.Department,
+				DepartmentID:      body.EmployeeID,
+				LearningJourney:   body.LearningJourney,
+				LearningJourneyID: body.LearningJourneyID,
+				Role:              body.Role,
+				RoleID:            body.RoleID,
+				Status:            body.Status,
+				StatusID:          body.StatusID,
+				IsActive:          body.IsActive,
+				Position:          body.Position,
+				PositionID:        body.PositionID,
+				AlternativeID:     body.AlternativeID,
+				Password:          body.Password,
+				CreatedBy:         body.CreatedBy,
+				CreatedAt:         body.CreatedAt,
+				UpdatedBy:         body.UpdatedBy,
+				UpdatedAt:         body.UpdatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -200,18 +256,32 @@ func UserDataUpsert(ctx *gin.Context) {
 			}
 			ctx.JSON(http.StatusOK, gin.H{"message": "User Data created successfully.", "data": &upsert})
 		} else { /* create */ /* if url params is global_id then global_id automatic get from url params, so dont need to provide in JSON Body req */
-			// id := ctx.Param("id")
+			id := ctx.Param("id")
 			upsert := models.UserData{
-				// GlobalID:   id,
-				EmployeeID: body.EmployeeID,
-				Name:       body.Name,
-				NIK:        body.NIK,
-				Level:      body.Level,
-				LevelID:    body.LevelID,
-				Grade:      body.Grade,
-				GradeID:    body.GradeID,
-				// CreatedBy:  body.CreatedBy,
-				// CreatedAt:  body.CreatedAt,
+				EmployeeID:        body.EmployeeID,
+				Name:              body.Name,
+				NIK:               body.NIK,
+				Level:             body.Level,
+				LevelID:           body.LevelID,
+				Grade:             body.Grade,
+				GradeID:           body.GradeID,
+				Department:        body.Department,
+				DepartmentID:      body.EmployeeID,
+				LearningJourney:   body.LearningJourney,
+				LearningJourneyID: body.LearningJourneyID,
+				Role:              body.Role,
+				RoleID:            body.RoleID,
+				Status:            body.Status,
+				StatusID:          body.StatusID,
+				IsActive:          body.IsActive,
+				Position:          body.Position,
+				PositionID:        body.PositionID,
+				AlternativeID:     id,
+				Password:          body.Password,
+				CreatedBy:         body.CreatedBy,
+				CreatedAt:         body.CreatedAt,
+				UpdatedBy:         body.UpdatedBy,
+				UpdatedAt:         body.UpdatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -224,17 +294,31 @@ func UserDataUpsert(ctx *gin.Context) {
 		}
 	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
 		upsert := models.UserData{
-			ID: current.ID,
-			// GlobalID:   body.GlobalID,
-			EmployeeID: body.EmployeeID,
-			Name:       body.Name,
-			NIK:        body.NIK,
-			Level:      body.Level,
-			LevelID:    body.LevelID,
-			Grade:      body.Grade,
-			GradeID:    body.GradeID,
-			// UpdatedBy:  body.UpdatedBy,
-			// UpdatedAt:  body.UpdatedAt,
+			ID:                current.ID,
+			EmployeeID:        body.EmployeeID,
+			Name:              body.Name,
+			NIK:               body.NIK,
+			Level:             body.Level,
+			LevelID:           body.LevelID,
+			Grade:             body.Grade,
+			GradeID:           body.GradeID,
+			Department:        body.Department,
+			DepartmentID:      body.EmployeeID,
+			LearningJourney:   body.LearningJourney,
+			LearningJourneyID: body.LearningJourneyID,
+			Role:              body.Role,
+			RoleID:            body.RoleID,
+			Status:            body.Status,
+			StatusID:          body.StatusID,
+			IsActive:          body.IsActive,
+			Position:          body.Position,
+			PositionID:        body.PositionID,
+			AlternativeID:     body.AlternativeID,
+			Password:          body.Password,
+			CreatedBy:         body.CreatedBy,
+			CreatedAt:         body.CreatedAt,
+			UpdatedBy:         body.UpdatedBy,
+			UpdatedAt:         body.UpdatedAt,
 		}
 		upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 
@@ -250,7 +334,7 @@ func UserDataUpsert(ctx *gin.Context) {
 			findByIdResultAfterUpdate = initializers.DB.First(&current, uint(id))
 		} else {
 			id := ctx.Param("id")
-			findByIdResultAfterUpdate = initializers.DB.First(&current, "c_global_id = ?", id)
+			findByIdResultAfterUpdate = initializers.DB.First(&current, "c_alternative_id = ?", id)
 		}
 
 		if findByIdResultAfterUpdate.Error != nil {
@@ -286,6 +370,6 @@ func UserDataDelete(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Data deleted successfully.", "deletedData": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "User Data deleted successfully.", "deletedData": &current})
 
 }
