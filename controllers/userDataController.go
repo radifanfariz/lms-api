@@ -16,6 +16,8 @@ type UserDataBody struct {
 	EmployeeID        int       `json:"employee_id"`
 	Name              string    `json:"name"`
 	NIK               string    `json:"nik"`
+	MainCompany       string    `json:"main_company"`
+	MainCompanyID     int       `json:"main_company_id"`
 	Level             string    `json:"level"`
 	LevelID           int       `json:"level_id"`
 	Grade             string    `json:"grade"`
@@ -48,6 +50,8 @@ func UserDataCreate(ctx *gin.Context) {
 		EmployeeID:        body.EmployeeID,
 		Name:              body.Name,
 		NIK:               body.NIK,
+		MainCompany:       body.MainCompany,
+		MainCompanyID:     body.MainCompanyID,
 		Level:             body.Level,
 		LevelID:           body.LevelID,
 		Grade:             body.Grade,
@@ -80,6 +84,28 @@ func UserDataCreate(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "User Data created successfully.", "data": &post})
 }
 
+func UserDataLogin(ctx *gin.Context) {
+	var userData models.UserData
+	var body UserDataBody
+
+	ctx.Bind(&body)
+
+	credentials := models.UserData{
+		NIK:      body.NIK,
+		Password: body.Password,
+	}
+	findByIdResult := initializers.DB.Where("c_nik = ? AND c_password = ?", credentials.NIK, credentials.Password).First(&userData)
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Invalid credentials !",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Login successful !", "data": userData})
+}
+
 func UserDataFindById(ctx *gin.Context) {
 	var userData models.UserData
 
@@ -87,7 +113,7 @@ func UserDataFindById(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.First(&userData, uint(id))
+		findByIdResult = initializers.DB.First(&userData, "n_employee_id = ?", uint(id))
 	} else {
 		id := ctx.Param("id")
 		findByIdResult = initializers.DB.First(&userData, "c_alternative_id = ?", id)
@@ -130,6 +156,8 @@ func UserDataUpdate(ctx *gin.Context) {
 		EmployeeID:        body.EmployeeID,
 		Name:              body.Name,
 		NIK:               body.NIK,
+		MainCompany:       body.MainCompany,
+		MainCompanyID:     body.MainCompanyID,
 		Level:             body.Level,
 		LevelID:           body.LevelID,
 		Grade:             body.Grade,
@@ -157,7 +185,7 @@ func UserDataUpdate(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.First(&current, uint(id))
+		findByIdResult = initializers.DB.First(&current, "n_employee_id = ?", uint(id))
 	} else {
 		id := ctx.Param("id")
 		findByIdResult = initializers.DB.First(&current, "c_alternative_id = ?", id)
@@ -181,7 +209,7 @@ func UserDataUpdate(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResultAfterUpdate = initializers.DB.First(&current, uint(id))
+		findByIdResultAfterUpdate = initializers.DB.First(&current, "n_employee_id = ?", uint(id))
 	} else {
 		id := ctx.Param("id")
 		findByIdResultAfterUpdate = initializers.DB.First(&current, "c_alternative_id = ?", id)
@@ -212,19 +240,21 @@ func UserDataUpsert(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.First(&current, uint(id))
+		findByIdResult = initializers.DB.First(&current, "n_employee_id = ?", uint(id))
 	} else {
 		id := ctx.Param("id")
 		findByIdResult = initializers.DB.First(&current, "c_alternative_id = ?", id)
 	}
 
-	if findByIdResult.Error != nil { /* create */ /* if url params is id then global_id can be provided in JSON Body Req */
+	if findByIdResult.Error != nil { /* create */ /* if url params is id then alternative_id can be provided in JSON Body Req */
 		if govalidator.IsNumeric(ctx.Param("id")) {
 			upsert := models.UserData{
 				// GlobalID:   body.GlobalID,
 				EmployeeID:        body.EmployeeID,
 				Name:              body.Name,
 				NIK:               body.NIK,
+				MainCompany:       body.MainCompany,
+				MainCompanyID:     body.MainCompanyID,
 				Level:             body.Level,
 				LevelID:           body.LevelID,
 				Grade:             body.Grade,
@@ -255,12 +285,14 @@ func UserDataUpsert(ctx *gin.Context) {
 				return
 			}
 			ctx.JSON(http.StatusOK, gin.H{"message": "User Data created successfully.", "data": &upsert})
-		} else { /* create */ /* if url params is global_id then global_id automatic get from url params, so dont need to provide in JSON Body req */
+		} else { /* create */ /* if url params is alternative_id then alternative_id automatic get from url params, so dont need to provide in JSON Body req */
 			id := ctx.Param("id")
 			upsert := models.UserData{
 				EmployeeID:        body.EmployeeID,
 				Name:              body.Name,
 				NIK:               body.NIK,
+				MainCompany:       body.MainCompany,
+				MainCompanyID:     body.MainCompanyID,
 				Level:             body.Level,
 				LevelID:           body.LevelID,
 				Grade:             body.Grade,
@@ -292,12 +324,14 @@ func UserDataUpsert(ctx *gin.Context) {
 			}
 			ctx.JSON(http.StatusOK, gin.H{"message": "User Data created successfully.", "data": &upsert})
 		}
-	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
+	} else { /* update */ /* update in upsert cannot update alternative_id, so dont need to provide alternative_id in JSON Body req */
 		upsert := models.UserData{
 			ID:                current.ID,
 			EmployeeID:        body.EmployeeID,
 			Name:              body.Name,
 			NIK:               body.NIK,
+			MainCompany:       body.MainCompany,
+			MainCompanyID:     body.MainCompanyID,
 			Level:             body.Level,
 			LevelID:           body.LevelID,
 			Grade:             body.Grade,
@@ -331,7 +365,7 @@ func UserDataUpsert(ctx *gin.Context) {
 
 		if govalidator.IsNumeric(ctx.Param("id")) {
 			id, _ := strconv.Atoi(ctx.Param("id"))
-			findByIdResultAfterUpdate = initializers.DB.First(&current, uint(id))
+			findByIdResultAfterUpdate = initializers.DB.First(&current, "n_employee_id = ?", uint(id))
 		} else {
 			id := ctx.Param("id")
 			findByIdResultAfterUpdate = initializers.DB.First(&current, "c_alternative_id = ?", id)
@@ -352,7 +386,7 @@ func UserDataDelete(ctx *gin.Context) {
 	var current models.UserData
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
-	findByIdResult := initializers.DB.First(&current, uint(id))
+	findByIdResult := initializers.DB.First(&current, "n_employee_id = ?", uint(id))
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -361,7 +395,7 @@ func UserDataDelete(ctx *gin.Context) {
 		return
 	}
 
-	deleteResult := initializers.DB.Delete(&current, uint(id))
+	deleteResult := initializers.DB.Delete(&current, "n_employee_id = ?", uint(id))
 
 	if deleteResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{

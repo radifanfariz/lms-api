@@ -7,6 +7,8 @@ type UserData struct {
 	EmployeeID        int       `gorm:"column:n_employee_id" json:"employee_id"`
 	Name              string    `gorm:"column:c_name" json:"name"`
 	NIK               string    `gorm:"column:c_nik" json:"nik"`
+	MainCompany       string    `gorm:"column:c_main_company" json:"main_company"`
+	MainCompanyID     int       `gorm:"column:n_main_company_id" json:"main_company_id"`
 	Level             string    `gorm:"column:c_level" json:"level"`
 	LevelID           int       `gorm:"column:n_level_id" json:"level_id"`
 	Grade             string    `gorm:"column:c_grade" json:"grade"`
@@ -24,10 +26,10 @@ type UserData struct {
 	PositionID        int       `gorm:"column:n_position_id" json:"position_id"`
 	AlternativeID     string    `gorm:"column:c_alternative_id" json:"alternative_id"`
 	Password          string    `gorm:"column:c_password" json:"password"`
-	CreatedBy         string    `gorm:"column:c_created_by"`
-	UpdatedBy         string    `gorm:"column:c_updated_by"`
-	CreatedAt         time.Time `gorm:"default:now();column:d_created_at"`
-	UpdatedAt         time.Time `gorm:"default:now();column:d_updated_at"`
+	CreatedBy         string    `gorm:"column:c_created_by" json:"created_by"`
+	UpdatedBy         string    `gorm:"column:c_updated_by" json:"updated_by"`
+	CreatedAt         time.Time `gorm:"default:now();column:d_created_at" json:"created_at"`
+	UpdatedAt         time.Time `gorm:"default:now();column:d_updated_at" json:"updated_at"`
 }
 
 type UserActionData struct {
@@ -39,8 +41,8 @@ type UserActionData struct {
 	PretestAccessed  int       `gorm:"column:n_pretest_accessed" json:"pretest_accessed"`
 	MateriAccessed   int       `gorm:"column:n_materi_accessed" json:"materi_accessed"`
 	PosttestAccessed int       `gorm:"column:n_posttest_accessed" json:"posttest_accessed"`
-	CreatedBy        string    `gorm:"column:c_created_by"`
-	UpdatedBy        string    `gorm:"column:c_updated_by"`
-	CreatedAt        time.Time `gorm:"default:now();column:d_created_at"`
-	UpdatedAt        time.Time `gorm:"default:now();column:d_updated_at"`
+	CreatedBy        string    `gorm:"column:c_created_by" json:"created_by"`
+	UpdatedBy        string    `gorm:"column:c_updated_by" json:"updated_by"`
+	CreatedAt        time.Time `gorm:"default:now();column:d_created_at" json:"created_at"`
+	UpdatedAt        time.Time `gorm:"default:now();column:d_updated_at" json:"updated_at"`
 }

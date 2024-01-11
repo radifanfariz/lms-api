@@ -256,6 +256,7 @@ func ModuleMetadataUpsert(ctx *gin.Context) {
 	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
 		upsert := models.ModuleMetadata{
 			ID:              current.ID,
+			GlobalID:        current.GlobalID,
 			Name:            body.Name,
 			Description:     body.Description,
 			Src:             body.Src,

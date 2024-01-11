@@ -34,8 +34,8 @@ func MateriMetadataCreate(ctx *gin.Context) {
 		GlobalID:    body.GlobalID,
 		Name:        body.Name,
 		Description: body.Description,
-		// CreatedBy:   body.CreatedBy,
-		// CreatedAt:   body.CreatedAt,
+		CreatedBy:   body.CreatedBy,
+		CreatedAt:   body.CreatedAt,
 	}
 	result := initializers.DB.Create(&post)
 
@@ -99,8 +99,8 @@ func MateriMetadataUpdate(ctx *gin.Context) {
 		Name:        body.Name,
 		Description: body.Description,
 		Src:         body.Src,
-		// UpdatedBy:   body.UpdatedBy,
-		// UpdatedAt:   body.UpdatedAt,
+		UpdatedBy:   body.UpdatedBy,
+		UpdatedAt:   body.UpdatedAt,
 	}
 
 	var current models.MateriMetadata
@@ -178,8 +178,8 @@ func MateriMetadataUpsert(ctx *gin.Context) {
 				Name:        body.Name,
 				Description: body.Description,
 				Src:         body.Src,
-				// CreatedBy:   body.CreatedBy,
-				// CreatedAt:   body.CreatedAt,
+				CreatedBy:   body.CreatedBy,
+				CreatedAt:   body.CreatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -197,8 +197,8 @@ func MateriMetadataUpsert(ctx *gin.Context) {
 				Name:        body.Name,
 				Description: body.Description,
 				Src:         body.Src,
-				// CreatedBy:   body.CreatedBy,
-				// CreatedAt:   body.CreatedAt,
+				CreatedBy:   body.CreatedBy,
+				CreatedAt:   body.CreatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -217,8 +217,8 @@ func MateriMetadataUpsert(ctx *gin.Context) {
 			Name:        body.Name,
 			Description: body.Description,
 			Src:         body.Src,
-			// UpdatedBy:   body.UpdatedBy,
-			// UpdatedAt:   body.UpdatedAt,
+			UpdatedBy:   body.UpdatedBy,
+			UpdatedAt:   body.UpdatedAt,
 		}
 		upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 

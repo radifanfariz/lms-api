@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
@@ -13,17 +14,22 @@ import (
 )
 
 type ModuleDataBody struct {
-	ID             int    `json:"id"`
-	GlobalID       string `json:"global_id"`
-	ModuleMetaID   int    `json:"module_meta_id"`
-	PreTestMetaID  int    `json:"pretest_meta_id"`
-	PreTestID      int    `json:"pretest_id"`
-	MateriMetaID   int    `json:"materi_meta_id"`
-	MateriID       int    `json:"materi_id"`
-	PostTestMetaID int    `json:"posttest_meta_id"`
-	PostTestID     int    `json:"posttest_id"`
-	UserID         int    `json:"user_id"`
-	GradeID        int    `json:"grade_id"`
+	ID             int       `json:"id"`
+	GlobalID       string    `json:"global_id"`
+	ModuleMetaID   int       `json:"module_meta_id"`
+	PreTestMetaID  int       `json:"pretest_meta_id"`
+	PreTestID      int       `json:"pretest_id"`
+	MateriMetaID   int       `json:"materi_meta_id"`
+	MateriID       int       `json:"materi_id"`
+	PostTestMetaID int       `json:"posttest_meta_id"`
+	PostTestID     int       `json:"posttest_id"`
+	UserID         int       `json:"user_id"`
+	GradeID        int       `json:"grade_id"`
+	IsPublished    *bool     `json:"is_published"`
+	CreatedBy      string    `json:"created_by"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedBy      string    `json:"updated_by"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 func ModuleDataCreate(ctx *gin.Context) {
@@ -43,6 +49,9 @@ func ModuleDataCreate(ctx *gin.Context) {
 		PostTestID:     body.PostTestID,
 		UserID:         body.UserID,
 		GradeID:        body.GradeID,
+		IsPublished:    body.IsPublished,
+		CreatedBy:      body.CreatedBy,
+		CreatedAt:      body.CreatedAt,
 	}
 	result := initializers.DB.Create(&post)
 
@@ -175,6 +184,9 @@ func ModuleDataUpdate(ctx *gin.Context) {
 		PostTestID:     body.PostTestID,
 		UserID:         body.UserID,
 		GradeID:        body.GradeID,
+		IsPublished:    body.IsPublished,
+		UpdatedBy:      body.UpdatedBy,
+		UpdatedAt:      body.UpdatedAt,
 	}
 
 	var current models.ModuleData
@@ -257,6 +269,9 @@ func ModuleDataUpsert(ctx *gin.Context) {
 				PostTestID:     body.PostTestID,
 				UserID:         body.UserID,
 				GradeID:        body.GradeID,
+				IsPublished:    body.IsPublished,
+				CreatedBy:      body.CreatedBy,
+				CreatedAt:      body.CreatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -279,6 +294,9 @@ func ModuleDataUpsert(ctx *gin.Context) {
 				PostTestID:     body.PostTestID,
 				UserID:         body.UserID,
 				GradeID:        body.GradeID,
+				IsPublished:    body.IsPublished,
+				CreatedBy:      body.CreatedBy,
+				CreatedAt:      body.CreatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -292,6 +310,7 @@ func ModuleDataUpsert(ctx *gin.Context) {
 	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
 		upsert := models.ModuleData{
 			ID:             current.ID,
+			GlobalID:       current.GlobalID,
 			ModuleMetaID:   body.ModuleMetaID,
 			PreTestMetaID:  body.PreTestMetaID,
 			PreTestID:      body.PreTestID,
@@ -301,6 +320,9 @@ func ModuleDataUpsert(ctx *gin.Context) {
 			PostTestID:     body.PostTestID,
 			UserID:         body.UserID,
 			GradeID:        body.GradeID,
+			IsPublished:    body.IsPublished,
+			UpdatedBy:      body.UpdatedBy,
+			UpdatedAt:      body.UpdatedAt,
 		}
 		upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 

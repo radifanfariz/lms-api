@@ -41,8 +41,8 @@ func MateriDataCreate(ctx *gin.Context) {
 		Type:         body.Type,
 		Src:          body.Src,
 		IsPublished:  body.IsPublished,
-		// CreatedBy:    body.CreatedBy,
-		// CreatedAt:    body.CreatedAt,
+		CreatedBy:    body.CreatedBy,
+		CreatedAt:    body.CreatedAt,
 	}
 	result := initializers.DB.Create(&post)
 
@@ -111,8 +111,8 @@ func MateriDataUpdate(ctx *gin.Context) {
 		Type:         body.Type,
 		Src:          body.Src,
 		IsPublished:  body.IsPublished,
-		// UpdatedBy:    body.UpdatedBy,
-		// UpdatedAt:    body.UpdatedAt,
+		UpdatedBy:    body.UpdatedBy,
+		UpdatedAt:    body.UpdatedAt,
 	}
 
 	var current models.MateriData
@@ -193,6 +193,8 @@ func MateriDataUpsert(ctx *gin.Context) {
 				Type:         body.Type,
 				Src:          body.Src,
 				IsPublished:  body.IsPublished,
+				CreatedBy:    body.UpdatedBy,
+				CreatedAt:    body.UpdatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -213,6 +215,8 @@ func MateriDataUpsert(ctx *gin.Context) {
 				Type:         body.Type,
 				Src:          body.Src,
 				IsPublished:  body.IsPublished,
+				CreatedBy:    body.UpdatedBy,
+				CreatedAt:    body.UpdatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -234,6 +238,8 @@ func MateriDataUpsert(ctx *gin.Context) {
 			Type:         body.Type,
 			Src:          body.Src,
 			IsPublished:  body.IsPublished,
+			UpdatedBy:    body.UpdatedBy,
+			UpdatedAt:    body.UpdatedAt,
 		}
 		upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 
