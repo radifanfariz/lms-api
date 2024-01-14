@@ -57,10 +57,10 @@ func PreTestDataFindById(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.First(&preTestData, uint(id))
+		findByIdResult = initializers.DB.Preload("Metadata").First(&preTestData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&preTestData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Preload("Metadata").First(&preTestData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -74,7 +74,7 @@ func PreTestDataFindById(ctx *gin.Context) {
 }
 func PreTestDataFindAll(ctx *gin.Context) {
 	var preTestData []models.PreTestData
-	result := initializers.DB.Find(&preTestData)
+	result := initializers.DB.Preload("Metadata").Find(&preTestData)
 
 	// fmt.Println(preTestData)
 

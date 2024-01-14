@@ -18,7 +18,7 @@ type PostTestMetadataBody struct {
 	Name        string    `json:"name" binding:"required"`
 	Description string    `json:"description" binding:"required"`
 	MaxAccess   int       `json:"max_access" binding:"required"`
-	MinScore    float64   `json:"min_score" binding:"required"`
+	MinScore    *float64  `json:"min_score" binding:"required"`
 	CreatedBy   string    `json:"created_by"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedBy   string    `json:"updated_by"`

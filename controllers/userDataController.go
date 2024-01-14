@@ -1,44 +1,70 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/radifanfariz/lms-api/initializers"
 	"github.com/radifanfariz/lms-api/models"
+	"github.com/radifanfariz/lms-api/utils"
 	"gorm.io/gorm"
 )
 
+type UserDataPortal struct {
+	UserToken   string `json:"userToken"`
+	NIK         string `json:"nik"`
+	LastLogin   string `json:"lastLogin"`
+	CreatedDate string `json:"createdDate"`
+	UpdatedBy   string `json:"updatedBy"`
+	CreatedBy   string `json:"createdBy"`
+	Name        string `json:"name"`
+	UpdatedDate string `json:"updatedDate"`
+	UserId      string `json:"userId"`
+	Status      string `json:"status"`
+}
+
+type BodyDataPortal struct {
+	Message string         `json:"message"`
+	Status  string         `json:"status"`
+	Data    UserDataPortal `json:"data"`
+}
+
 type UserDataBody struct {
-	EmployeeID        int       `json:"employee_id"`
-	Name              string    `json:"name"`
-	NIK               string    `json:"nik"`
-	MainCompany       string    `json:"main_company"`
-	MainCompanyID     int       `json:"main_company_id"`
-	Level             string    `json:"level"`
-	LevelID           int       `json:"level_id"`
-	Grade             string    `json:"grade"`
-	GradeID           int       `json:"grade_id"`
-	Department        string    `json:"department"`
-	DepartmentID      int       `json:"department_id"`
-	LearningJourney   string    `json:"learning_journey"`
-	LearningJourneyID int       `json:"learning_journey_id"`
-	Role              string    `json:"role"`
-	RoleID            int       `json:"role_id"`
-	Status            string    `json:"status"`
-	StatusID          int       `json:"status_id"`
-	IsActive          *bool     `json:"is_active"`
-	Position          string    `json:"position"`
-	PositionID        int       `json:"position_id"`
-	AlternativeID     string    `json:"alternative_id"`
-	Password          string    `json:"password"`
-	CreatedBy         string    `json:"created_by"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedBy         string    `json:"updated_by"`
-	UpdatedAt         time.Time `json:"updated_at"`
+	EmployeeID        int    `json:"employee_id"`
+	Name              string `json:"name"`
+	NIK               string `json:"nik"`
+	MainCompany       string `json:"main_company"`
+	MainCompanyID     int    `json:"main_company_id"`
+	Level             string `json:"level"`
+	LevelID           int    `json:"level_id"`
+	Grade             string `json:"grade"`
+	GradeID           int    `json:"grade_id"`
+	Department        string `json:"department"`
+	DepartmentID      int    `json:"department_id"`
+	LearningJourney   string `json:"learning_journey"`
+	LearningJourneyID int    `json:"learning_journey_id"`
+	Role              string `json:"role"`
+	RoleID            int    `json:"role_id"`
+	Status            string `json:"status"`
+	StatusID          int    `json:"status_id"`
+	IsActive          *bool  `json:"is_active"`
+	Position          string `json:"position"`
+	PositionID        int    `json:"position_id"`
+	AlternativeID     string `json:"alternative_id"`
+	// Password          string    `json:"password"`
+	CreatedBy string    `json:"created_by"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedBy string    `json:"updated_by"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func UserDataCreate(ctx *gin.Context) {
@@ -68,9 +94,9 @@ func UserDataCreate(ctx *gin.Context) {
 		Position:          body.Position,
 		PositionID:        body.PositionID,
 		AlternativeID:     body.AlternativeID,
-		Password:          body.Password,
-		CreatedBy:         body.CreatedBy,
-		CreatedAt:         body.CreatedAt,
+		// Password:          body.Password,
+		CreatedBy: body.CreatedBy,
+		CreatedAt: body.CreatedAt,
 	}
 	result := initializers.DB.Create(&post)
 
@@ -86,14 +112,13 @@ func UserDataCreate(ctx *gin.Context) {
 
 func UserDataLogin(ctx *gin.Context) {
 	var userData models.UserData
-	var body UserDataBody
-
-	ctx.Bind(&body)
-
-	credentials := models.UserData{
-		NIK:      body.NIK,
-		Password: body.Password,
+	var credentials struct {
+		NIK      string `json:"nik"`
+		Password string `json:"password"`
 	}
+
+	ctx.Bind(&credentials)
+
 	findByIdResult := initializers.DB.Where("c_nik = ? AND c_password = ?", credentials.NIK, credentials.Password).First(&userData)
 
 	if findByIdResult.Error != nil {
@@ -104,6 +129,77 @@ func UserDataLogin(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Login successful !", "data": userData})
+}
+
+func UserDataLoginThroughPortal(ctx *gin.Context) {
+	var userData models.UserData
+	var credentials struct {
+		NIK      string `json:"nik"`
+		Password string `json:"password"`
+	}
+
+	ctx.Bind(&credentials)
+
+	values := map[string]string{"nik": credentials.NIK, "password": credentials.Password}
+	jsonData, err := json.Marshal(values)
+	if err != nil {
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+	}
+
+	req, err := http.NewRequest(http.MethodPost, "http://172.16.2.200:8080/dev_sso/dev/user/login", bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+	}
+
+	// // appending to existing query args
+	// q := req.URL.Query()
+	// q.Add("foo", "bar")
+
+	// // assign encoded query string to http request
+	// req.URL.RawQuery = q.Encode()
+
+	client := &http.Client{
+		CheckRedirect: utils.RedirectPolicyFunc,
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Basic "+utils.BasicAuth("GIERDEV001", "E1D791888AD4943C5C2BE0291EB928B0"))
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Errored when sending request to the server")
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+		return
+	}
+
+	defer resp.Body.Close()
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+	}
+
+	var jsonResult BodyDataPortal
+	json.Unmarshal([]byte(responseBody), &jsonResult)
+
+	// fmt.Println(resp.Status)
+	// fmt.Println(jsonResult)
+	// fmt.Println(string(responseBody))
+
+	if strings.ToLower(jsonResult.Status) == "success" {
+		findByIdResult := initializers.DB.Where("c_nik = ?", credentials.NIK).First(&userData)
+
+		if findByIdResult.Error != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Invalid credentials !",
+			})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": "Login successful !", "data": userData})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": jsonResult.Message, "status": jsonResult.Status})
+
 }
 
 func UserDataFindById(ctx *gin.Context) {
@@ -174,9 +270,9 @@ func UserDataUpdate(ctx *gin.Context) {
 		Position:          body.Position,
 		PositionID:        body.PositionID,
 		AlternativeID:     body.AlternativeID,
-		Password:          body.Password,
-		UpdatedBy:         body.UpdatedBy,
-		UpdatedAt:         body.UpdatedAt,
+		// Password:          body.Password,
+		UpdatedBy: body.UpdatedBy,
+		UpdatedAt: body.UpdatedAt,
 	}
 
 	var current models.UserData
@@ -271,11 +367,11 @@ func UserDataUpsert(ctx *gin.Context) {
 				Position:          body.Position,
 				PositionID:        body.PositionID,
 				AlternativeID:     body.AlternativeID,
-				Password:          body.Password,
-				CreatedBy:         body.CreatedBy,
-				CreatedAt:         body.CreatedAt,
-				UpdatedBy:         body.UpdatedBy,
-				UpdatedAt:         body.UpdatedAt,
+				// Password:          body.Password,
+				CreatedBy: body.CreatedBy,
+				CreatedAt: body.CreatedAt,
+				UpdatedBy: body.UpdatedBy,
+				UpdatedAt: body.UpdatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -309,11 +405,11 @@ func UserDataUpsert(ctx *gin.Context) {
 				Position:          body.Position,
 				PositionID:        body.PositionID,
 				AlternativeID:     id,
-				Password:          body.Password,
-				CreatedBy:         body.CreatedBy,
-				CreatedAt:         body.CreatedAt,
-				UpdatedBy:         body.UpdatedBy,
-				UpdatedAt:         body.UpdatedAt,
+				// Password:          body.Password,
+				CreatedBy: body.CreatedBy,
+				CreatedAt: body.CreatedAt,
+				UpdatedBy: body.UpdatedBy,
+				UpdatedAt: body.UpdatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -348,11 +444,11 @@ func UserDataUpsert(ctx *gin.Context) {
 			Position:          body.Position,
 			PositionID:        body.PositionID,
 			AlternativeID:     body.AlternativeID,
-			Password:          body.Password,
-			CreatedBy:         body.CreatedBy,
-			CreatedAt:         body.CreatedAt,
-			UpdatedBy:         body.UpdatedBy,
-			UpdatedAt:         body.UpdatedAt,
+			// Password:          body.Password,
+			CreatedBy: body.CreatedBy,
+			CreatedAt: body.CreatedAt,
+			UpdatedBy: body.UpdatedBy,
+			UpdatedAt: body.UpdatedAt,
 		}
 		upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 

@@ -54,16 +54,16 @@ func MateriResultDataCreate(ctx *gin.Context) {
 }
 
 func MateriResultDataFindById(ctx *gin.Context) {
-	var MateriResultData models.MateriResultData
+	var MateriResultData []models.MateriResultData
 
 	var findByIdResult *gorm.DB
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.First(&MateriResultData, uint(id))
+		findByIdResult = initializers.DB.Find(&MateriResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&MateriResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Find(&MateriResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -174,7 +174,7 @@ func MateriResultDataUpsert(ctx *gin.Context) {
 		findByIdResult = initializers.DB.First(&current, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&current, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.First(&current, "c_materi_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil { /* create */ /* if url params is id then global_id can be provided in JSON Body Req */
@@ -244,7 +244,7 @@ func MateriResultDataUpsert(ctx *gin.Context) {
 			findByIdResultAfterUpdate = initializers.DB.First(&current, uint(id))
 		} else {
 			id := ctx.Param("id")
-			findByIdResultAfterUpdate = initializers.DB.First(&current, "c_global_id = ?", id)
+			findByIdResultAfterUpdate = initializers.DB.First(&current, "c_materi_id = ?", id)
 		}
 
 		if findByIdResultAfterUpdate.Error != nil {

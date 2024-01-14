@@ -13,7 +13,7 @@ type PreTestMetadata struct {
 	Name        string    `gorm:"column:c_name" json:"name"`
 	Description string    `gorm:"column:c_description" json:"description"`
 	MaxAccess   int       `gorm:"column:n_max_access" json:"max_access"`
-	MinScore    float64   `gorm:"column:n_min_score" json:"min_score"`
+	MinScore    *float64  `gorm:"column:n_min_score" json:"min_score"`
 	CreatedBy   string    `gorm:"column:c_created_by" json:"created_by"`
 	UpdatedBy   string    `gorm:"column:c_updated_by" json:"updated_by"`
 	CreatedAt   time.Time `gorm:"default:now();column:d_created_at" json:"created_at"`

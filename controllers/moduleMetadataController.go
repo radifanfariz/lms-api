@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -81,27 +81,47 @@ func ModuleMetadataFindById(ctx *gin.Context) {
 }
 
 func ModuleMetadataFindPaging(ctx *gin.Context) {
+
 	limit, _ := strconv.Atoi(ctx.Query("per_page"))
 	page, _ := strconv.Atoi(ctx.Query("page"))
 	sort := ctx.Query("sort")
+	filter := ctx.Query("filter")
+	filterColumn := ctx.Query("filter_column")
 	params := utils.Pagination{
-		Limit: limit,
-		Page:  page,
-		Sort:  sort,
+		Limit:        limit,
+		Page:         page,
+		Sort:         sort,
+		FilterColumn: filterColumn,
+		Filter:       filter,
 	}
+
 	var moduleMetadata []models.ModuleMetadata
-	result := initializers.DB.Scopes(utils.Paginate(moduleMetadata, &params, initializers.DB)).Find(&moduleMetadata)
+	res := initializers.DB.Scopes(utils.Paginate(moduleMetadata, &params, initializers.DB)).Find(&moduleMetadata)
 
-	params.Data = moduleMetadata
-
-	// fmt.Println(ModuleMetadata)
-
-	if result.Error != nil {
+	if res.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Error find all.",
 		})
 		return
 	}
+
+	/* this to get total all data (total all rows) and total pages in pagination */
+	if params.Filter != "" && params.FilterColumn != "" {
+		var moduleMetadata []models.ModuleMetadata
+		totalRows := initializers.DB.Where(params.FilterColumn, params.Filter).Find(&moduleMetadata).RowsAffected
+		params.TotalData = totalRows
+		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
+		params.TotalPages = totalPages
+	} else {
+		var moduleMetadata []models.ModuleMetadata
+		totalRows := initializers.DB.Find(&moduleMetadata).RowsAffected
+		params.TotalData = totalRows
+		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
+		params.TotalPages = totalPages
+	}
+	/*------------------------------------------------------------------------------*/
+
+	params.Data = moduleMetadata
 
 	ctx.JSON(http.StatusOK, params)
 }
@@ -123,8 +143,6 @@ func ModuleMetadataFindAll(ctx *gin.Context) {
 
 func ModuleMetadataUpdate(ctx *gin.Context) {
 	var body ModuleMetadataBody
-
-	fmt.Println(body.Description)
 
 	if err := ctx.ShouldBind(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

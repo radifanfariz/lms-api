@@ -57,10 +57,10 @@ func PostTestDataFindById(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.First(&postTestData, uint(id))
+		findByIdResult = initializers.DB.Preload("Metadata").First(&postTestData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&postTestData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Preload("Metadata").First(&postTestData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -74,7 +74,7 @@ func PostTestDataFindById(ctx *gin.Context) {
 }
 func PostTestDataFindAll(ctx *gin.Context) {
 	var postTestData []models.PostTestData
-	result := initializers.DB.Find(&postTestData)
+	result := initializers.DB.Preload("Metadata").Find(&postTestData)
 
 	// fmt.Println(postTestData)
 
@@ -215,6 +215,7 @@ func PostTestDataUpsert(ctx *gin.Context) {
 	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
 		upsert := models.PostTestData{
 			ID:             current.ID,
+			GlobalID:       body.GlobalID,
 			ModuleID:       body.ModuleID,
 			PostTestMetaID: body.PostTestMetaID,
 			Question:       body.Question,

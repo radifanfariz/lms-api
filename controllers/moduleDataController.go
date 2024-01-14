@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -109,13 +110,18 @@ func ModuleDataFindPaging(ctx *gin.Context) {
 	limit, _ := strconv.Atoi(ctx.Query("per_page"))
 	page, _ := strconv.Atoi(ctx.Query("page"))
 	sort := ctx.Query("sort")
+	filter := ctx.Query("filter")
+	filterColumn := ctx.Query("filter_column")
 	params := utils.Pagination{
-		Limit: limit,
-		Page:  page,
-		Sort:  sort,
+		Limit:        limit,
+		Page:         page,
+		Sort:         sort,
+		FilterColumn: filterColumn,
+		Filter:       filter,
 	}
+
 	var moduleData []models.ModuleData
-	result := initializers.DB.Scopes(utils.Paginate(moduleData, &params, initializers.DB)).
+	res := initializers.DB.Model(moduleData).Scopes(utils.Paginate(moduleData, &params, initializers.DB)).
 		Preload("Metadata").
 		Preload("UserData").
 		Preload("PreTestMetadata").
@@ -126,18 +132,32 @@ func ModuleDataFindPaging(ctx *gin.Context) {
 		Preload("PostTestData").
 		Find(&moduleData)
 
-	params.Data = moduleData
-
-	// fmt.Println(ModuleData)
-
-	if result.Error != nil {
+	if res.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Error find all.",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, params)
+	/* this to get total all data (total all rows) and total pages in pagination */
+	if params.Filter != "" && params.FilterColumn != "" {
+		var moduleData []models.ModuleData
+		totalRows := initializers.DB.Where(params.FilterColumn, params.Filter).Find(&moduleData).RowsAffected
+		params.TotalData = totalRows
+		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
+		params.TotalPages = totalPages
+	} else {
+		var moduleData []models.ModuleData
+		totalRows := initializers.DB.Find(&moduleData).RowsAffected
+		params.TotalData = totalRows
+		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
+		params.TotalPages = totalPages
+	}
+	/*------------------------------------------------------------------------------*/
+
+	params.Data = moduleData
+
+	ctx.JSONP(http.StatusOK, params)
 }
 func ModuleDataFindAll(ctx *gin.Context) {
 	var moduleData []models.ModuleData
