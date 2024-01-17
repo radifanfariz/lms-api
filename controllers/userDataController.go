@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -132,6 +133,10 @@ func UserDataLogin(ctx *gin.Context) {
 }
 
 func UserDataLoginThroughPortal(ctx *gin.Context) {
+	portalUrl := os.Getenv("PORTAL_URL")
+	portalBasicAuthUsername := os.Getenv("PORTAL_BASIC_AUTH_USERNAME")
+	portalBasicAuthPassword := os.Getenv("PORTAL_BASIC_AUTH_PASSWORD")
+
 	var userData models.UserData
 	var credentials struct {
 		NIK      string `json:"nik"`
@@ -147,7 +152,7 @@ func UserDataLoginThroughPortal(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
 	}
 
-	req, err := http.NewRequest(http.MethodPost, "http://172.16.2.200:8080/dev_sso/dev/user/login", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(http.MethodPost, portalUrl, bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Fatal(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
@@ -164,7 +169,7 @@ func UserDataLoginThroughPortal(ctx *gin.Context) {
 		CheckRedirect: utils.RedirectPolicyFunc,
 	}
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Basic "+utils.BasicAuth("GIERDEV001", "E1D791888AD4943C5C2BE0291EB928B0"))
+	req.Header.Add("Authorization", "Basic "+utils.BasicAuth(portalBasicAuthUsername, portalBasicAuthPassword))
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println("Errored when sending request to the server")

@@ -9,6 +9,7 @@ import (
 
 func init() {
 	initializers.ConnectToDB()
+	initializers.LoadEnv()
 }
 
 func main() {
@@ -65,6 +66,9 @@ func main() {
 	/*----------------------------*/
 	/* Access Data Endpoint */
 	routers.AccessDataRouter(r)
+	/*----------------------------*/
+	/* Upload File Endpoint */
+	routers.UploadFileRouter(r)
 	/*----------------------------*/
 	r.Run(":1001") // listen and serve on 0.0.0.0:8080
 }

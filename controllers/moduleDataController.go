@@ -218,7 +218,8 @@ func ModuleDataUpdate(ctx *gin.Context) {
 		findByIdResult = initializers.DB.First(&current, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&current, "c_global_id = ?", id)
+		isPublished := true
+		findByIdResult = initializers.DB.Where(models.ModuleData{IsPublished: &isPublished}).First(&current, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
