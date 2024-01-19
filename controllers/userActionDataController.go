@@ -76,6 +76,30 @@ func UserActionDataFindById(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"data": UserActionData})
 }
+func UserActionDataFindByIdAndUserId(ctx *gin.Context) {
+	var UserActionData models.UserActionData
+
+	var findByIdResult *gorm.DB
+
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		userId, _ := strconv.Atoi(ctx.Param("user_id"))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).First(&UserActionData, uint(id))
+	} else {
+		id := ctx.Param("id")
+		userId, _ := strconv.Atoi(ctx.Param("user_id"))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).First(&UserActionData, "c_global_id = ?", id)
+	}
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "User Action Data not found.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": UserActionData})
+}
 func UserActionDataFindAll(ctx *gin.Context) {
 	var UserActionData []models.UserActionData
 	result := initializers.DB.Find(&UserActionData)
