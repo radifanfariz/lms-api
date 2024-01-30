@@ -75,6 +75,30 @@ func MateriResultDataFindById(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"data": MateriResultData})
 }
+func MateriResultDataFindByIdAndUserId(ctx *gin.Context) {
+	var MateriResultData []models.MateriResultData
+
+	var findByIdResult *gorm.DB
+
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		userId, _ := strconv.Atoi(ctx.Param("user_id"))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Find(&MateriResultData, uint(id))
+	} else {
+		id := ctx.Param("id")
+		userId, _ := strconv.Atoi(ctx.Param("user_id"))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Find(&MateriResultData, "c_global_id = ?", id)
+	}
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Materi ResultData not found.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": MateriResultData})
+}
 func MateriResultDataFindAll(ctx *gin.Context) {
 	var MateriResultData []models.MateriResultData
 	result := initializers.DB.Find(&MateriResultData)

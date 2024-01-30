@@ -24,6 +24,6 @@ func UserActionDataRouter(r *gin.Engine) {
 	r.GET(UserActionDataEndpoint+"/:id/user/:user_id", controllers.UserActionDataFindByIdAndUserId)
 	r.GET(UserActionDataEndpoint+"/all", controllers.UserActionDataFindAll)
 	r.PUT(UserActionDataEndpoint+"/update/:id", controllers.UserActionDataUpdate)
-	r.PUT(UserActionDataEndpoint+"/upsert/:id", controllers.UserActionDataUpsert)
+	r.PUT(UserActionDataEndpoint+"/upsert/:id/user/:user_id", controllers.UserActionDataUpsert)
 	r.DELETE(UserActionDataEndpoint+"/delete/:id", controllers.UserActionDataDelete)
 }

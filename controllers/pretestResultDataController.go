@@ -79,6 +79,30 @@ func PreTestResultDataFindById(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"data": preTestResultData})
 }
+func PreTestResultDataFindByIdAndUserId(ctx *gin.Context) {
+	var preTestResultData []models.PreTestResultData
+
+	var findByIdResult *gorm.DB
+
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		userId, _ := strconv.Atoi(ctx.Param("user_id"))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Find(&preTestResultData, uint(id))
+	} else {
+		id := ctx.Param("id")
+		userId, _ := strconv.Atoi(ctx.Param("user_id"))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Find(&preTestResultData, "c_global_id = ?", id)
+	}
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "PreTest ResultData not found.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": preTestResultData})
+}
 func PreTestResultDataFindAll(ctx *gin.Context) {
 	var preTestResultData []models.PreTestResultData
 	result := initializers.DB.Find(&preTestResultData)

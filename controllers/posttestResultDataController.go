@@ -79,6 +79,30 @@ func PostTestResultDataFindById(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"data": postTestResultData})
 }
+func PostTestResultDataFindByIdAndUserId(ctx *gin.Context) {
+	var postTestResultData []models.PostTestResultData
+
+	var findByIdResult *gorm.DB
+
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		userId, _ := strconv.Atoi(ctx.Param("user_id"))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Find(&postTestResultData, uint(id))
+	} else {
+		id := ctx.Param("id")
+		userId, _ := strconv.Atoi(ctx.Param("user_id"))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Find(&postTestResultData, "c_global_id = ?", id)
+	}
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "PostTest ResultData not found.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": postTestResultData})
+}
 func PostTestResultDataFindAll(ctx *gin.Context) {
 	var postTestResultData []models.PostTestResultData
 	result := initializers.DB.Find(&postTestResultData)

@@ -197,10 +197,12 @@ func UserActionDataUpsert(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.First(&current, uint(id))
+		userId, _ := strconv.Atoi(ctx.Param("user_id"))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).First(&current, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&current, "c_global_id = ?", id)
+		userId, _ := strconv.Atoi(ctx.Param("user_id"))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).First(&current, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil { /* create */ /* if url params is id then global_id can be provided in JSON Body Req */
