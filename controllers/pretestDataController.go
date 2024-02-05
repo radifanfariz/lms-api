@@ -70,6 +70,8 @@ func PreTestDataFindById(ctx *gin.Context) {
 		return
 	}
 
+	// fmt.Println(preTestData)
+
 	ctx.JSON(http.StatusOK, gin.H{"data": preTestData})
 }
 func PreTestDataFindAll(ctx *gin.Context) {

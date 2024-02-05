@@ -55,16 +55,16 @@ func UserActionDataCreate(ctx *gin.Context) {
 }
 
 func UserActionDataFindById(ctx *gin.Context) {
-	var UserActionData models.UserActionData
+	var UserActionData []models.UserActionData
 
 	var findByIdResult *gorm.DB
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.First(&UserActionData, uint(id))
+		findByIdResult = initializers.DB.Preload("UserData").Find(&UserActionData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.First(&UserActionData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Preload("UserData").Find(&UserActionData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -84,11 +84,11 @@ func UserActionDataFindByIdAndUserId(ctx *gin.Context) {
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).First(&UserActionData, uint(id))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Find(&UserActionData, uint(id))
 	} else {
 		id := ctx.Param("id")
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).First(&UserActionData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Find(&UserActionData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -102,7 +102,7 @@ func UserActionDataFindByIdAndUserId(ctx *gin.Context) {
 }
 func UserActionDataFindAll(ctx *gin.Context) {
 	var UserActionData []models.UserActionData
-	result := initializers.DB.Find(&UserActionData)
+	result := initializers.DB.Preload("UserData").Find(&UserActionData)
 
 	// fmt.Println(UserActionData)
 

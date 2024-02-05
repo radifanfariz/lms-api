@@ -60,10 +60,10 @@ func MateriResultDataFindById(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.Find(&MateriResultData, uint(id))
+		findByIdResult = initializers.DB.Preload("UserData").Preload("MateriData").Order("n_id").Find(&MateriResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.Find(&MateriResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Preload("UserData").Preload("MateriData").Order("n_id").Find(&MateriResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -83,11 +83,11 @@ func MateriResultDataFindByIdAndUserId(ctx *gin.Context) {
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Find(&MateriResultData, uint(id))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("MateriData").Order("n_id").Find(&MateriResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Find(&MateriResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("MateriData").Order("n_id").Find(&MateriResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -101,7 +101,7 @@ func MateriResultDataFindByIdAndUserId(ctx *gin.Context) {
 }
 func MateriResultDataFindAll(ctx *gin.Context) {
 	var MateriResultData []models.MateriResultData
-	result := initializers.DB.Find(&MateriResultData)
+	result := initializers.DB.Preload("UserData").Preload("MateriData").Order("n_id").Find(&MateriResultData)
 
 	// fmt.Println(MateriResultData)
 

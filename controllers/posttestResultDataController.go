@@ -64,10 +64,10 @@ func PostTestResultDataFindById(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.Find(&postTestResultData, uint(id))
+		findByIdResult = initializers.DB.Preload("UserData").Find(&postTestResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.Find(&postTestResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Preload("UserData").Find(&postTestResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -87,11 +87,11 @@ func PostTestResultDataFindByIdAndUserId(ctx *gin.Context) {
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Find(&postTestResultData, uint(id))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Find(&postTestResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Find(&postTestResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Find(&postTestResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -105,7 +105,7 @@ func PostTestResultDataFindByIdAndUserId(ctx *gin.Context) {
 }
 func PostTestResultDataFindAll(ctx *gin.Context) {
 	var postTestResultData []models.PostTestResultData
-	result := initializers.DB.Find(&postTestResultData)
+	result := initializers.DB.Preload("UserData").Find(&postTestResultData)
 
 	// fmt.Println(postTestResultData)
 

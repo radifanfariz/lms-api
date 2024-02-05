@@ -14,14 +14,14 @@ import (
 )
 
 type AccessDataBody struct {
-	ModuleID    int          `json:"module_id"`
-	GlobalID    string       `json:"global_id"`
-	JSONGradeID models.JSONB `json:"json_grade_id" gorm:"type:jsonb"`
-	JSONUserID  models.JSONB `json:"json_user_id" gorm:"type:jsonb"`
-	CreatedBy   string       `json:"created_by"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedBy   string       `json:"updated_by"`
-	UpdatedAt   time.Time    `json:"updated_at"`
+	ModuleID     int       `json:"module_id"`
+	GlobalID     string    `json:"global_id"`
+	ArrayGradeID []int64   `json:"array_grade_id"`
+	ArrayUserID  []int64   `json:"array_user_id"`
+	CreatedBy    string    `json:"created_by"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedBy    string    `json:"updated_by"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 func AccessDataCreate(ctx *gin.Context) {
@@ -32,11 +32,12 @@ func AccessDataCreate(ctx *gin.Context) {
 	fmt.Println(&body)
 
 	post := models.AccessData{
-		ModuleID:    body.ModuleID,
-		JSONGradeID: body.JSONGradeID,
-		JSONUserID:  body.JSONUserID,
-		CreatedBy:   body.CreatedBy,
-		CreatedAt:   body.CreatedAt,
+		GlobalID:     body.GlobalID,
+		ModuleID:     body.ModuleID,
+		ArrayGradeID: body.ArrayGradeID,
+		ArrayUserID:  body.ArrayUserID,
+		CreatedBy:    body.CreatedBy,
+		CreatedAt:    body.CreatedAt,
 	}
 	result := initializers.DB.Create(&post)
 
@@ -97,11 +98,12 @@ func AccessDataUpdate(ctx *gin.Context) {
 	}
 
 	updates := models.AccessData{
-		ModuleID:    body.ModuleID,
-		JSONGradeID: body.JSONGradeID,
-		JSONUserID:  body.JSONUserID,
-		UpdatedBy:   body.UpdatedBy,
-		UpdatedAt:   body.UpdatedAt,
+		GlobalID:     body.GlobalID,
+		ModuleID:     body.ModuleID,
+		ArrayGradeID: body.ArrayGradeID,
+		ArrayUserID:  body.ArrayUserID,
+		UpdatedBy:    body.UpdatedBy,
+		UpdatedAt:    body.UpdatedAt,
 	}
 
 	var current models.AccessData
@@ -171,15 +173,17 @@ func AccessDataUpsert(ctx *gin.Context) {
 		findByIdResult = initializers.DB.First(&current, "c_global_id = ?", id)
 	}
 
+	fmt.Println(body.GlobalID)
+
 	if findByIdResult.Error != nil { /* create */ /* if url params is id then global_id can be provided in JSON Body Req */
 		if govalidator.IsNumeric(ctx.Param("id")) {
 			upsert := models.AccessData{
-				GlobalID:    body.GlobalID,
-				ModuleID:    body.ModuleID,
-				JSONGradeID: body.JSONGradeID,
-				JSONUserID:  body.JSONUserID,
-				CreatedBy:   body.CreatedBy,
-				CreatedAt:   body.CreatedAt,
+				GlobalID:     body.GlobalID,
+				ModuleID:     body.ModuleID,
+				ArrayGradeID: body.ArrayGradeID,
+				ArrayUserID:  body.ArrayUserID,
+				CreatedBy:    body.CreatedBy,
+				CreatedAt:    body.CreatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -192,12 +196,12 @@ func AccessDataUpsert(ctx *gin.Context) {
 		} else { /* create */ /* if url params is global_id then global_id automatic get from url params, so dont need to provide in JSON Body req */
 			id := ctx.Param("id")
 			upsert := models.AccessData{
-				GlobalID:    id,
-				ModuleID:    body.ModuleID,
-				JSONGradeID: body.JSONGradeID,
-				JSONUserID:  body.JSONUserID,
-				CreatedBy:   body.CreatedBy,
-				CreatedAt:   body.CreatedAt,
+				GlobalID:     id,
+				ModuleID:     body.ModuleID,
+				ArrayGradeID: body.ArrayGradeID,
+				ArrayUserID:  body.ArrayUserID,
+				CreatedBy:    body.CreatedBy,
+				CreatedAt:    body.CreatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -210,13 +214,13 @@ func AccessDataUpsert(ctx *gin.Context) {
 		}
 	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
 		upsert := models.AccessData{
-			ID:          current.ID,
-			GlobalID:    current.GlobalID,
-			ModuleID:    body.ModuleID,
-			JSONGradeID: body.JSONGradeID,
-			JSONUserID:  body.JSONUserID,
-			UpdatedBy:   body.UpdatedBy,
-			UpdatedAt:   body.UpdatedAt,
+			ID:           current.ID,
+			GlobalID:     body.GlobalID,
+			ModuleID:     body.ModuleID,
+			ArrayGradeID: body.ArrayGradeID,
+			ArrayUserID:  body.ArrayUserID,
+			UpdatedBy:    body.UpdatedBy,
+			UpdatedAt:    body.UpdatedAt,
 		}
 		upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 

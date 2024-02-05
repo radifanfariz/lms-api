@@ -48,4 +48,5 @@ type PostTestResultData struct {
 	UpdatedBy        string           `gorm:"column:c_updated_by" json:"updated_by"`
 	CreatedAt        time.Time        `gorm:"default:now();column:d_created_at" json:"created_at"`
 	UpdatedAt        time.Time        `gorm:"default:now();column:d_updated_at" json:"updated_at"`
+	UserData         UserData         `gorm:"foreignKey:UserID" json:"user_data"`
 }

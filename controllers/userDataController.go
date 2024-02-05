@@ -229,6 +229,28 @@ func UserDataFindById(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"data": userData})
 }
+func UserDataFindByParams(ctx *gin.Context) {
+	var body UserDataBody
+	var userData []models.UserData
+
+	if err := ctx.ShouldBind(&body); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Println(body.Name)
+
+	var findByIdResult = initializers.DB.Where("c_name ILIKE ?", "%"+body.Name+"%").Find(&userData)
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "User Data not found.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": userData})
+}
 func UserDataFindAll(ctx *gin.Context) {
 	var userData []models.UserData
 	result := initializers.DB.Find(&userData)
