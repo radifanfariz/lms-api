@@ -82,6 +82,7 @@ func ModuleDataFindById(ctx *gin.Context) {
 			Preload("PreTestData").
 			Preload("MateriData").
 			Preload("PostTestData").
+			Where("b_ispublished = ?", true).
 			Find(&moduleData, uint(id))
 	} else {
 		id := ctx.Param("id")
@@ -94,6 +95,7 @@ func ModuleDataFindById(ctx *gin.Context) {
 			Preload("PreTestData").
 			Preload("MateriData").
 			Preload("PostTestData").
+			Where("b_ispublished = ?", true).
 			Find(&moduleData, "c_global_id = ?", id)
 	}
 
@@ -130,6 +132,7 @@ func ModuleDataFindPaging(ctx *gin.Context) {
 		Preload("PreTestData").
 		Preload("MateriData").
 		Preload("PostTestData").
+		Where("b_ispublished = ?", true).
 		Find(&moduleData)
 
 	if res.Error != nil {
@@ -170,6 +173,7 @@ func ModuleDataFindAll(ctx *gin.Context) {
 		Preload("PreTestData").
 		Preload("MateriData").
 		Preload("PostTestData").
+		Where("b_ispublished = ?", true).
 		Find(&moduleData)
 
 	// fmt.Println(ModuleData)

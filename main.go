@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/radifanfariz/lms-api/initializers"
@@ -70,5 +72,6 @@ func main() {
 	/* Upload File Endpoint */
 	routers.UploadFileRouter(r)
 	/*----------------------------*/
-	r.Run(":1001") // listen and serve on 0.0.0.0:8080
+	port := os.Getenv("PORT")
+	r.Run(":" + port) // listen and serve on 0.0.0.0:8080
 }
