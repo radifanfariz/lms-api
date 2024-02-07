@@ -2,6 +2,7 @@ package initializers
 
 import (
 	"fmt"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,12 +21,18 @@ type DBConfig struct {
 func ConnectToDB() {
 	var err error
 
+	host := os.Getenv("DB_Host")
+	user := os.Getenv("DB_User")
+	password := os.Getenv("DB_Password")
+	dbName := os.Getenv("DB_DBName")
+	port := os.Getenv("DB_Port")
+
 	dbConfig := DBConfig{
-		Host:     "localhost",
-		User:     "postgres",
-		Password: "root",
-		DBName:   "lms",
-		Port:     "5432",
+		Host:     host,
+		User:     user,
+		Password: password,
+		DBName:   dbName,
+		Port:     port,
 	}
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",

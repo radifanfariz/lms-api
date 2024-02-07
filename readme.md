@@ -111,9 +111,6 @@ In your src folder in Go Workspace do it:
 ```
 git clone <main or dev branch of this repo>
 cd lms-api
-go mod download
-```
-then refer to *bin* folder to access *CompileDaemon* and run program like this:
-```
-../bin/CompileDaemon -command="./lms-api"
+go build
+./lms-api
 ```
