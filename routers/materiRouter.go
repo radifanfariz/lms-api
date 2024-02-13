@@ -27,6 +27,7 @@ func MateriResultDataRouter(r *gin.Engine) {
 	MateriResultDataEndpoint := "/api/materi/result"
 	r.POST(MateriResultDataEndpoint+"/create", controllers.MateriResultDataCreate)
 	r.GET(MateriResultDataEndpoint+"/:id", controllers.MateriResultDataFindById)
+	r.GET(MateriResultDataEndpoint+"/user/:user_id", controllers.MateriResultDataFindByUserId)
 	r.GET(MateriResultDataEndpoint+"/:id/user/:user_id", controllers.MateriResultDataFindByIdAndUserId)
 	r.GET(MateriResultDataEndpoint+"/all", controllers.MateriResultDataFindAll)
 	r.PUT(MateriResultDataEndpoint+"/update/:id", controllers.MateriResultDataUpdate)

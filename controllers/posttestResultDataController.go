@@ -64,11 +64,28 @@ func PostTestResultDataFindById(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.Preload("UserData").Find(&postTestResultData, uint(id))
+		findByIdResult = initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&postTestResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.Preload("UserData").Find(&postTestResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&postTestResultData, "c_global_id = ?", id)
 	}
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "PostTest ResultData not found.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": postTestResultData})
+}
+func PostTestResultDataFindByUserId(ctx *gin.Context) {
+	var postTestResultData []models.PostTestResultData
+
+	var findByIdResult *gorm.DB
+
+	userId := ctx.Param("user_id")
+	findByIdResult = initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&postTestResultData, "n_user_id = ?", userId)
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -87,11 +104,11 @@ func PostTestResultDataFindByIdAndUserId(ctx *gin.Context) {
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Find(&postTestResultData, uint(id))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&postTestResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Find(&postTestResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&postTestResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -105,7 +122,7 @@ func PostTestResultDataFindByIdAndUserId(ctx *gin.Context) {
 }
 func PostTestResultDataFindAll(ctx *gin.Context) {
 	var postTestResultData []models.PostTestResultData
-	result := initializers.DB.Preload("UserData").Find(&postTestResultData)
+	result := initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&postTestResultData)
 
 	// fmt.Println(postTestResultData)
 

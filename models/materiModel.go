@@ -49,4 +49,5 @@ type MateriResultData struct {
 	UpdatedAt  time.Time        `gorm:"default:now();column:d_updated_at" json:"updated_at"`
 	UserData   UserData         `gorm:"foreignKey:UserID" json:"user_data"`
 	MateriData MateriData       `gorm:"foreignKey:MateriID" json:"materi_data"`
+	ModuleData ModuleData       `gorm:"foreignKey:GlobalID;references:GlobalID" json:"module_data"`
 }

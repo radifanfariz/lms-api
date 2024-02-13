@@ -27,6 +27,7 @@ func PreTestResultDataRouter(r *gin.Engine) {
 	PreTestResultDataEndpoint := "/api/pretest/result"
 	r.POST(PreTestResultDataEndpoint+"/create", controllers.PreTestResultDataCreate)
 	r.GET(PreTestResultDataEndpoint+"/:id", controllers.PreTestResultDataFindById)
+	r.GET(PreTestResultDataEndpoint+"/user/:user_id", controllers.PreTestResultDataFindByUserId)
 	r.GET(PreTestResultDataEndpoint+"/:id/user/:user_id", controllers.PreTestResultDataFindByIdAndUserId)
 	r.GET(PreTestResultDataEndpoint+"/all", controllers.PreTestResultDataFindAll)
 	r.PUT(PreTestResultDataEndpoint+"/update/:id", controllers.PreTestResultDataUpdate)

@@ -114,3 +114,6 @@ cd lms-api
 go build
 ./lms-api
 ```
+
+### *References*
+https://linuxtldr.com/installing-go/

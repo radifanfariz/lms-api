@@ -61,10 +61,10 @@ func UserActionDataFindById(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.Preload("UserData").Find(&UserActionData, uint(id))
+		findByIdResult = initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&UserActionData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.Preload("UserData").Find(&UserActionData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&UserActionData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -76,6 +76,23 @@ func UserActionDataFindById(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"data": UserActionData})
 }
+func UserActionDataFindByUserId(ctx *gin.Context) {
+	var userActionResultData []models.UserActionData
+
+	var findByIdResult *gorm.DB
+
+	userId := ctx.Param("user_id")
+	findByIdResult = initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&userActionResultData, "n_user_id = ?", userId)
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "PreTest ResultData not found.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": userActionResultData})
+}
 func UserActionDataFindByIdAndUserId(ctx *gin.Context) {
 	var UserActionData models.UserActionData
 
@@ -84,11 +101,11 @@ func UserActionDataFindByIdAndUserId(ctx *gin.Context) {
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Find(&UserActionData, uint(id))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&UserActionData, uint(id))
 	} else {
 		id := ctx.Param("id")
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Find(&UserActionData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&UserActionData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -102,7 +119,7 @@ func UserActionDataFindByIdAndUserId(ctx *gin.Context) {
 }
 func UserActionDataFindAll(ctx *gin.Context) {
 	var UserActionData []models.UserActionData
-	result := initializers.DB.Preload("UserData").Find(&UserActionData)
+	result := initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestMetadata.Metadata").Find(&UserActionData)
 
 	// fmt.Println(UserActionData)
 

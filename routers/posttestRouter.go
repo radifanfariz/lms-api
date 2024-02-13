@@ -27,6 +27,7 @@ func PostTestResultDataRouter(r *gin.Engine) {
 	PostTestResultDataEndpoint := "/api/posttest/result"
 	r.POST(PostTestResultDataEndpoint+"/create", controllers.PostTestResultDataCreate)
 	r.GET(PostTestResultDataEndpoint+"/:id", controllers.PostTestResultDataFindById)
+	r.GET(PostTestResultDataEndpoint+"/user/:user_id", controllers.PostTestResultDataFindByUserId)
 	r.GET(PostTestResultDataEndpoint+"/:id/user/:user_id", controllers.PostTestResultDataFindByIdAndUserId)
 	r.GET(PostTestResultDataEndpoint+"/all", controllers.PostTestResultDataFindAll)
 	r.PUT(PostTestResultDataEndpoint+"/update/:id", controllers.PostTestResultDataUpdate)

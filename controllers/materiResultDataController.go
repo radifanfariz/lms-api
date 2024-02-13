@@ -60,11 +60,28 @@ func MateriResultDataFindById(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.Preload("UserData").Preload("MateriData").Order("n_id").Find(&MateriResultData, uint(id))
+		findByIdResult = initializers.DB.Preload("UserData").Preload("MateriData.Metadata").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id").Find(&MateriResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.Preload("UserData").Preload("MateriData").Order("n_id").Find(&MateriResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Preload("UserData").Preload("MateriData.Metadata").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id").Find(&MateriResultData, "c_global_id = ?", id)
 	}
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Materi ResultData not found.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": MateriResultData})
+}
+func MateriResultDataFindByUserId(ctx *gin.Context) {
+	var MateriResultData []models.MateriResultData
+
+	var findByIdResult *gorm.DB
+
+	userId := ctx.Param("user_id")
+	findByIdResult = initializers.DB.Preload("UserData").Preload("MateriData.Metadata").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&MateriResultData, "n_user_id = ?", userId)
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -83,11 +100,11 @@ func MateriResultDataFindByIdAndUserId(ctx *gin.Context) {
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("MateriData").Order("n_id").Find(&MateriResultData, uint(id))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("MateriData.Metadata").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id").Find(&MateriResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("MateriData").Order("n_id").Find(&MateriResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("MateriData.Metadata").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id").Find(&MateriResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -101,7 +118,7 @@ func MateriResultDataFindByIdAndUserId(ctx *gin.Context) {
 }
 func MateriResultDataFindAll(ctx *gin.Context) {
 	var MateriResultData []models.MateriResultData
-	result := initializers.DB.Preload("UserData").Preload("MateriData").Order("n_id").Find(&MateriResultData)
+	result := initializers.DB.Preload("UserData").Preload("MateriData.Metadata").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id").Find(&MateriResultData)
 
 	// fmt.Println(MateriResultData)
 

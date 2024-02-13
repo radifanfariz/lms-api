@@ -22,6 +22,7 @@ func UserActionDataRouter(r *gin.Engine) {
 	UserActionDataEndpoint := "/api/user/action"
 	r.POST(UserActionDataEndpoint+"/create", controllers.UserActionDataCreate)
 	r.GET(UserActionDataEndpoint+"/:id", controllers.UserActionDataFindById)
+	r.GET(UserActionDataEndpoint+"/user/:user_id", controllers.UserActionDataFindByUserId)
 	r.GET(UserActionDataEndpoint+"/:id/user/:user_id", controllers.UserActionDataFindByIdAndUserId)
 	r.GET(UserActionDataEndpoint+"/all", controllers.UserActionDataFindAll)
 	r.PUT(UserActionDataEndpoint+"/update/:id", controllers.UserActionDataUpdate)

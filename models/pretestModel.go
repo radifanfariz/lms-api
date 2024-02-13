@@ -49,6 +49,7 @@ type PreTestResultData struct {
 	CreatedAt        time.Time        `gorm:"default:now();column:d_created_at" json:"created_at"`
 	UpdatedAt        time.Time        `gorm:"default:now();column:d_updated_at" json:"updated_at"`
 	UserData         UserData         `gorm:"foreignKey:UserID" json:"user_data"`
+	ModuleData       ModuleData       `gorm:"foreignKey:GlobalID;references:GlobalID" json:"module_data"`
 }
 
 // // Assuming you have a GORM DB instance named "db"

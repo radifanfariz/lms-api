@@ -33,17 +33,18 @@ type UserData struct {
 }
 
 type UserActionData struct {
-	ID               int       `gorm:"primaryKey;column:n_id" json:"id"`
-	UserID           int       `gorm:"column:n_user_id" json:"user_id"`
-	GlobalID         string    `gorm:"column:c_global_id" json:"global_id"`
-	IsStartCourse    *bool     `gorm:"column:b_isstartcourse" json:"is_startcourse"`
-	ModuleAccessed   int       `gorm:"column:n_module_accessed" json:"module_accessed"`
-	PretestAccessed  int       `gorm:"column:n_pretest_accessed" json:"pretest_accessed"`
-	MateriAccessed   int       `gorm:"column:n_materi_accessed" json:"materi_accessed"`
-	PosttestAccessed int       `gorm:"column:n_posttest_accessed" json:"posttest_accessed"`
-	CreatedBy        string    `gorm:"column:c_created_by" json:"created_by"`
-	UpdatedBy        string    `gorm:"column:c_updated_by" json:"updated_by"`
-	CreatedAt        time.Time `gorm:"default:now();column:d_created_at" json:"created_at"`
-	UpdatedAt        time.Time `gorm:"default:now();column:d_updated_at" json:"updated_at"`
-	UserData         UserData  `gorm:"foreignKey:UserID" json:"user_data"`
+	ID               int        `gorm:"primaryKey;column:n_id" json:"id"`
+	UserID           int        `gorm:"column:n_user_id" json:"user_id"`
+	GlobalID         string     `gorm:"column:c_global_id" json:"global_id"`
+	IsStartCourse    *bool      `gorm:"column:b_isstartcourse" json:"is_startcourse"`
+	ModuleAccessed   int        `gorm:"column:n_module_accessed" json:"module_accessed"`
+	PretestAccessed  int        `gorm:"column:n_pretest_accessed" json:"pretest_accessed"`
+	MateriAccessed   int        `gorm:"column:n_materi_accessed" json:"materi_accessed"`
+	PosttestAccessed int        `gorm:"column:n_posttest_accessed" json:"posttest_accessed"`
+	CreatedBy        string     `gorm:"column:c_created_by" json:"created_by"`
+	UpdatedBy        string     `gorm:"column:c_updated_by" json:"updated_by"`
+	CreatedAt        time.Time  `gorm:"default:now();column:d_created_at" json:"created_at"`
+	UpdatedAt        time.Time  `gorm:"default:now();column:d_updated_at" json:"updated_at"`
+	UserData         UserData   `gorm:"foreignKey:UserID" json:"user_data"`
+	ModuleData       ModuleData `gorm:"foreignKey:GlobalID;references:GlobalID" json:"module_data"`
 }
