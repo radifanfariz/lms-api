@@ -63,10 +63,10 @@ func MateriDataFindById(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.Find(&materiData, uint(id))
+		findByIdResult = initializers.DB.Preload("Metadata").Find(&materiData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.Find(&materiData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Preload("Metadata").Find(&materiData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -80,7 +80,7 @@ func MateriDataFindById(ctx *gin.Context) {
 }
 func MateriDataFindAll(ctx *gin.Context) {
 	var materiData []models.MateriData
-	result := initializers.DB.Find(&materiData)
+	result := initializers.DB.Preload("Metadata").Find(&materiData)
 
 	// fmt.Println(materiData)
 
