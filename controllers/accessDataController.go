@@ -14,7 +14,7 @@ import (
 )
 
 type AccessDataBody struct {
-	ModuleID     int       `json:"module_id"`
+	ModuleMetaID int       `json:"module_meta_id"`
 	GlobalID     string    `json:"global_id"`
 	ArrayGradeID []int64   `json:"array_grade_id"`
 	ArrayUserID  []int64   `json:"array_user_id"`
@@ -33,7 +33,7 @@ func AccessDataCreate(ctx *gin.Context) {
 
 	post := models.AccessData{
 		GlobalID:     body.GlobalID,
-		ModuleID:     body.ModuleID,
+		ModuleMetaID: body.ModuleMetaID,
 		ArrayGradeID: body.ArrayGradeID,
 		ArrayUserID:  body.ArrayUserID,
 		CreatedBy:    body.CreatedBy,
@@ -99,7 +99,7 @@ func AccessDataUpdate(ctx *gin.Context) {
 
 	updates := models.AccessData{
 		GlobalID:     body.GlobalID,
-		ModuleID:     body.ModuleID,
+		ModuleMetaID: body.ModuleMetaID,
 		ArrayGradeID: body.ArrayGradeID,
 		ArrayUserID:  body.ArrayUserID,
 		UpdatedBy:    body.UpdatedBy,
@@ -179,7 +179,7 @@ func AccessDataUpsert(ctx *gin.Context) {
 		if govalidator.IsNumeric(ctx.Param("id")) {
 			upsert := models.AccessData{
 				GlobalID:     body.GlobalID,
-				ModuleID:     body.ModuleID,
+				ModuleMetaID: body.ModuleMetaID,
 				ArrayGradeID: body.ArrayGradeID,
 				ArrayUserID:  body.ArrayUserID,
 				CreatedBy:    body.CreatedBy,
@@ -197,7 +197,7 @@ func AccessDataUpsert(ctx *gin.Context) {
 			id := ctx.Param("id")
 			upsert := models.AccessData{
 				GlobalID:     id,
-				ModuleID:     body.ModuleID,
+				ModuleMetaID: body.ModuleMetaID,
 				ArrayGradeID: body.ArrayGradeID,
 				ArrayUserID:  body.ArrayUserID,
 				CreatedBy:    body.CreatedBy,
@@ -216,7 +216,7 @@ func AccessDataUpsert(ctx *gin.Context) {
 		upsert := models.AccessData{
 			ID:           current.ID,
 			GlobalID:     body.GlobalID,
-			ModuleID:     body.ModuleID,
+			ModuleMetaID: body.ModuleMetaID,
 			ArrayGradeID: body.ArrayGradeID,
 			ArrayUserID:  body.ArrayUserID,
 			UpdatedBy:    body.UpdatedBy,

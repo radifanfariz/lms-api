@@ -117,3 +117,4 @@ go build
 
 ### *References*
 https://linuxtldr.com/installing-go/
+https://www.jajaldoang.com/id/post/how-to-update-golang/#:~:text=curl%20-O%20https%3A%2F%2Fdl.google.com%2Fgo%2Fgo1.21.0.linux-amd64.tar.gz%20Untuk%20Mac%3A%20curl%20-O%20https%3A%2F%2Fdl.google.com%2Fgo%2Fgo1.21.0.darwin-amd64.tar.gz,%2Fusr%2Flocal%20tar%20-xvf%20go1.21.0.linux-amd64.tar.gz%20sudo%20mv%20go%20%2Fusr%2Flocal
