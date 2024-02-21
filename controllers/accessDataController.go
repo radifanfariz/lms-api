@@ -173,8 +173,6 @@ func AccessDataUpsert(ctx *gin.Context) {
 		findByIdResult = initializers.DB.First(&current, "c_global_id = ?", id)
 	}
 
-	fmt.Println(body.GlobalID)
-
 	if findByIdResult.Error != nil { /* create */ /* if url params is id then global_id can be provided in JSON Body Req */
 		if govalidator.IsNumeric(ctx.Param("id")) {
 			upsert := models.AccessData{

@@ -73,3 +73,8 @@ func (UserActionData) TableName() string {
 func (AccessData) TableName() string {
 	return "t_access_data"
 }
+
+// TableName overrides the table name used by Gallery Data to `t_gallery_data`
+func (GalleryData) TableName() string {
+	return "t_gallery_data"
+}

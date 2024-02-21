@@ -69,6 +69,9 @@ func main() {
 	/* Access Data Endpoint */
 	routers.AccessDataRouter(r)
 	/*----------------------------*/
+	/* Gallery Data Endpoint */
+	routers.GalleryDataRouter(r)
+	/*----------------------------*/
 	/* Upload File Endpoint */
 	routers.UploadFileRouter(r)
 	/*----------------------------*/
