@@ -25,19 +25,19 @@ func EmployeeDataFindByParams(ctx *gin.Context) {
 	hrisBasicAuthPassword := os.Getenv("HRIS_BASIC_AUTH_PASSWORD")
 	hrisKeyAccess := os.Getenv("HRIS_KEY_ACCESS")
 
-	mainCompanyId := ""
+	var mainCompanyId string
 	if ctx.Query("mainCompanyId") != "" {
 		mainCompanyId = ctx.Query("mainCompanyId")
 	}
-	employeeId := ""
+	var employeeId string
 	if ctx.Query("employeeId") != "" {
 		employeeId = ctx.Query("employeeId")
 	}
-	employeeName := ""
+	var employeeName string
 	if ctx.Query("employeeName") != "" {
 		employeeName = ctx.Query("employeeName")
 	}
-	employeeStatus := ""
+	var employeeStatus string = "active"
 	if ctx.Query("employeeStatus") != "" {
 		employeeStatus = ctx.Query("employeeStatus")
 	}
@@ -59,6 +59,7 @@ func EmployeeDataFindByParams(ctx *gin.Context) {
 		CheckRedirect: utils.RedirectPolicyFunc,
 	}
 	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Access-Control-Allow-Origin", "*")
 	req.Header.Add("Authorization", "Basic "+utils.BasicAuth(hrisBasicAuthUsername, hrisBasicAuthPassword))
 	req.Header.Add("key-access", hrisKeyAccess)
 	resp, err := client.Do(req)
@@ -114,6 +115,7 @@ func GradeDataFindByParams(ctx *gin.Context) {
 		CheckRedirect: utils.RedirectPolicyFunc,
 	}
 	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Access-Control-Allow-Origin", "*")
 	req.Header.Add("Authorization", "Basic "+utils.BasicAuth(hrisBasicAuthUsername, hrisBasicAuthPassword))
 	req.Header.Add("key-access", hrisKeyAccess)
 	resp, err := client.Do(req)

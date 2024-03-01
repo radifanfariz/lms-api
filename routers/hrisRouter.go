@@ -7,6 +7,6 @@ import (
 
 func HrisDataRouter(r *gin.Engine) {
 	HrisDataEndpoint := "/api/hris/"
-	r.GET(HrisDataEndpoint+"employee/", controllers.EmployeeDataFindByParams)
-	r.GET(HrisDataEndpoint+"/grade/", controllers.GradeDataFindByParams)
+	r.GET(HrisDataEndpoint+"employee", controllers.EmployeeDataFindByParams)
+	r.GET(HrisDataEndpoint+"/grade", controllers.GradeDataFindByParams)
 }
