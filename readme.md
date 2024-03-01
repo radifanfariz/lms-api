@@ -80,7 +80,7 @@
     You can see it successfully downloaded the godo package by listing the directory:
 
     ```
-    ls $env:GOPATH/src/github.com/digitalocean/godo
+    ls $env:GOPATH/src/github.com/radifanfariz/lms
     ```
 
     You will receive output similar to this:
@@ -88,7 +88,7 @@
     ```
 
     Output
-        Directory: C:\Users\sammy\go\src\github.com\digitalocean\godo
+        Directory: C:\Users\sammy\go\src\github.com\radifanfariz\lms
 
 
     Mode                LastWriteTime         Length Name

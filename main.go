@@ -75,6 +75,9 @@ func main() {
 	/* Upload File Endpoint */
 	routers.UploadFileRouter(r)
 	/*----------------------------*/
+	/* HRIS Data Endpoint */
+	routers.HrisDataRouter(r)
+	/*----------------------------*/
 	port := os.Getenv("PORT")
 	r.Run(":" + port) // listen and serve on 0.0.0.0:8080
 }
