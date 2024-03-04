@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -27,19 +28,19 @@ func EmployeeDataFindByParams(ctx *gin.Context) {
 
 	var mainCompanyId string
 	if ctx.Query("mainCompanyId") != "" {
-		mainCompanyId = ctx.Query("mainCompanyId")
+		mainCompanyId = url.QueryEscape(ctx.Query("mainCompanyId"))
 	}
 	var employeeId string
 	if ctx.Query("employeeId") != "" {
-		employeeId = ctx.Query("employeeId")
+		employeeId = url.QueryEscape(ctx.Query("employeeId"))
 	}
 	var employeeName string
 	if ctx.Query("employeeName") != "" {
-		employeeName = ctx.Query("employeeName")
+		employeeName = url.QueryEscape(ctx.Query("employeeName"))
 	}
 	var employeeStatus string = "active"
 	if ctx.Query("employeeStatus") != "" {
-		employeeStatus = ctx.Query("employeeStatus")
+		employeeStatus = url.QueryEscape(ctx.Query("employeeStatus"))
 	}
 
 	req, err := http.NewRequest(http.MethodGet, hrisUrl+"/smartmulia/employee?mainCompanyId="+mainCompanyId+"&employeeId="+employeeId+"&employeeName="+employeeName+"&employeeStatus="+employeeStatus, nil)
@@ -95,7 +96,7 @@ func GradeDataFindByParams(ctx *gin.Context) {
 
 	mainCompanyId := ""
 	if ctx.Query("mainCompanyId") != "" {
-		mainCompanyId = ctx.Query("mainCompanyId")
+		mainCompanyId = url.QueryEscape(ctx.Query("mainCompanyId"))
 	}
 
 	req, err := http.NewRequest(http.MethodGet, hrisUrl+"/smartmulia/employee/grade?mainCompanyId="+mainCompanyId, nil)
