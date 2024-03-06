@@ -15,6 +15,11 @@ func init() {
 }
 
 func main() {
+	/*----------------------------*/
+	/* for production */
+	gin.SetMode(gin.ReleaseMode)
+	/*----------------------------*/
+
 	r := gin.Default()
 
 	r.Use(cors.Default())
