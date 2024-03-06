@@ -65,7 +65,7 @@ func UploadFileCreate(ctx *gin.Context) {
 	form := map[string]string{"title": formData.Title, "file": header.Filename}
 	ct, body, errForm := createForm(form, file)
 	if errForm != nil {
-		panic(errForm)
+		log.Fatal(errForm)
 	}
 	req, err := http.NewRequest(http.MethodPost, ossUrl, body)
 	if err != nil {
