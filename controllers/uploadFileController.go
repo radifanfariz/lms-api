@@ -95,6 +95,7 @@ func UploadFileCreate(ctx *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+		return
 	}
 
 	var jsonResultSuccess BodySuccessResOSS
