@@ -17,7 +17,7 @@ func init() {
 func main() {
 	/*----------------------------*/
 	/* for production */
-	gin.SetMode(gin.ReleaseMode)
+	// gin.SetMode(gin.ReleaseMode)
 	/*----------------------------*/
 
 	r := gin.Default()

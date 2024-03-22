@@ -2,11 +2,13 @@ package controllers
 
 import (
 	"bytes"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -18,6 +20,7 @@ import (
 	"github.com/radifanfariz/lms-api/models"
 	"github.com/radifanfariz/lms-api/utils"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type UserDataPortal struct {
@@ -46,7 +49,7 @@ type UserDataBody struct {
 	MainCompany       string `json:"main_company"`
 	MainCompanyID     int    `json:"main_company_id"`
 	Level             string `json:"level"`
-	LevelID           int    `json:"level_id"`
+	LevelID           *int   `json:"level_id"`
 	Grade             string `json:"grade"`
 	GradeID           int    `json:"grade_id"`
 	Department        string `json:"department"`
@@ -503,6 +506,196 @@ func UserDataUpsert(ctx *gin.Context) {
 
 		ctx.JSON(http.StatusOK, gin.H{"message": "User Data updated successfully.", "data": &current})
 	}
+}
+
+func UserDataBulkUpsert(ctx *gin.Context) {
+	/* before use this function, make sure to add unique constraint in the database (for upsert purpose) */
+	/*-------------------make request to another api-----------------------------*/
+	hrisUrl := os.Getenv("HRIS_URL")
+	hrisBasicAuthUsername := os.Getenv("HRIS_BASIC_AUTH_USERNAME")
+	hrisBasicAuthPassword := os.Getenv("HRIS_BASIC_AUTH_PASSWORD")
+	hrisKeyAccess := os.Getenv("HRIS_KEY_ACCESS")
+
+	var limit string = "99999999"
+	if ctx.Query("limit") != "" {
+		limit = url.QueryEscape(ctx.Query("limit"))
+	}
+	var employeeStatus string = "active"
+	if ctx.Query("employeeStatus") != "" {
+		employeeStatus = url.QueryEscape(ctx.Query("employeeStatus"))
+	}
+
+	req, err := http.NewRequest(http.MethodGet, hrisUrl+"/smartmulia/employee?limit="+limit+"&employeeStatus="+employeeStatus, nil)
+	if err != nil {
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   true,
+			"message": "Something went wrong !",
+		})
+		return
+	}
+
+	// // appending to existing query args
+	// q := req.URL.Query()
+	// q.Add("foo", "bar")
+
+	// // assign encoded query string to http request
+	// req.URL.RawQuery = q.Encode()
+
+	client := &http.Client{
+		CheckRedirect: utils.RedirectPolicyFunc,
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Access-Control-Allow-Origin", "*")
+	req.Header.Add("Authorization", "Basic "+utils.BasicAuth(hrisBasicAuthUsername, hrisBasicAuthPassword))
+	req.Header.Add("key-access", hrisKeyAccess)
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Errored when sending request to the server")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   true,
+			"message": "Something went wrong !",
+		})
+		return
+	}
+
+	defer resp.Body.Close()
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   true,
+			"message": "Something went wrong !",
+		})
+		return
+	}
+
+	var employeeJsonResult models.EmployeeDataFromHris
+	json.Unmarshal([]byte(responseBody), &employeeJsonResult)
+	// fmt.Println("employee data: ", employeeJsonResult)
+	/*-----------------------------------------------------------------------------*/
+	/*
+		using struct []UserDataBody has problem
+		ERROR: relation "user_data_bodies" does not exist (SQLSTATE 42P01)
+		because tablename have not been configured (reference in models/configTable.go)
+		so instead using []models.UserData
+	*/
+	/*----------------------------------------do upsert------------------*/
+
+	/* whether need manual input (for now the input is from another api) */
+	// var body []models.UserData
+
+	// if err := ctx.ShouldBind(&body); err != nil {
+	// 	ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
+	/*----------------------*/
+
+	var uniqueConstraintsName string = "tuserdata_ix1"
+	if ctx.Query("uniqueConstraintsName") != "" {
+		uniqueConstraintsName = ctx.Query("uniqueConstraintsName")
+	}
+	var createdBy string
+	if ctx.Query("createdBy") != "" {
+		createdBy = ctx.Query("createdBy")
+	}
+	var createdAt string
+	if ctx.Query("createdAt") != "" {
+		createdAt = ctx.Query("createdAt")
+	}
+	var updatedBy string
+	if ctx.Query("updatedBy") != "" {
+		updatedBy = ctx.Query("updatedBy")
+	}
+	var updatedAt string
+	if ctx.Query("updatedAt") != "" {
+		updatedAt = ctx.Query("updatedAt")
+	}
+
+	/*------------------formatting data from HRIS api----------------*/
+	// Remove duplicates based on the ID
+	uniqueEmployeeData := utils.RemoveDuplicates(employeeJsonResult.Data, "EmployeeID").([]models.EmployeeData)
+	var formattedEmployeeData []models.UserData
+	for _, v := range uniqueEmployeeData {
+		employeeIdInt, _ := strconv.Atoi(v.EmployeeID)
+		mainCompanyIdInt, _ := strconv.Atoi(v.MainCOmpanyID)
+		positionIdInt, _ := strconv.Atoi(v.PositionID)
+		gradeIdInt, _ := strconv.Atoi(v.GradeID)
+		departmentIdInt, _ := strconv.Atoi(v.DepartmentID)
+		isActiveBool := models.UserData{IsActive: func() *bool { b := true; return &b }()}
+		createdAtTime, errCreatedAtTime := time.Parse("2006-01-02T15:04:05.999 07:00", createdAt)
+		if errCreatedAtTime != nil && createdAt != "" {
+			log.Println("error parse time : ", err)
+		}
+		updatedAtTime, errUpdatedAtTime := time.Parse("2006-01-02T15:04:05.999 07:00", updatedAt)
+		if errUpdatedAtTime != nil && updatedAt != "" {
+			log.Println("error parse time : ", err)
+		}
+		uuidString := func() (uuid string) {
+
+			b := make([]byte, 16)
+			_, err := rand.Read(b)
+			if err != nil {
+				fmt.Println("Error: ", err)
+				return
+			}
+
+			uuid = fmt.Sprintf("%X-%X-%X-%X-%X", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+
+			return
+		}
+
+		formattedEmployeeData = append(formattedEmployeeData, models.UserData{
+			ID:                nil,
+			EmployeeID:        employeeIdInt,
+			Name:              v.EmployeeName,
+			NIK:               v.EmployeeNik,
+			MainCompany:       v.MainCompanyName,
+			MainCompanyID:     mainCompanyIdInt,
+			Level:             "",
+			LevelID:           nil,
+			Position:          v.EmployeePosition,
+			PositionID:        positionIdInt,
+			Grade:             v.GradeName,
+			GradeID:           gradeIdInt,
+			Department:        v.DepartmentName,
+			DepartmentID:      departmentIdInt,
+			LearningJourney:   "foundation",
+			LearningJourneyID: 1,
+			Role:              "user",
+			RoleID:            2,
+			Status:            "active",
+			StatusID:          1,
+			IsActive:          isActiveBool.IsActive,
+			CreatedBy:         createdBy,
+			CreatedAt:         createdAtTime,
+			UpdatedBy:         updatedBy,
+			UpdatedAt:         updatedAtTime,
+			AlternativeID:     uuidString(),
+		})
+	}
+
+	/*----------------------------------------------------------------*/
+
+	bulkUpsertResult := initializers.DB.Clauses(clause.OnConflict{
+		OnConstraint: uniqueConstraintsName,
+		DoNothing:    true,
+	}).CreateInBatches(&formattedEmployeeData, 100)
+
+	if bulkUpsertResult.Error != nil {
+		log.Println(bulkUpsertResult.Error)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error":    true,
+			"errorMsg": bulkUpsertResult.Error.Error(),
+			"message":  "Error upserting bulk User Data.",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"error":   false,
+		"message": "Success upserting bulk User Data.",
+	})
+	/*-------------------------------------------------------------------------------------------------*/
 }
 
 func UserDataDelete(ctx *gin.Context) {

@@ -3,14 +3,14 @@ package models
 import "time"
 
 type UserData struct {
-	ID                int    `gorm:"primaryKey;column:n_id" json:"id"`
+	ID                *int   `gorm:"primaryKey;column:n_id" json:"id"`
 	EmployeeID        int    `gorm:"column:n_employee_id" json:"employee_id"`
 	Name              string `gorm:"column:c_name" json:"name"`
 	NIK               string `gorm:"column:c_nik" json:"nik"`
 	MainCompany       string `gorm:"column:c_main_company" json:"main_company"`
 	MainCompanyID     int    `gorm:"column:n_main_company_id" json:"main_company_id"`
 	Level             string `gorm:"column:c_level" json:"level"`
-	LevelID           int    `gorm:"column:n_level_id" json:"level_id"`
+	LevelID           *int   `gorm:"column:n_level_id" json:"level_id"`
 	Grade             string `gorm:"column:c_grade" json:"grade"`
 	GradeID           int    `gorm:"column:n_grade_id" json:"grade_id"`
 	Department        string `gorm:"column:c_department" json:"department"`
