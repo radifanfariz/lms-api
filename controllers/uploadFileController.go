@@ -52,12 +52,14 @@ func UploadFileCreate(ctx *gin.Context) {
 
 	if err := ctx.ShouldBind(&formData); err != nil {
 		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
 		return
 	}
 	// fmt.Println(formData)
 	file, header, errFile := ctx.Request.FormFile("file")
 	if errFile != nil {
 		http.Error(ctx.Writer, errFile.Error(), http.StatusInternalServerError)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
 		return
 	}
 	defer file.Close()
@@ -67,6 +69,7 @@ func UploadFileCreate(ctx *gin.Context) {
 	ct, body, errForm := createForm(form, file)
 	if errForm != nil {
 		log.Fatal(errForm)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
 		return
 	}
 	req, err := http.NewRequest(http.MethodPost, ossUrl, body)
@@ -86,7 +89,6 @@ func UploadFileCreate(ctx *gin.Context) {
 	if err != nil {
 		fmt.Println("Errored when sending request to the server")
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
-		defer resp.Body.Close()
 		return
 	}
 
