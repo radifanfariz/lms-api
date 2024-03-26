@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -232,18 +233,21 @@ func UserDataFindById(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"data": userData})
 }
-func UserDataFindByParams(ctx *gin.Context) {
-	var body UserDataBody
+func UserDataFindByEmployeeIds(ctx *gin.Context) {
 	var userData []models.UserData
+
+	var findByIdResult *gorm.DB
+
+	var body struct {
+		EmployeeIDs []int `json:"employee_id"`
+	}
 
 	if err := ctx.ShouldBind(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	fmt.Println(body.Name)
-
-	var findByIdResult = initializers.DB.Where("c_name ILIKE ?", "%"+body.Name+"%").Find(&userData)
+	findByIdResult = initializers.DB.Where("n_employee_id IN ?", body.EmployeeIDs).Find(&userData)
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -253,6 +257,58 @@ func UserDataFindByParams(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"data": userData})
+}
+func UserDataFindByParams(ctx *gin.Context) {
+	limit, _ := strconv.Atoi(ctx.Query("per_page"))
+	page, _ := strconv.Atoi(ctx.Query("page"))
+	sort := ctx.Query("sort")
+	filter := ctx.Query("filter")
+	filterColumn := ctx.Query("filter_column")
+	params := utils.Pagination{
+		Limit:        limit,
+		Page:         page,
+		Sort:         sort,
+		FilterColumn: filterColumn,
+		Filter:       filter,
+	}
+
+	var userData []models.UserData
+	findUserByParams := initializers.DB.Model(userData).Scopes(utils.Paginate(userData, &params, initializers.DB)).Find(&userData)
+
+	if findUserByParams.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "User Data not found.",
+		})
+		return
+	}
+
+	/* this to get total all data (total all rows) and total pages in pagination */
+	if params.Filter != "" && params.FilterColumn != "" {
+		var userData []models.UserData
+		totalRows := initializers.DB.Where(params.FilterColumn+" ILIKE ?", "%"+params.Filter+"%").Find(&userData).RowsAffected
+		params.TotalData = totalRows
+		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
+		if params.Limit < 0 {
+			params.TotalPages = 1
+		} else {
+			params.TotalPages = totalPages
+		}
+	} else {
+		var userData []models.UserData
+		totalRows := initializers.DB.Find(&userData).RowsAffected
+		params.TotalData = totalRows
+		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
+		if params.Limit < 0 {
+			params.TotalPages = 1
+		} else {
+			params.TotalPages = totalPages
+		}
+	}
+	/*------------------------------------------------------------------------------*/
+
+	params.Data = userData
+
+	ctx.JSON(http.StatusOK, params)
 }
 func UserDataFindAll(ctx *gin.Context) {
 	var userData []models.UserData

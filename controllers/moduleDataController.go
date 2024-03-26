@@ -145,16 +145,24 @@ func ModuleDataFindPaging(ctx *gin.Context) {
 	/* this to get total all data (total all rows) and total pages in pagination */
 	if params.Filter != "" && params.FilterColumn != "" {
 		var moduleData []models.ModuleData
-		totalRows := initializers.DB.Where(params.FilterColumn, params.Filter).Find(&moduleData).RowsAffected
+		totalRows := initializers.DB.Where(params.FilterColumn+" ILIKE ?", "%"+params.Filter+"%").Find(&moduleData).RowsAffected
 		params.TotalData = totalRows
 		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
-		params.TotalPages = totalPages
+		if params.Limit < 0 {
+			params.TotalPages = 1
+		} else {
+			params.TotalPages = totalPages
+		}
 	} else {
 		var moduleData []models.ModuleData
 		totalRows := initializers.DB.Find(&moduleData).RowsAffected
 		params.TotalData = totalRows
 		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
-		params.TotalPages = totalPages
+		if params.Limit < 0 {
+			params.TotalPages = 1
+		} else {
+			params.TotalPages = totalPages
+		}
 	}
 	/*------------------------------------------------------------------------------*/
 

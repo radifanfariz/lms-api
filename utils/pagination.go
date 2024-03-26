@@ -58,7 +58,7 @@ func Paginate(value interface{}, pagination *Pagination, db *gorm.DB) func(db *g
 
 	if pagination.GetFilter() != "" && pagination.GetFilterColumn() != "" {
 		return func(db *gorm.DB) *gorm.DB {
-			return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Where(pagination.GetFilterColumn(), pagination.GetFilter())
+			return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Where(pagination.GetFilterColumn()+" ILIKE ?", "%"+pagination.GetFilter()+"%")
 		}
 	}
 	return func(db *gorm.DB) *gorm.DB {
