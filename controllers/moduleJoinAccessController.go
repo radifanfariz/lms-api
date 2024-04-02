@@ -19,7 +19,7 @@ type ModuleMetadataJoinAccssedDataPagination struct {
 	PositionID int `json:"position_id,omitempty" query:"position_id"`
 }
 
-func ModuleMetadataJoinAccssedDataPaginate(value interface{}, pagination *ModuleMetadataJoinAccssedDataPagination, db *gorm.DB, ctx *gin.Context) func(db *gorm.DB) *gorm.DB {
+func ModuleMetadataJoinAccessDataPaginate(value interface{}, pagination *ModuleMetadataJoinAccssedDataPagination, db *gorm.DB, ctx *gin.Context) func(db *gorm.DB) *gorm.DB {
 	if pagination.GradeID != 0 || pagination.UserID != 0 || pagination.PositionID != 0 {
 		return func(db *gorm.DB) *gorm.DB {
 			return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("left join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id").Where("? = ANY(n_array_grade_id) OR ? = ANY(n_array_user_id) OR ? = ANY(n_array_position_id)", pagination.GradeID, pagination.UserID, pagination.PositionID)
@@ -30,7 +30,7 @@ func ModuleMetadataJoinAccssedDataPaginate(value interface{}, pagination *Module
 	}
 }
 
-func ModuleMeatadataJoinAccssedDataFindPaging(ctx *gin.Context) {
+func ModuleMeatadataJoinAccessDataFindPaging(ctx *gin.Context) {
 
 	limit, _ := strconv.Atoi(ctx.Query("per_page"))
 	page, _ := strconv.Atoi(ctx.Query("page"))
@@ -70,11 +70,11 @@ func ModuleMeatadataJoinAccssedDataFindPaging(ctx *gin.Context) {
 	}
 
 	var moduleMetadata []models.ModuleMetadata
-	res := initializers.DB.Scopes(ModuleMetadataJoinAccssedDataPaginate(moduleMetadata, &params, initializers.DB, ctx)).Find(&moduleMetadata)
+	res := initializers.DB.Scopes(ModuleMetadataJoinAccessDataPaginate(moduleMetadata, &params, initializers.DB, ctx)).Find(&moduleMetadata)
 
 	/* for total actual total data not total data per page */
 	var moduleMetadataNoPageNoLimit []models.ModuleMetadata
-	resNoPageNoLimit := initializers.DB.Scopes(ModuleMetadataJoinAccssedDataPaginate(moduleMetadata, &paramsNoPageNoLimit, initializers.DB, ctx)).Find(&moduleMetadataNoPageNoLimit)
+	resNoPageNoLimit := initializers.DB.Scopes(ModuleMetadataJoinAccessDataPaginate(moduleMetadata, &paramsNoPageNoLimit, initializers.DB, ctx)).Find(&moduleMetadataNoPageNoLimit)
 
 	totalRows := resNoPageNoLimit.RowsAffected
 	params.TotalData = totalRows

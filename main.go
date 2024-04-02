@@ -84,7 +84,7 @@ func main() {
 	routers.HrisDataRouter(r)
 	/*----------------------------*/
 	/* ModuleMetadataJoinAccssedData Data Endpoint */
-	routers.ModuleMetadataJoinAccssedDataRouter(r)
+	routers.ModuleJoinAccessRouter(r)
 	/*----------------------------*/
 	port := os.Getenv("PORT")
 	r.Run(":" + port) // listen and serve on 0.0.0.0:8080
