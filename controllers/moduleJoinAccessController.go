@@ -17,12 +17,13 @@ type ModuleMetadataJoinAccssedDataPagination struct {
 	GradeID    int `json:"grade_id,omitempty" query:"grade_id"`
 	UserID     int `json:"user_id,omitempty" query:"user_id"`
 	PositionID int `json:"position_id,omitempty" query:"position_id"`
+	CompanyID  int `json:"company_id,omitempty" query:"company_id"`
 }
 
 func ModuleMetadataJoinAccessDataPaginate(value interface{}, pagination *ModuleMetadataJoinAccssedDataPagination, db *gorm.DB, ctx *gin.Context) func(db *gorm.DB) *gorm.DB {
-	if pagination.GradeID != 0 || pagination.UserID != 0 || pagination.PositionID != 0 {
+	if pagination.GradeID != 0 || pagination.UserID != 0 || pagination.PositionID != 0 || pagination.CompanyID != 0 {
 		return func(db *gorm.DB) *gorm.DB {
-			return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("left join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id").Where("? = ANY(n_array_grade_id) OR ? = ANY(n_array_user_id) OR ? = ANY(n_array_position_id)", pagination.GradeID, pagination.UserID, pagination.PositionID)
+			return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("left join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id").Where("? = ANY(n_array_grade_id) OR ? = ANY(n_array_user_id) OR ? = ANY(n_array_position_id) OR ? = ANY(n_array_company_id)", pagination.GradeID, pagination.UserID, pagination.PositionID, pagination.CompanyID)
 		}
 	}
 	return func(db *gorm.DB) *gorm.DB {
@@ -44,8 +45,12 @@ func ModuleMeatadataJoinAccessDataFindPaging(ctx *gin.Context) {
 		userId, _ = strconv.Atoi(ctx.Query("user_id"))
 	}
 	var positionId int
-	if ctx.Query("posiition_id") != "" {
-		positionId, _ = strconv.Atoi(ctx.Query("posiition_id"))
+	if ctx.Query("position_id") != "" {
+		positionId, _ = strconv.Atoi(ctx.Query("position_id"))
+	}
+	var companyId int
+	if ctx.Query("company_id") != "" {
+		companyId, _ = strconv.Atoi(ctx.Query("company_id"))
 	}
 
 	params := ModuleMetadataJoinAccssedDataPagination{
@@ -57,6 +62,7 @@ func ModuleMeatadataJoinAccessDataFindPaging(ctx *gin.Context) {
 		GradeID:    gradeId,
 		UserID:     userId,
 		PositionID: positionId,
+		CompanyID:  companyId,
 	}
 	paramsNoPageNoLimit := ModuleMetadataJoinAccssedDataPagination{
 		Pagination: &utils.Pagination{
@@ -67,6 +73,7 @@ func ModuleMeatadataJoinAccessDataFindPaging(ctx *gin.Context) {
 		GradeID:    gradeId,
 		UserID:     userId,
 		PositionID: positionId,
+		CompanyID:  companyId,
 	}
 
 	var moduleMetadata []models.ModuleMetadata
