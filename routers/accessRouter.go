@@ -8,6 +8,7 @@ import (
 func AccessDataRouter(r *gin.Engine) {
 	AccessDataEndpoint := "/api/access/data"
 	r.POST(AccessDataEndpoint+"/create", controllers.AccessDataCreate)
+	r.GET(AccessDataEndpoint+"/params", controllers.AccessDataFindByParams)
 	r.GET(AccessDataEndpoint+"/:id", controllers.AccessDataFindById)
 	r.GET(AccessDataEndpoint+"/all", controllers.AccessDataFindAll)
 	r.PUT(AccessDataEndpoint+"/update/:id", controllers.AccessDataUpdate)
