@@ -24,23 +24,17 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-type UserDataPortal struct {
-	UserToken   string `json:"userToken"`
-	NIK         string `json:"nik"`
-	LastLogin   string `json:"lastLogin"`
-	CreatedDate string `json:"createdDate"`
-	UpdatedBy   string `json:"updatedBy"`
-	CreatedBy   string `json:"createdBy"`
-	Name        string `json:"name"`
-	UpdatedDate string `json:"updatedDate"`
-	UserId      string `json:"userId"`
-	Status      string `json:"status"`
+type BodyDataSSO struct {
+	Message string             `json:"message"`
+	Status  string             `json:"status"`
+	Data    models.UserDataSSO `json:"data"`
 }
 
 type BodyDataPortal struct {
-	Message string         `json:"message"`
-	Status  string         `json:"status"`
-	Data    UserDataPortal `json:"data"`
+	Message string                `json:"message"`
+	Status  string                `json:"status"`
+	Data    models.UserDataPortal `json:"data"`
+	Reff    string                `json:"reff"`
 }
 
 type UserDataBody struct {
@@ -136,6 +130,80 @@ func UserDataLogin(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Login successful !", "data": userData})
 }
 
+func UserDataLoginThroughSSO(ctx *gin.Context) {
+	ssoUrl := os.Getenv("SSO_URL")
+	ssoBasicAuthUsername := os.Getenv("SSO_BASIC_AUTH_USERNAME")
+	ssoBasicAuthPassword := os.Getenv("SSO_BASIC_AUTH_PASSWORD")
+
+	var userData models.UserData
+	var credentials struct {
+		NIK      string `json:"nik"`
+		Password string `json:"password"`
+	}
+
+	ctx.Bind(&credentials)
+
+	values := map[string]string{"nik": credentials.NIK, "password": credentials.Password}
+	jsonData, err := json.Marshal(values)
+	if err != nil {
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+	}
+
+	req, err := http.NewRequest(http.MethodPost, ssoUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+	}
+
+	// // appending to existing query args
+	// q := req.URL.Query()
+	// q.Add("foo", "bar")
+
+	// // assign encoded query string to http request
+	// req.URL.RawQuery = q.Encode()
+
+	client := &http.Client{
+		CheckRedirect: utils.RedirectPolicyFunc,
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Basic "+utils.BasicAuth(ssoBasicAuthUsername, ssoBasicAuthPassword))
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Errored when sending request to the server")
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+		return
+	}
+
+	defer resp.Body.Close()
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+	}
+
+	var jsonResult BodyDataSSO
+	json.Unmarshal([]byte(responseBody), &jsonResult)
+
+	// fmt.Println(resp.Status)
+	// fmt.Println(jsonResult)
+	// fmt.Println(string(responseBody))
+
+	if strings.ToLower(jsonResult.Status) == "success" {
+		findByIdResult := initializers.DB.Where("c_nik = ?", credentials.NIK).First(&userData)
+
+		if findByIdResult.Error != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Invalid credentials !",
+			})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": "Login successful !", "data": userData})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": jsonResult.Message, "status": jsonResult.Status})
+
+}
 func UserDataLoginThroughPortal(ctx *gin.Context) {
 	portalUrl := os.Getenv("PORTAL_URL")
 	portalBasicAuthUsername := os.Getenv("PORTAL_BASIC_AUTH_USERNAME")
@@ -193,7 +261,7 @@ func UserDataLoginThroughPortal(ctx *gin.Context) {
 
 	// fmt.Println(resp.Status)
 	// fmt.Println(jsonResult)
-	// fmt.Println(string(responseBody))
+	fmt.Println(string(responseBody))
 
 	if strings.ToLower(jsonResult.Status) == "success" {
 		findByIdResult := initializers.DB.Where("c_nik = ?", credentials.NIK).First(&userData)
@@ -204,10 +272,10 @@ func UserDataLoginThroughPortal(ctx *gin.Context) {
 			})
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"message": "Login successful !", "data": userData})
+		ctx.JSON(http.StatusOK, gin.H{"message": "Login successful !", "data": userData, "dataFromPortal": jsonResult.Data})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": jsonResult.Message, "status": jsonResult.Status})
+	ctx.JSON(http.StatusOK, gin.H{"message": jsonResult.Message, "status": jsonResult.Status, "reff": jsonResult.Reff})
 
 }
 

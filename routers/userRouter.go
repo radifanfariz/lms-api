@@ -9,6 +9,7 @@ func UserDataRouter(r *gin.Engine) {
 	UserDataEndpoint := "/api/user/data"
 	r.POST(UserDataEndpoint+"/create", controllers.UserDataCreate)
 	r.POST(UserDataEndpoint+"/login", controllers.UserDataLogin)
+	r.POST(UserDataEndpoint+"/login/through-sso", controllers.UserDataLoginThroughSSO)
 	r.POST(UserDataEndpoint+"/login/through-portal", controllers.UserDataLoginThroughPortal)
 	r.GET(UserDataEndpoint+"/params", controllers.UserDataFindByParams)
 	r.GET(UserDataEndpoint+"/:id", controllers.UserDataFindById)

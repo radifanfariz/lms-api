@@ -48,3 +48,63 @@ type UserActionData struct {
 	UserData         UserData   `gorm:"foreignKey:UserID" json:"user_data"`
 	ModuleData       ModuleData `gorm:"foreignKey:GlobalID;references:GlobalID" json:"module_data"`
 }
+
+/*SSO User Data Model*/
+type UserDataSSO struct {
+	UserToken   string `json:"userToken"`
+	NIK         string `json:"nik"`
+	LastLogin   string `json:"lastLogin"`
+	CreatedDate string `json:"createdDate"`
+	UpdatedBy   string `json:"updatedBy"`
+	CreatedBy   string `json:"createdBy"`
+	Name        string `json:"name"`
+	UpdatedDate string `json:"updatedDate"`
+	UserId      string `json:"userId"`
+	Status      string `json:"status"`
+}
+
+/* Portal User Data Model */
+type Token struct {
+	User string `json:"user"`
+	SSO  string `json:"sso"`
+}
+type UserBU struct {
+	BUID             string `json:"buId"`
+	Title            string `json:"title"`
+	Name             string `json:"name"`
+	AnnualLeaveSetup string `json:"annualLeaveSetup"`
+	CreatedDate      string `json:"createdDate"`
+	CreatedBy        string `json:"createdBy"`
+	UpdatedDate      string `json:"updatedDate"`
+	UpdatedBy        string `json:"updatedBy"`
+}
+type Menus struct {
+	Name   string `json:"name"`
+	Icon   string `json:"icon"`
+	MenuID string `json:"menuId"`
+	Seq    string `json:"seq"`
+}
+type UserDataPortal struct {
+	SSOID        string   `json:"ssoId"`
+	HRISID       int      `json:"hrisId"`
+	WorkScheme   int      `json:"workScheme"`
+	LastLogin    string   `json:"lastLogin"`
+	Access       [][]int  `json:"access"`
+	Gender       string   `json:"gender"`
+	Roles        string   `json:"roles"`
+	UpdatedDate  string   `json:"updatedDate"`
+	Office       []string `json:"office"`
+	LastNotified int      `json:"lastNotified"`
+	UserID       int      `json:"userId"`
+	BirthDate    string   `json:"birthDate"`
+	Token        []Token  `json:"token"`
+	NIK          string   `json:"nik"`
+	HRDDoc       int      `json:"hrdDoc"`
+	JoinDate     string   `json:"joinDate"`
+	BU           [][]any  `json:"bu"`
+	UserBU       UserBU   `json:"userBu"`
+	Name         string   `json:"name"`
+	Menus        []Menus  `json:"menus"`
+	Email        string   `json:"email"`
+	Status       string   `json:"status"`
+}

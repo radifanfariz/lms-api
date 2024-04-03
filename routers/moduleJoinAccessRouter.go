@@ -6,7 +6,10 @@ import (
 )
 
 func ModuleJoinAccessRouter(r *gin.Engine) {
-	ModuleJoinAccssedEndpoint := "/api/moduleJoinAccess"
-	r.GET(ModuleJoinAccssedEndpoint+"/paging", controllers.ModuleMeatadataJoinAccessDataFindPaging)
+	ModuleMetadataJoinAccessEndpoint := "/api/moduleMetadataJoinAccessData"
+	ModuleDataJoinAccessEndpoint := "/api/moduleDataJoinAccessData"
+	r.GET(ModuleMetadataJoinAccessEndpoint+"/paging", controllers.ModuleMetadataJoinAccessDataFindPaging)
+	r.GET(ModuleMetadataJoinAccessEndpoint+"/first/:id", controllers.ModuleMetadataJoinAccessDataFindFirst)
+	r.GET(ModuleDataJoinAccessEndpoint+"/first/:id", controllers.ModuleDataJoinAccessDataFindFirst)
 
 }

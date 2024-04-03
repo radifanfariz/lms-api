@@ -23,7 +23,7 @@ type ModuleMetadataJoinAccssedDataPagination struct {
 func ModuleMetadataJoinAccessDataPaginate(value interface{}, pagination *ModuleMetadataJoinAccssedDataPagination, db *gorm.DB, ctx *gin.Context) func(db *gorm.DB) *gorm.DB {
 	if pagination.GradeID != 0 || pagination.UserID != 0 || pagination.PositionID != 0 || pagination.CompanyID != 0 {
 		return func(db *gorm.DB) *gorm.DB {
-			return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("left join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id").Where(pagination.GetFilterColumn()+" ILIKE ? AND "+"( ? = ANY(n_array_grade_id) OR ? = ANY(n_array_user_id) OR ? = ANY(n_array_position_id) OR ? = ANY(n_array_company_id))", "%"+pagination.GetFilter()+"%", pagination.GradeID, pagination.UserID, pagination.PositionID, pagination.CompanyID)
+			return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("inner join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id").Where(pagination.GetFilterColumn()+" ILIKE ? AND "+"( ? = ANY(n_array_grade_id) OR ? = ANY(n_array_user_id) OR ? = ANY(n_array_position_id) OR ? = ANY(n_array_company_id))", "%"+pagination.GetFilter()+"%", pagination.GradeID, pagination.UserID, pagination.PositionID, pagination.CompanyID)
 		}
 	}
 	return func(db *gorm.DB) *gorm.DB {
@@ -31,7 +31,7 @@ func ModuleMetadataJoinAccessDataPaginate(value interface{}, pagination *ModuleM
 	}
 }
 
-func ModuleMeatadataJoinAccessDataFindPaging(ctx *gin.Context) {
+func ModuleMetadataJoinAccessDataFindPaging(ctx *gin.Context) {
 
 	limit, _ := strconv.Atoi(ctx.Query("per_page"))
 	page, _ := strconv.Atoi(ctx.Query("page"))
@@ -110,4 +110,86 @@ func ModuleMeatadataJoinAccessDataFindPaging(ctx *gin.Context) {
 	params.Data = moduleMetadata
 
 	ctx.JSON(http.StatusOK, params)
+}
+
+func ModuleMetadataJoinAccessDataFindFirst(ctx *gin.Context) {
+	var gradeId int
+	if ctx.Query("grade_id") != "" {
+		gradeId, _ = strconv.Atoi(ctx.Query("grade_id"))
+	}
+	var userId int
+	if ctx.Query("user_id") != "" {
+		userId, _ = strconv.Atoi(ctx.Query("user_id"))
+	}
+	var positionId int
+	if ctx.Query("position_id") != "" {
+		positionId, _ = strconv.Atoi(ctx.Query("position_id"))
+	}
+	var companyId int
+	if ctx.Query("company_id") != "" {
+		companyId, _ = strconv.Atoi(ctx.Query("company_id"))
+	}
+	globalId := ctx.Param("id")
+
+	var moduleMetadata models.ModuleMetadata
+	if gradeId != 0 || userId != 0 || positionId != 0 || companyId != 0 || globalId != "" {
+
+		findFirstModuleJoinAccess := initializers.DB.Table("t_module_metadata").Joins("inner join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id").Where("t_access_data.c_global_id = ? AND "+"( ? = ANY(n_array_grade_id) OR ? = ANY(n_array_user_id) OR ? = ANY(n_array_position_id) OR ? = ANY(n_array_company_id))", globalId, gradeId, userId, positionId, companyId).First(&moduleMetadata)
+		if findFirstModuleJoinAccess.Error != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Error find first.",
+			})
+			return
+		}
+
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": moduleMetadata})
+}
+func ModuleDataJoinAccessDataFindFirst(ctx *gin.Context) {
+	var gradeId int
+	if ctx.Query("grade_id") != "" {
+		gradeId, _ = strconv.Atoi(ctx.Query("grade_id"))
+	}
+	var userId int
+	if ctx.Query("user_id") != "" {
+		userId, _ = strconv.Atoi(ctx.Query("user_id"))
+	}
+	var positionId int
+	if ctx.Query("position_id") != "" {
+		positionId, _ = strconv.Atoi(ctx.Query("position_id"))
+	}
+	var companyId int
+	if ctx.Query("company_id") != "" {
+		companyId, _ = strconv.Atoi(ctx.Query("company_id"))
+	}
+	globalId := ctx.Param("id")
+
+	var moduleData models.ModuleData
+	if gradeId != 0 || userId != 0 || positionId != 0 || companyId != 0 || globalId != "" {
+
+		findFirstModuleJoinAccess := initializers.DB.
+			Preload("Metadata").
+			Preload("UserData").
+			Preload("PreTestMetadata").
+			Preload("MateriMetadata").
+			Preload("PostTestMetadata").
+			Preload("PreTestData").
+			Preload("PreTestData.Metadata").
+			Preload("MateriData").
+			Preload("MateriData.Metadata").
+			Preload("PostTestData").
+			Preload("PostTestData.Metadata").
+			Table("t_module_data").Joins("inner join t_access_data on t_access_data.n_module_meta_id = t_module_data.n_module_meta_id").Where("t_access_data.c_global_id = ? AND "+"( ? = ANY(n_array_grade_id) OR ? = ANY(n_array_user_id) OR ? = ANY(n_array_position_id) OR ? = ANY(n_array_company_id))", globalId, gradeId, userId, positionId, companyId).First(&moduleData)
+
+		if findFirstModuleJoinAccess.Error != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Error find first.",
+			})
+			return
+		}
+
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": moduleData})
 }

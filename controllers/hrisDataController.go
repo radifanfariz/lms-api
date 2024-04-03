@@ -15,9 +15,9 @@ import (
 )
 
 type BodyDataHris struct {
-	Status  string         `json:"status"`
-	Message string         `json:"message"`
-	Data    UserDataPortal `json:"data"`
+	Status  string             `json:"status"`
+	Message string             `json:"message"`
+	Data    models.UserDataSSO `json:"data"`
 }
 
 func EmployeeDataFindByParams(ctx *gin.Context) {
