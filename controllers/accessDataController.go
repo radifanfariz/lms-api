@@ -197,12 +197,12 @@ func AccessDataUpdate(ctx *gin.Context) {
 
 	if findByIdResultAfterUpdate.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Access ResultData not found.(Something went wrong !)",
+			"message": "Access Data not found.(Something went wrong !)",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Data updated successfully.", "data": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Access Data updated successfully.", "data": &current})
 }
 
 func AccessDataUpsert(ctx *gin.Context) {
@@ -329,6 +329,6 @@ func AccessDataDelete(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Data deleted successfully.", "deletedData": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Access Data deleted successfully.", "deletedData": &current})
 
 }

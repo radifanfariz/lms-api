@@ -150,7 +150,7 @@ func PreTestMetadataUpdate(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Metadata updated successfully.", "data": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Pretest Metadata updated successfully.", "data": &current})
 }
 
 func PreTestMetadataUpsert(ctx *gin.Context) {
@@ -277,6 +277,6 @@ func PreTestMetadataDelete(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Metadata deleted successfully.", "deletedData": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Pretest Metadata deleted successfully.", "deletedData": &current})
 
 }

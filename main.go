@@ -86,6 +86,9 @@ func main() {
 	/* ModuleMetadataJoinAccssedData Data Endpoint */
 	routers.ModuleJoinAccessRouter(r)
 	/*----------------------------*/
+	/* Category Data Endpoint */
+	routers.CategoryDataRouter(r)
+	/*----------------------------*/
 	port := os.Getenv("PORT")
 	r.Run(":" + port) // listen and serve on 0.0.0.0:8080
 }

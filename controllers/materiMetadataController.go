@@ -141,12 +141,12 @@ func MateriMetadataUpdate(ctx *gin.Context) {
 
 	if findByIdResultAfterUpdate.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Materi ResultData not found.(Something went wrong !)",
+			"message": "Materi Data not found.(Something went wrong !)",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Metadata updated successfully.", "data": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Materi Metadata updated successfully.", "data": &current})
 }
 
 func MateriMetadataUpsert(ctx *gin.Context) {
@@ -270,6 +270,6 @@ func MateriMetadataDelete(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Metadata deleted successfully.", "deletedData": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Materi Metadata deleted successfully.", "deletedData": &current})
 
 }

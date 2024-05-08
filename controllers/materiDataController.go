@@ -153,7 +153,7 @@ func MateriDataUpdate(ctx *gin.Context) {
 
 	if findByIdResultAfterUpdate.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Materi ResultData not found.(Something went wrong !)",
+			"message": "Materi Data not found.(Something went wrong !)",
 		})
 		return
 	}

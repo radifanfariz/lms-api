@@ -200,7 +200,7 @@ func PostTestResultDataUpdate(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset ResultData updated successfully.", "data": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Posttest ResultData updated successfully.", "data": &current})
 }
 
 func PostTestResultDataUpsert(ctx *gin.Context) {
@@ -333,6 +333,6 @@ func PostTestResultDataDelete(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset ResultData deleted successfully.", "deletedData": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Posttest ResultData deleted successfully.", "deletedData": &current})
 
 }
