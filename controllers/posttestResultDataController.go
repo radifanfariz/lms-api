@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/asaskevich/govalidator"
@@ -40,6 +41,53 @@ func PostTestResultDataCreate(ctx *gin.Context) {
 		Start:            body.Start,
 		End:              body.End,
 		Duration:         body.Duration,
+		Answer:           body.Answer,
+		QuestionAnswered: body.QuestionAnswered,
+		CreatedBy:        body.CreatedBy,
+		CreatedAt:        body.CreatedAt,
+	}
+	result := initializers.DB.Create(&post)
+
+	if result.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error creating post.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "PostTest ResultData created successfully.", "data": &post})
+}
+func PostTestResultDataAutotimeCreate(ctx *gin.Context) {
+	var body PostTestResultDataBody
+
+	ctx.Bind(&body)
+
+	var startTime pgtype.Timestamp
+	var endTime pgtype.Timestamp
+	var durationTime models.Duration
+	trackedPart := strings.ToLower(ctx.Param("tracked_part"))
+	switch trackedPart {
+	case "start":
+		startTime.Time = time.Now()
+		startTime.Valid = true
+	case "end":
+		endTime.Time = time.Now()
+		endTime.Valid = true
+	default:
+		startTime.Time = time.Now()
+		startTime.Valid = true
+		endTime.Time = time.Now()
+		endTime.Valid = true
+		durationTime = models.Duration(endTime.Time.Sub(startTime.Time).Seconds())
+	}
+
+	post := models.PostTestResultData{
+		UserID:           body.UserID,
+		GlobalID:         body.GlobalID,
+		Score:            body.Score,
+		Start:            startTime,
+		End:              endTime,
+		Duration:         durationTime,
 		Answer:           body.Answer,
 		QuestionAnswered: body.QuestionAnswered,
 		CreatedBy:        body.CreatedBy,
@@ -202,6 +250,97 @@ func PostTestResultDataUpdate(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Posttest ResultData updated successfully.", "data": &current})
 }
+func PostTestResultDataAutotimeUpdate(ctx *gin.Context) {
+	var body PostTestResultDataBody
+
+	if err := ctx.ShouldBind(&body); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var current models.PostTestResultData
+	var findByIdResult *gorm.DB
+	var findByIdResultAfterUpdate *gorm.DB
+
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		findByIdResult = initializers.DB.First(&current, uint(id))
+	} else {
+		id := ctx.Param("id")
+		findByIdResult = initializers.DB.First(&current, "c_global_id = ?", id)
+	}
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "PostTest ResultData not found.",
+		})
+		return
+	}
+
+	var startTime pgtype.Timestamp
+	var endTime pgtype.Timestamp
+	var durationTime models.Duration
+	trackedPart := strings.ToLower(ctx.Param("tracked_part"))
+	switch trackedPart {
+	case "start":
+		endTime.Time = current.End.Time
+		endTime.Valid = true
+		startTime.Time = time.Now()
+		startTime.Valid = true
+		durationTime = models.Duration(endTime.Time.Sub(startTime.Time).Seconds())
+	case "end":
+		startTime.Time = current.Start.Time
+		startTime.Valid = true
+		endTime.Time = time.Now()
+		endTime.Valid = true
+		durationTime = models.Duration(endTime.Time.Sub(startTime.Time).Seconds())
+	default:
+		startTime.Time = time.Now()
+		startTime.Valid = true
+		endTime.Time = time.Now()
+		endTime.Valid = true
+		durationTime = models.Duration(endTime.Time.Sub(startTime.Time).Seconds())
+	}
+
+	updates := models.PostTestResultData{
+		UserID:           body.UserID,
+		GlobalID:         body.GlobalID,
+		Score:            body.Score,
+		Start:            startTime,
+		End:              endTime,
+		Duration:         durationTime,
+		Answer:           body.Answer,
+		QuestionAnswered: body.QuestionAnswered,
+		UpdatedBy:        body.CreatedBy,
+		UpdatedAt:        body.CreatedAt,
+	}
+
+	updateResult := initializers.DB.Model(&current).Omit("ID").Updates(&updates)
+
+	if updateResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error updating PostTest ResultData.",
+		})
+		return
+	}
+
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		findByIdResultAfterUpdate = initializers.DB.First(&current, uint(id))
+	} else {
+		id := ctx.Param("id")
+		findByIdResultAfterUpdate = initializers.DB.First(&current, "c_global_id = ?", id)
+	}
+
+	if findByIdResultAfterUpdate.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "PostTest ResultData not found.(Something went wrong !)",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Posttest ResultData updated successfully.", "data": &current})
+}
 
 func PostTestResultDataUpsert(ctx *gin.Context) {
 	var body PostTestResultDataBody
@@ -278,6 +417,138 @@ func PostTestResultDataUpsert(ctx *gin.Context) {
 			Start:            body.Start,
 			End:              body.End,
 			Duration:         body.Duration,
+			Answer:           body.Answer,
+			QuestionAnswered: body.QuestionAnswered,
+			UpdatedBy:        body.UpdatedBy,
+			UpdatedAt:        body.UpdatedAt,
+		}
+		upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
+
+		if upsertResult.Error != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Error updating PostTest Result Data.",
+			})
+			return
+		}
+
+		if govalidator.IsNumeric(ctx.Param("id")) {
+			id, _ := strconv.Atoi(ctx.Param("id"))
+			findByIdResultAfterUpdate = initializers.DB.First(&current, uint(id))
+		} else {
+			id := ctx.Param("id")
+			findByIdResultAfterUpdate = initializers.DB.First(&current, "c_global_id = ?", id)
+		}
+
+		if findByIdResultAfterUpdate.Error != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "PostTest Result Data not found.(Something went wrong !)",
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{"message": "PostTest Result Data updated successfully.", "data": &current})
+	}
+}
+func PostTestResultDataAutotimeUpsert(ctx *gin.Context) {
+	var body PostTestResultDataBody
+
+	if err := ctx.ShouldBind(&body); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var current models.PostTestResultData
+	var upsertResult *gorm.DB
+	var findByIdResult *gorm.DB
+	var findByIdResultAfterUpdate *gorm.DB
+
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		findByIdResult = initializers.DB.First(&current, uint(id))
+	} else {
+		id := ctx.Param("id")
+		findByIdResult = initializers.DB.First(&current, "c_global_id = ?", id)
+	}
+
+	var startTime pgtype.Timestamp
+	var endTime pgtype.Timestamp
+	var durationTime models.Duration
+	trackedPart := strings.ToLower(ctx.Param("tracked_part"))
+	switch trackedPart {
+	case "start":
+		endTime.Time = current.End.Time
+		endTime.Valid = true
+		startTime.Time = time.Now()
+		startTime.Valid = true
+		durationTime = models.Duration(endTime.Time.Sub(startTime.Time).Seconds())
+	case "end":
+		startTime.Time = current.Start.Time
+		startTime.Valid = true
+		endTime.Time = time.Now()
+		endTime.Valid = true
+		durationTime = models.Duration(endTime.Time.Sub(startTime.Time).Seconds())
+	default:
+		startTime.Time = time.Now()
+		startTime.Valid = true
+		endTime.Time = time.Now()
+		endTime.Valid = true
+		durationTime = models.Duration(endTime.Time.Sub(startTime.Time).Seconds())
+	}
+
+	if findByIdResult.Error != nil { /* create */ /* if url params is id then global_id can be provided in JSON Body Req */
+		if govalidator.IsNumeric(ctx.Param("id")) {
+			upsert := models.PostTestResultData{
+				GlobalID:         body.GlobalID,
+				UserID:           body.UserID,
+				Score:            body.Score,
+				Start:            startTime,
+				End:              endTime,
+				Duration:         durationTime,
+				Answer:           body.Answer,
+				QuestionAnswered: body.QuestionAnswered,
+				CreatedBy:        body.CreatedBy,
+				CreatedAt:        body.CreatedAt,
+			}
+			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
+			if upsertResult.Error != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"message": "Error updating PostTest Result Data.",
+				})
+				return
+			}
+			ctx.JSON(http.StatusOK, gin.H{"message": "PostTest Result Data created successfully.", "data": &upsert})
+		} else { /* create */ /* if url params is global_id then global_id automatic get from url params, so dont need to provide in JSON Body req */
+			id := ctx.Param("id")
+			upsert := models.PostTestResultData{
+				GlobalID:         id,
+				UserID:           body.UserID,
+				Score:            body.Score,
+				Start:            startTime,
+				End:              endTime,
+				Duration:         durationTime,
+				Answer:           body.Answer,
+				QuestionAnswered: body.QuestionAnswered,
+				CreatedBy:        body.CreatedBy,
+				CreatedAt:        body.CreatedAt,
+			}
+			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
+			if upsertResult.Error != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"message": "Error updating PostTest Result Data.",
+				})
+				return
+			}
+			ctx.JSON(http.StatusOK, gin.H{"message": "PostTest Result Data created successfully.", "data": &upsert})
+		}
+	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
+		upsert := models.PostTestResultData{
+			ID:               current.ID,
+			GlobalID:         body.GlobalID,
+			UserID:           body.UserID,
+			Score:            body.Score,
+			Start:            startTime,
+			End:              endTime,
+			Duration:         durationTime,
 			Answer:           body.Answer,
 			QuestionAnswered: body.QuestionAnswered,
 			UpdatedBy:        body.UpdatedBy,

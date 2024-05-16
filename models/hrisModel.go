@@ -24,6 +24,7 @@ type EmployeeDataFromHris struct {
 	Status  bool           `json:"status"`
 	Data    []EmployeeData `json:"data"`
 }
+
 type GradeData struct {
 	GradeID       string `json:"gradeId"`
 	MainCompanyID string `json:"mainCompanyId"`
@@ -34,4 +35,21 @@ type GradeDataFromHris struct {
 	Message string      `json:"message"`
 	Status  bool        `json:"status"`
 	Data    []GradeData `json:"data"`
+}
+
+type PositionData struct {
+	JabatanID       string `json:"jabatanId"`
+	JabatanName     string `json:"jabatanName"`
+	MainCompanyID   string `json:"mainCompanyId"`
+	MainCompanyName string `json:"mainCompanyName"`
+	DepartmentID    string `json:"depatmentId"`
+	DepartmentName  string `json:"departmentName"`
+	PangkatID       string `json:"pangkatId"`
+	PangkatName     string `json:"pangkatName"`
+}
+
+type PositionDataFromHris struct {
+	Message string         `json:"message"`
+	Status  bool           `json:"status"`
+	Data    []PositionData `json:"data"`
 }

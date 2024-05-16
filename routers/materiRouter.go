@@ -26,11 +26,14 @@ func MateriDataRouter(r *gin.Engine) {
 func MateriResultDataRouter(r *gin.Engine) {
 	MateriResultDataEndpoint := "/api/materi/result"
 	r.POST(MateriResultDataEndpoint+"/create", controllers.MateriResultDataCreate)
+	r.POST(MateriResultDataEndpoint+"/create/autotime/:tracked_part", controllers.MateriResultDataAutotimeCreate)
 	r.GET(MateriResultDataEndpoint+"/:id", controllers.MateriResultDataFindById)
 	r.GET(MateriResultDataEndpoint+"/user/:user_id", controllers.MateriResultDataFindByUserId)
 	r.GET(MateriResultDataEndpoint+"/:id/user/:user_id", controllers.MateriResultDataFindByIdAndUserId)
 	r.GET(MateriResultDataEndpoint+"/all", controllers.MateriResultDataFindAll)
 	r.PUT(MateriResultDataEndpoint+"/update/:id", controllers.MateriResultDataUpdate)
+	r.PUT(MateriResultDataEndpoint+"/update/autotime/:id/:tracked_part", controllers.MateriResultDataAutotimeUpdate)
 	r.PUT(MateriResultDataEndpoint+"/upsert/:id", controllers.MateriResultDataUpsert)
+	r.PUT(MateriResultDataEndpoint+"/upsert/autotime/:id/:tracked_part", controllers.MateriResultDataAutotimeUpsert)
 	r.DELETE(MateriResultDataEndpoint+"/delete/:id", controllers.MateriResultDataDelete)
 }
