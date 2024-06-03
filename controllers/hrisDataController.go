@@ -26,24 +26,48 @@ func EmployeeDataFindByParams(ctx *gin.Context) {
 	hrisBasicAuthPassword := os.Getenv("HRIS_BASIC_AUTH_PASSWORD")
 	hrisKeyAccess := os.Getenv("HRIS_KEY_ACCESS")
 
-	var mainCompanyId string
-	if ctx.Query("mainCompanyId") != "" {
-		mainCompanyId = url.QueryEscape(ctx.Query("mainCompanyId"))
-	}
 	var employeeId string
 	if ctx.Query("employeeId") != "" {
 		employeeId = url.QueryEscape(ctx.Query("employeeId"))
 	}
-	var employeeName string
-	if ctx.Query("employeeName") != "" {
-		employeeName = url.QueryEscape(ctx.Query("employeeName"))
+	var mainCompanyId string
+	if ctx.Query("mainCompanyId") != "" {
+		mainCompanyId = url.QueryEscape(ctx.Query("mainCompanyId"))
+	}
+	var limit string = "999999"
+	if ctx.Query("limit") != "" {
+		mainCompanyId = url.QueryEscape(ctx.Query("limit"))
 	}
 	var employeeStatus string = "active"
 	if ctx.Query("employeeStatus") != "" {
 		employeeStatus = url.QueryEscape(ctx.Query("employeeStatus"))
 	}
+	var employeeName string
+	if ctx.Query("employeeName") != "" {
+		employeeName = url.QueryEscape(ctx.Query("employeeName"))
+	}
+	var employeeNik string
+	if ctx.Query("employeeNik") != "" {
+		employeeNik = url.QueryEscape(ctx.Query("employeeNik"))
+	}
+	var employeePosition string
+	if ctx.Query("employeePosition") != "" {
+		employeePosition = url.QueryEscape(ctx.Query("employeePosiition"))
+	}
+	var mainCompanyName string
+	if ctx.Query("mainCompanyName") != "" {
+		mainCompanyName = url.QueryEscape(ctx.Query("mainCompanyName"))
+	}
+	var joinDate string
+	if ctx.Query("joinDate") != "" {
+		joinDate = url.QueryEscape(ctx.Query("joinDate"))
+	}
 
-	req, err := http.NewRequest(http.MethodGet, hrisUrl+"/smartmulia/employee?mainCompanyId="+mainCompanyId+"&employeeId="+employeeId+"&employeeName="+employeeName+"&employeeStatus="+employeeStatus, nil)
+	req, err := http.NewRequest(http.MethodGet, hrisUrl+
+		"/smartmulia/employee?mainCompanyId="+mainCompanyId+"&mainCompanyName="+mainCompanyName+"&employeeId="+
+		employeeId+"&employeeName="+employeeName+"&employeeStatus="+employeeStatus+
+		"&employeeNik="+employeeNik+"&employeePosition="+employeePosition+"&joinDate="+joinDate+"&limit="+limit,
+		nil)
 	if err != nil {
 		log.Fatal(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})

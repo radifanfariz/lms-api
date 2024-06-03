@@ -57,7 +57,7 @@ func ModuleDataCreate(ctx *gin.Context) {
 	result := initializers.DB.Create(&post)
 
 	if result.Error != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Error creating post. (It is likely that you will have to complete all parts of the module!)",
 		})
 		return
@@ -108,6 +108,8 @@ func ModuleDataFindById(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"data": moduleData})
 }
+
+/* still unsupported find by category */
 func ModuleDataFindPaging(ctx *gin.Context) {
 	limit, _ := strconv.Atoi(ctx.Query("per_page"))
 	page, _ := strconv.Atoi(ctx.Query("page"))
@@ -170,6 +172,7 @@ func ModuleDataFindPaging(ctx *gin.Context) {
 
 	ctx.JSONP(http.StatusOK, params)
 }
+
 func ModuleDataFindAll(ctx *gin.Context) {
 	var moduleData []models.ModuleData
 	result := initializers.DB.

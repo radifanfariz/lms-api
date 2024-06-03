@@ -15,6 +15,7 @@ type EmployeeData struct {
 	GradeName        string `json:"gradeName"`
 	MainCOmpanyID    string `json:"mainCompanyId"`
 	MainCompanyName  string `json:"mainCompanyName"`
+	JoinDate         string `json:"joinDate"`
 	DirectSPV        string `json:"direct_spv"`
 	Subordinate      string `json:"subordinate"`
 }

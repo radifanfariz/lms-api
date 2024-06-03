@@ -17,6 +17,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/radifanfariz/lms-api/initializers"
 	"github.com/radifanfariz/lms-api/models"
 	"github.com/radifanfariz/lms-api/utils"
@@ -38,38 +39,51 @@ type BodyDataPortal struct {
 }
 
 type UserDataBody struct {
-	EmployeeID        int    `json:"employee_id"`
-	Name              string `json:"name"`
-	NIK               string `json:"nik"`
-	MainCompany       string `json:"main_company"`
-	MainCompanyID     int    `json:"main_company_id"`
-	Level             string `json:"level"`
-	LevelID           *int   `json:"level_id"`
-	Grade             string `json:"grade"`
-	GradeID           int    `json:"grade_id"`
-	Department        string `json:"department"`
-	DepartmentID      int    `json:"department_id"`
-	LearningJourney   string `json:"learning_journey"`
-	LearningJourneyID int    `json:"learning_journey_id"`
-	Role              string `json:"role"`
-	RoleID            int    `json:"role_id"`
-	Status            string `json:"status"`
-	StatusID          int    `json:"status_id"`
-	IsActive          *bool  `json:"is_active"`
-	Position          string `json:"position"`
-	PositionID        int    `json:"position_id"`
-	AlternativeID     string `json:"alternative_id"`
-	// Password          string    `json:"password"`
-	CreatedBy string    `json:"created_by"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedBy string    `json:"updated_by"`
-	UpdatedAt time.Time `json:"updated_at"`
+	EmployeeID        int       `json:"employee_id"`
+	Name              string    `json:"name"`
+	NIK               string    `json:"nik"`
+	MainCompany       string    `json:"main_company"`
+	MainCompanyID     int       `json:"main_company_id"`
+	Level             string    `json:"level"`
+	LevelID           *int      `json:"level_id"`
+	Grade             string    `json:"grade"`
+	GradeID           int       `json:"grade_id"`
+	Department        string    `json:"department"`
+	DepartmentID      int       `json:"department_id"`
+	LearningJourney   string    `json:"learning_journey"`
+	LearningJourneyID int       `json:"learning_journey_id"`
+	Role              string    `json:"role"`
+	RoleID            int       `json:"role_id"`
+	Status            string    `json:"status"`
+	StatusID          int       `json:"status_id"`
+	IsActive          *bool     `json:"is_active"`
+	Position          string    `json:"position"`
+	PositionID        int       `json:"position_id"`
+	JoinDate          string    `json:"join_date"`
+	AlternativeID     string    `json:"alternative_id"`
+	Password          *string   `json:"password"`
+	CreatedBy         string    `json:"created_by"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedBy         string    `json:"updated_by"`
+	UpdatedAt         time.Time `json:"updated_at"`
 }
 
 func UserDataCreate(ctx *gin.Context) {
 	var body UserDataBody
 
 	ctx.Bind(&body)
+
+	var joinDataValue *pgtype.Date = nil
+	joinDateParsed, errJoinDateParsed := time.Parse("2006-01-02", body.JoinDate)
+	if errJoinDateParsed != nil {
+		log.Println("error parse joinDate time : ", errJoinDateParsed)
+	}
+	if !joinDateParsed.IsZero() {
+		joinDataValue = &pgtype.Date{
+			Time:  joinDateParsed,
+			Valid: true,
+		}
+	}
 
 	post := models.UserData{
 		EmployeeID:        body.EmployeeID,
@@ -92,10 +106,11 @@ func UserDataCreate(ctx *gin.Context) {
 		IsActive:          body.IsActive,
 		Position:          body.Position,
 		PositionID:        body.PositionID,
+		JoinDate:          joinDataValue,
 		AlternativeID:     body.AlternativeID,
-		// Password:          body.Password,
-		CreatedBy: body.CreatedBy,
-		CreatedAt: body.CreatedAt,
+		Password:          body.Password,
+		CreatedBy:         body.CreatedBy,
+		CreatedAt:         body.CreatedAt,
 	}
 	result := initializers.DB.Create(&post)
 
@@ -402,6 +417,24 @@ func UserDataUpdate(ctx *gin.Context) {
 		return
 	}
 
+	var joinDataValue *pgtype.Date = nil
+	joinDateParsed, errJoinDateParsed := time.Parse("2006-01-02", body.JoinDate)
+	if errJoinDateParsed != nil {
+		log.Println("error parse joinDate time : ", errJoinDateParsed)
+	}
+	if !joinDateParsed.IsZero() {
+		joinDataValue = &pgtype.Date{
+			Time:  joinDateParsed,
+			Valid: true,
+		}
+	}
+	if !joinDateParsed.IsZero() {
+		joinDataValue = &pgtype.Date{
+			Time:  joinDateParsed,
+			Valid: true,
+		}
+	}
+
 	updates := models.UserData{
 		EmployeeID:        body.EmployeeID,
 		Name:              body.Name,
@@ -423,10 +456,11 @@ func UserDataUpdate(ctx *gin.Context) {
 		IsActive:          body.IsActive,
 		Position:          body.Position,
 		PositionID:        body.PositionID,
+		JoinDate:          joinDataValue,
 		AlternativeID:     body.AlternativeID,
-		// Password:          body.Password,
-		UpdatedBy: body.UpdatedBy,
-		UpdatedAt: body.UpdatedAt,
+		Password:          body.Password,
+		UpdatedBy:         body.UpdatedBy,
+		UpdatedAt:         body.UpdatedAt,
 	}
 
 	var current models.UserData
@@ -479,8 +513,23 @@ func UserDataUpsert(ctx *gin.Context) {
 	var body UserDataBody
 
 	if err := ctx.ShouldBind(&body); err != nil {
+		fmt.Println(err.Error())
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	}
+
+	var uniqueConstraintsName string = "tuserdata_ix1"
+
+	var joinDataValue *pgtype.Date = nil
+	joinDateParsed, errJoinDateParsed := time.Parse("2006-01-02", body.JoinDate)
+	if errJoinDateParsed != nil {
+		log.Println("error parse joinDate time : ", errJoinDateParsed)
+	}
+	if !joinDateParsed.IsZero() {
+		joinDataValue = &pgtype.Date{
+			Time:  joinDateParsed,
+			Valid: true,
+		}
 	}
 
 	var current models.UserData
@@ -520,14 +569,35 @@ func UserDataUpsert(ctx *gin.Context) {
 				IsActive:          body.IsActive,
 				Position:          body.Position,
 				PositionID:        body.PositionID,
+				JoinDate:          joinDataValue,
 				AlternativeID:     body.AlternativeID,
-				// Password:          body.Password,
-				CreatedBy: body.CreatedBy,
-				CreatedAt: body.CreatedAt,
-				UpdatedBy: body.UpdatedBy,
-				UpdatedAt: body.UpdatedAt,
+				Password:          body.Password,
+				CreatedBy:         body.CreatedBy,
+				CreatedAt:         body.CreatedAt,
+				UpdatedBy:         body.UpdatedBy,
+				UpdatedAt:         body.UpdatedAt,
 			}
-			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
+			upsertResult = initializers.DB.Model(&current).Omit("ID").Clauses(clause.OnConflict{
+				OnConstraint: uniqueConstraintsName,
+				DoUpdates: clause.AssignmentColumns([]string{
+					"c_name",
+					"n_level_id",
+					"c_level",
+					"n_grade_id",
+					"c_grade",
+					"n_department_id",
+					"c_department",
+					"n_position_id",
+					"c_position",
+					"n_main_company_id",
+					"c_main_company",
+					"d_join_date",
+					"c_created_by",
+					"c_updated_by",
+					"d_created_at",
+					"d_updated_at",
+				}),
+			}).Save(&upsert)
 			if upsertResult.Error != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{
 					"message": "Error updating User Data.",
@@ -558,14 +628,35 @@ func UserDataUpsert(ctx *gin.Context) {
 				IsActive:          body.IsActive,
 				Position:          body.Position,
 				PositionID:        body.PositionID,
+				JoinDate:          joinDataValue,
 				AlternativeID:     id,
-				// Password:          body.Password,
-				CreatedBy: body.CreatedBy,
-				CreatedAt: body.CreatedAt,
-				UpdatedBy: body.UpdatedBy,
-				UpdatedAt: body.UpdatedAt,
+				Password:          body.Password,
+				CreatedBy:         body.CreatedBy,
+				CreatedAt:         body.CreatedAt,
+				UpdatedBy:         body.UpdatedBy,
+				UpdatedAt:         body.UpdatedAt,
 			}
-			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
+			upsertResult = initializers.DB.Model(&current).Omit("ID").Clauses(clause.OnConflict{
+				OnConstraint: uniqueConstraintsName,
+				DoUpdates: clause.AssignmentColumns([]string{
+					"c_name",
+					"n_level_id",
+					"c_level",
+					"n_grade_id",
+					"c_grade",
+					"n_department_id",
+					"c_department",
+					"n_position_id",
+					"c_position",
+					"n_main_company_id",
+					"c_main_company",
+					"d_join_date",
+					"c_created_by",
+					"c_updated_by",
+					"d_created_at",
+					"d_updated_at",
+				}),
+			}).Save(&upsert)
 			if upsertResult.Error != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{
 					"message": "Error updating User Data.",
@@ -597,14 +688,38 @@ func UserDataUpsert(ctx *gin.Context) {
 			IsActive:          body.IsActive,
 			Position:          body.Position,
 			PositionID:        body.PositionID,
-			AlternativeID:     body.AlternativeID,
-			// Password:          body.Password,
-			CreatedBy: body.CreatedBy,
-			CreatedAt: body.CreatedAt,
-			UpdatedBy: body.UpdatedBy,
-			UpdatedAt: body.UpdatedAt,
+			JoinDate: &pgtype.Date{
+				Time:  joinDateParsed,
+				Valid: !joinDateParsed.IsZero(),
+			},
+			AlternativeID: body.AlternativeID,
+			Password:      body.Password,
+			CreatedBy:     body.CreatedBy,
+			CreatedAt:     body.CreatedAt,
+			UpdatedBy:     body.UpdatedBy,
+			UpdatedAt:     body.UpdatedAt,
 		}
-		upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
+		upsertResult = initializers.DB.Model(&current).Omit("ID").Clauses(clause.OnConflict{
+			OnConstraint: uniqueConstraintsName,
+			DoUpdates: clause.AssignmentColumns([]string{
+				"c_name",
+				"n_level_id",
+				"c_level",
+				"n_grade_id",
+				"c_grade",
+				"n_department_id",
+				"c_department",
+				"n_position_id",
+				"c_position",
+				"n_main_company_id",
+				"c_main_company",
+				"d_join_date",
+				"c_created_by",
+				"c_updated_by",
+				"d_created_at",
+				"d_updated_at",
+			}),
+		}).Save(&upsert)
 
 		if upsertResult.Error != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -716,9 +831,6 @@ func UserDataBulkUpsert(ctx *gin.Context) {
 	/*----------------------*/
 
 	var uniqueConstraintsName string = "tuserdata_ix1"
-	if ctx.Query("uniqueConstraintsName") != "" {
-		uniqueConstraintsName = ctx.Query("uniqueConstraintsName")
-	}
 	var createdBy string
 	if ctx.Query("createdBy") != "" {
 		createdBy = ctx.Query("createdBy")
@@ -745,15 +857,20 @@ func UserDataBulkUpsert(ctx *gin.Context) {
 		mainCompanyIdInt, _ := strconv.Atoi(v.MainCOmpanyID)
 		positionIdInt, _ := strconv.Atoi(v.PositionID)
 		gradeIdInt, _ := strconv.Atoi(v.GradeID)
+		pangkatIdInt, _ := strconv.Atoi(v.PangkatID)
 		departmentIdInt, _ := strconv.Atoi(v.DepartmentID)
 		isActiveBool := models.UserData{IsActive: func() *bool { b := true; return &b }()}
+		joinDateParsed, errJoinDateParsed := time.Parse("2006-01-02", v.JoinDate)
+		if errJoinDateParsed != nil {
+			log.Println("error parse joinDate time : ", errJoinDateParsed)
+		}
 		createdAtTime, errCreatedAtTime := time.Parse("2006-01-02T15:04:05.999 07:00", createdAt)
 		if errCreatedAtTime != nil && createdAt != "" {
-			log.Println("error parse time : ", err)
+			log.Println("error parse createdAt time : ", errCreatedAtTime)
 		}
 		updatedAtTime, errUpdatedAtTime := time.Parse("2006-01-02T15:04:05.999 07:00", updatedAt)
 		if errUpdatedAtTime != nil && updatedAt != "" {
-			log.Println("error parse time : ", err)
+			log.Println("error parse updatedAt time : ", errUpdatedAtTime)
 		}
 		uuidString := func() (uuid string) {
 
@@ -776,8 +893,8 @@ func UserDataBulkUpsert(ctx *gin.Context) {
 			NIK:               v.EmployeeNik,
 			MainCompany:       v.MainCompanyName,
 			MainCompanyID:     mainCompanyIdInt,
-			Level:             "",
-			LevelID:           nil,
+			Level:             v.PangkatName,
+			LevelID:           &pangkatIdInt,
 			Position:          v.EmployeePosition,
 			PositionID:        positionIdInt,
 			Grade:             v.GradeName,
@@ -791,11 +908,15 @@ func UserDataBulkUpsert(ctx *gin.Context) {
 			Status:            "active",
 			StatusID:          1,
 			IsActive:          isActiveBool.IsActive,
-			CreatedBy:         createdBy,
-			CreatedAt:         createdAtTime,
-			UpdatedBy:         updatedBy,
-			UpdatedAt:         updatedAtTime,
-			AlternativeID:     uuidString(),
+			JoinDate: &pgtype.Date{
+				Time:  joinDateParsed,
+				Valid: !joinDateParsed.IsZero(),
+			},
+			CreatedBy:     createdBy,
+			CreatedAt:     createdAtTime,
+			UpdatedBy:     updatedBy,
+			UpdatedAt:     updatedAtTime,
+			AlternativeID: uuidString(),
 		})
 	}
 
@@ -803,7 +924,25 @@ func UserDataBulkUpsert(ctx *gin.Context) {
 
 	bulkUpsertResult := initializers.DB.Clauses(clause.OnConflict{
 		OnConstraint: uniqueConstraintsName,
-		DoNothing:    true,
+		DoUpdates: clause.AssignmentColumns([]string{
+			"n_employee_id",
+			"c_name",
+			"n_level_id",
+			"c_level",
+			"n_grade_id",
+			"c_grade",
+			"n_department_id",
+			"c_department",
+			"n_position_id",
+			"c_position",
+			"n_main_company_id",
+			"c_main_company",
+			"d_join_date",
+			"c_created_by",
+			"c_updated_by",
+			"d_created_at",
+			"d_updated_at",
+		}),
 	}).CreateInBatches(&formattedEmployeeData, 100)
 
 	if bulkUpsertResult.Error != nil {
