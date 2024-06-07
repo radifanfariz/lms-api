@@ -114,18 +114,16 @@ func ModuleDataFindPaging(ctx *gin.Context) {
 	limit, _ := strconv.Atoi(ctx.Query("per_page"))
 	page, _ := strconv.Atoi(ctx.Query("page"))
 	sort := ctx.Query("sort")
-	filter := ctx.Query("filter")
-	filterColumn := ctx.Query("filter_column")
+	learningJourney := ctx.Query("learning_journey")
 	params := utils.Pagination{
-		Limit:        limit,
-		Page:         page,
-		Sort:         sort,
-		FilterColumn: filterColumn,
-		Filter:       filter,
+		Limit: limit,
+		Page:  page,
+		Sort:  sort,
 	}
 
 	var moduleData []models.ModuleData
 	res := initializers.DB.Model(moduleData).Scopes(utils.Paginate(moduleData, &params, initializers.DB)).
+		Joins("inner join t_module_metadata on t_module_data.n_module_meta_id = t_module_metadata.n_id").
 		Preload("Metadata").
 		Preload("UserData").
 		Preload("PreTestMetadata").
@@ -135,6 +133,7 @@ func ModuleDataFindPaging(ctx *gin.Context) {
 		Preload("MateriData").
 		Preload("PostTestData").
 		Where("b_ispublished = ?", true).
+		Where("c_learning_journey ILIKE ?", "%"+learningJourney+"%").
 		Find(&moduleData)
 
 	if res.Error != nil {
@@ -145,9 +144,9 @@ func ModuleDataFindPaging(ctx *gin.Context) {
 	}
 
 	/* this to get total all data (total all rows) and total pages in pagination */
-	if params.Filter != "" && params.FilterColumn != "" {
-		var moduleData []models.ModuleData
-		totalRows := initializers.DB.Where(params.FilterColumn+" ILIKE ?", "%"+params.Filter+"%").Find(&moduleData).RowsAffected
+	if learningJourney != "" {
+		var userData []models.ModuleData
+		totalRows := initializers.DB.Where("c_learning_journey"+" ILIKE ?", "%"+learningJourney+"%").Find(&userData).RowsAffected
 		params.TotalData = totalRows
 		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
 		if params.Limit < 0 {
@@ -156,8 +155,8 @@ func ModuleDataFindPaging(ctx *gin.Context) {
 			params.TotalPages = totalPages
 		}
 	} else {
-		var moduleData []models.ModuleData
-		totalRows := initializers.DB.Find(&moduleData).RowsAffected
+		var userData []models.ModuleData
+		totalRows := initializers.DB.Find(&userData).RowsAffected
 		params.TotalData = totalRows
 		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
 		if params.Limit < 0 {

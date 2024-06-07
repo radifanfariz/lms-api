@@ -14,12 +14,6 @@ import (
 	"github.com/radifanfariz/lms-api/utils"
 )
 
-type BodyDataHris struct {
-	Status  string             `json:"status"`
-	Message string             `json:"message"`
-	Data    models.UserDataSSO `json:"data"`
-}
-
 func EmployeeDataFindByParams(ctx *gin.Context) {
 	hrisUrl := os.Getenv("HRIS_URL")
 	hrisBasicAuthUsername := os.Getenv("HRIS_BASIC_AUTH_USERNAME")

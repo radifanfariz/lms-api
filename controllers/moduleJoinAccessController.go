@@ -27,20 +27,20 @@ func ModuleMetadataJoinAccessDataPaginate(value interface{}, pagination *ModuleM
 	if pagination.GradeID != 0 || pagination.UserID != 0 || pagination.PositionID != 0 || pagination.CompanyID != 0 {
 		if pagination.Category != "" {
 			return func(db *gorm.DB) *gorm.DB {
-				return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("inner join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id").Where("( ? = ANY(n_array_grade_id) OR ? = ANY(n_array_user_id) OR ? = ANY(n_array_position_id) OR ? = ANY(n_array_company_id)) AND c_learning_journey ILIKE ? AND c_category ILIKE ? AND b_ispublished = ?", pagination.GradeID, pagination.UserID, pagination.PositionID, pagination.CompanyID, pagination.LearningJourney, pagination.Category, true)
+				return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("inner join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id inner join t_module_data on t_module_data.n_module_meta_id = t_module_metadata.n_id").Where("( ? = ANY(n_array_grade_id) OR ? = ANY(n_array_user_id) OR ? = ANY(n_array_position_id) OR ? = ANY(n_array_company_id)) AND c_learning_journey ILIKE ? AND c_category ILIKE ? AND b_ispublished = ?", pagination.GradeID, pagination.UserID, pagination.PositionID, pagination.CompanyID, pagination.LearningJourney, pagination.Category, true)
 			}
 		}
 		return func(db *gorm.DB) *gorm.DB {
-			return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("inner join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id").Where("( ? = ANY(n_array_grade_id) OR ? = ANY(n_array_user_id) OR ? = ANY(n_array_position_id) OR ? = ANY(n_array_company_id)) OR c_learning_journey ILIKE ? AND b_ispublished = ?", pagination.GradeID, pagination.UserID, pagination.PositionID, pagination.CompanyID, pagination.LearningJourney, true)
+			return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("inner join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id inner join t_module_data on t_module_data.n_module_meta_id = t_module_metadata.n_id").Where("( ? = ANY(n_array_grade_id) OR ? = ANY(n_array_user_id) OR ? = ANY(n_array_position_id) OR ? = ANY(n_array_company_id)) OR c_learning_journey ILIKE ? AND b_ispublished = ?", pagination.GradeID, pagination.UserID, pagination.PositionID, pagination.CompanyID, pagination.LearningJourney, true)
 		}
 	}
 	if pagination.Category != "" {
 		return func(db *gorm.DB) *gorm.DB {
-			return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("inner join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id").Where("c_category ILIKE ? AND b_ispublished = ?", pagination.Category, true)
+			return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("inner join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id inner join t_module_data on t_module_data.n_module_meta_id = t_module_metadata.n_id").Where("c_category ILIKE ? AND b_ispublished = ?", pagination.Category, true)
 		}
 	}
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("inner join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id").Where("b_ispublished = ?", true)
+		return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort()).Table("t_module_metadata").Joins("inner join t_access_data on t_access_data.n_module_meta_id = t_module_metadata.n_id inner join t_module_data on t_module_data.n_module_meta_id = t_module_metadata.n_id").Where("b_ispublished = ?", true)
 	}
 }
 
