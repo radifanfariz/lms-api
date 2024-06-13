@@ -20,6 +20,7 @@ type AccessDataBody struct {
 	ArrayUserID     []int64   `json:"array_user_id"`
 	ArrayPositionID []int64   `json:"array_position_id"`
 	ArrayCompanyID  []int64   `json:"array_company_id"`
+	CompanyID       int       `json:"company_id"`
 	CreatedBy       string    `json:"created_by"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedBy       string    `json:"updated_by"`
@@ -40,6 +41,7 @@ func AccessDataCreate(ctx *gin.Context) {
 		ArrayUserID:     body.ArrayUserID,
 		ArrayPositionID: body.ArrayPositionID,
 		ArrayCompanyID:  body.ArrayCompanyID,
+		CompanyID:       body.CompanyID,
 		CreatedBy:       body.CreatedBy,
 		CreatedAt:       body.CreatedAt,
 	}
@@ -124,6 +126,28 @@ func AccessDataFindById(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"data": accessData})
 }
+func AccessDataFindAllById(ctx *gin.Context) {
+	var accessData []models.AccessData
+
+	var findByIdResult *gorm.DB
+
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		findByIdResult = initializers.DB.Find(&accessData, uint(id))
+	} else {
+		id := ctx.Param("id")
+		findByIdResult = initializers.DB.Find(&accessData, "c_global_id = ?", id)
+	}
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Access Data not found.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": accessData})
+}
 func AccessDataFindAll(ctx *gin.Context) {
 	var accessData []models.AccessData
 	result := initializers.DB.Find(&accessData)
@@ -155,6 +179,7 @@ func AccessDataUpdate(ctx *gin.Context) {
 		ArrayUserID:     body.ArrayUserID,
 		ArrayPositionID: body.ArrayPositionID,
 		ArrayCompanyID:  body.ArrayCompanyID,
+		CompanyID:       body.CompanyID,
 		UpdatedBy:       body.UpdatedBy,
 		UpdatedAt:       body.UpdatedAt,
 	}
@@ -235,6 +260,7 @@ func AccessDataUpsert(ctx *gin.Context) {
 				ArrayUserID:     body.ArrayUserID,
 				ArrayPositionID: body.ArrayPositionID,
 				ArrayCompanyID:  body.ArrayCompanyID,
+				CompanyID:       body.CompanyID,
 				CreatedBy:       body.CreatedBy,
 				CreatedAt:       body.CreatedAt,
 			}
@@ -255,6 +281,7 @@ func AccessDataUpsert(ctx *gin.Context) {
 				ArrayUserID:     body.ArrayUserID,
 				ArrayPositionID: body.ArrayPositionID,
 				ArrayCompanyID:  body.ArrayCompanyID,
+				CompanyID:       body.CompanyID,
 				CreatedBy:       body.CreatedBy,
 				CreatedAt:       body.CreatedAt,
 			}
@@ -276,6 +303,7 @@ func AccessDataUpsert(ctx *gin.Context) {
 			ArrayUserID:     body.ArrayUserID,
 			ArrayPositionID: body.ArrayPositionID,
 			ArrayCompanyID:  body.ArrayCompanyID,
+			CompanyID:       body.CompanyID,
 			UpdatedBy:       body.UpdatedBy,
 			UpdatedAt:       body.UpdatedAt,
 		}

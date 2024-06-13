@@ -349,7 +349,11 @@ func UserDataFindByParams(ctx *gin.Context) {
 
 	companyId := ctx.Query("company_id")
 
-	findByIdResult = initializers.DB.Where("n_main_company_id = ?", companyId).Find(&userData)
+	if companyId != "" {
+		findByIdResult = initializers.DB.Where("n_main_company_id = ?", companyId).Find(&userData)
+	} else {
+		findByIdResult = initializers.DB.Find(&userData)
+	}
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{

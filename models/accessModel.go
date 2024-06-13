@@ -14,6 +14,7 @@ type AccessData struct {
 	ArrayUserID     pq.Int64Array `gorm:"column:n_array_user_id;type:integer[]" json:"array_user_id"`
 	ArrayPositionID pq.Int64Array `gorm:"column:n_array_position_id;type:integer[]" json:"array_position_id"`
 	ArrayCompanyID  pq.Int64Array `gorm:"column:n_array_company_id;type:integer[]" json:"array_company_id"`
+	CompanyID       int           `gorm:"column:n_company_id;type:integer" json:"company_id"`
 	CreatedBy       string        `gorm:"column:c_created_by" json:"created_by"`
 	UpdatedBy       string        `gorm:"column:c_updated_by" json:"updated_by"`
 	CreatedAt       time.Time     `gorm:"default:now();column:d_created_at" json:"created_at"`
