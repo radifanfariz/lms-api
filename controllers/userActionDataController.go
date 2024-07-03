@@ -86,7 +86,7 @@ func UserActionDataFindByUserId(ctx *gin.Context) {
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "PreTest ResultData not found.",
+			"message": "UserAction Data not found.",
 		})
 		return
 	}

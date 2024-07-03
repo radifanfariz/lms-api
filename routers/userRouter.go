@@ -9,14 +9,17 @@ func UserDataRouter(r *gin.Engine) {
 	UserDataEndpoint := "/api/user/data"
 	r.POST(UserDataEndpoint+"/create", controllers.UserDataCreate)
 	r.POST(UserDataEndpoint+"/login", controllers.UserDataLogin)
+	r.POST(UserDataEndpoint+"/login/through-sso", controllers.UserDataLoginThroughSSO)
 	r.POST(UserDataEndpoint+"/login/through-portal", controllers.UserDataLoginThroughPortal)
-	r.GET(UserDataEndpoint+"/params", controllers.UserDataFindByParams)
+	r.GET(UserDataEndpoint+"/paging", controllers.UserDataFindByPaging)
 	r.GET(UserDataEndpoint+"/:id", controllers.UserDataFindById)
 	r.POST(UserDataEndpoint+"/employeeId", controllers.UserDataFindByEmployeeIds)
 	r.GET(UserDataEndpoint+"/all", controllers.UserDataFindAll)
+	r.GET(UserDataEndpoint+"/params", controllers.UserDataFindByParams)
 	r.PUT(UserDataEndpoint+"/update/:id", controllers.UserDataUpdate)
 	r.PUT(UserDataEndpoint+"/upsert/:id", controllers.UserDataUpsert)
 	r.PUT(UserDataEndpoint+"/upsert/bulk", controllers.UserDataBulkUpsert)
+	r.PUT(UserDataEndpoint+"/upsert/resetall/bulk", controllers.UserDataBulkUpsertResetAll)
 	r.DELETE(UserDataEndpoint+"/delete/:id", controllers.UserDataDelete)
 }
 

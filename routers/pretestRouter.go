@@ -26,11 +26,14 @@ func PreTestDataRouter(r *gin.Engine) {
 func PreTestResultDataRouter(r *gin.Engine) {
 	PreTestResultDataEndpoint := "/api/pretest/result"
 	r.POST(PreTestResultDataEndpoint+"/create", controllers.PreTestResultDataCreate)
+	r.POST(PreTestResultDataEndpoint+"/create/autotime/:tracked_part", controllers.PreTestResultDataAutotimeCreate)
 	r.GET(PreTestResultDataEndpoint+"/:id", controllers.PreTestResultDataFindById)
 	r.GET(PreTestResultDataEndpoint+"/user/:user_id", controllers.PreTestResultDataFindByUserId)
 	r.GET(PreTestResultDataEndpoint+"/:id/user/:user_id", controllers.PreTestResultDataFindByIdAndUserId)
 	r.GET(PreTestResultDataEndpoint+"/all", controllers.PreTestResultDataFindAll)
 	r.PUT(PreTestResultDataEndpoint+"/update/:id", controllers.PreTestResultDataUpdate)
+	r.PUT(PreTestResultDataEndpoint+"/update/autotime/:id/:tracked_part", controllers.PreTestResultDataAutotimeUpdate)
 	r.PUT(PreTestResultDataEndpoint+"/upsert/:id", controllers.PreTestResultDataUpsert)
+	r.PUT(PreTestResultDataEndpoint+"/upsert/autotime/:id/:tracked_part", controllers.PreTestResultDataAutotimeUpsert)
 	r.DELETE(PreTestResultDataEndpoint+"/delete/:id", controllers.PreTestResultDataDelete)
 }

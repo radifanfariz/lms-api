@@ -85,18 +85,15 @@ func ModuleMetadataFindPaging(ctx *gin.Context) {
 	limit, _ := strconv.Atoi(ctx.Query("per_page"))
 	page, _ := strconv.Atoi(ctx.Query("page"))
 	sort := ctx.Query("sort")
-	filter := ctx.Query("filter")
-	filterColumn := ctx.Query("filter_column")
+	learningJourney := ctx.Query("learning_journey")
 	params := utils.Pagination{
-		Limit:        limit,
-		Page:         page,
-		Sort:         sort,
-		FilterColumn: filterColumn,
-		Filter:       filter,
+		Limit: limit,
+		Page:  page,
+		Sort:  sort,
 	}
 
 	var moduleMetadata []models.ModuleMetadata
-	res := initializers.DB.Scopes(utils.Paginate(moduleMetadata, &params, initializers.DB)).Find(&moduleMetadata)
+	res := initializers.DB.Scopes(utils.Paginate(moduleMetadata, &params, initializers.DB)).Where("c_learning_journey ILIKE ?", "%"+learningJourney+"%").Find(&moduleMetadata)
 
 	if res.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -106,18 +103,26 @@ func ModuleMetadataFindPaging(ctx *gin.Context) {
 	}
 
 	/* this to get total all data (total all rows) and total pages in pagination */
-	if params.Filter != "" && params.FilterColumn != "" {
-		var moduleMetadata []models.ModuleMetadata
-		totalRows := initializers.DB.Where(params.FilterColumn, params.Filter).Find(&moduleMetadata).RowsAffected
+	if learningJourney != "" {
+		var userData []models.ModuleMetadata
+		totalRows := initializers.DB.Where("c_learning_journey"+" ILIKE ?", "%"+learningJourney+"%").Find(&userData).RowsAffected
 		params.TotalData = totalRows
 		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
-		params.TotalPages = totalPages
+		if params.Limit < 0 {
+			params.TotalPages = 1
+		} else {
+			params.TotalPages = totalPages
+		}
 	} else {
-		var moduleMetadata []models.ModuleMetadata
-		totalRows := initializers.DB.Find(&moduleMetadata).RowsAffected
+		var userData []models.ModuleMetadata
+		totalRows := initializers.DB.Find(&userData).RowsAffected
 		params.TotalData = totalRows
 		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
-		params.TotalPages = totalPages
+		if params.Limit < 0 {
+			params.TotalPages = 1
+		} else {
+			params.TotalPages = totalPages
+		}
 	}
 	/*------------------------------------------------------------------------------*/
 

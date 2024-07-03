@@ -22,7 +22,11 @@ func main() {
 
 	r := gin.Default()
 
-	r.Use(cors.Default())
+	// CORS middleware with custom settings
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{"*"} // Specify your allowed origin(s) here
+	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "X-Portal-Token")
+	r.Use(cors.New(corsConfig))
 
 	/* just initial testing */
 	// r.GET("/ping", func(c *gin.Context) {
@@ -82,6 +86,18 @@ func main() {
 	/*----------------------------*/
 	/* HRIS Data Endpoint */
 	routers.HrisDataRouter(r)
+	/*----------------------------*/
+	/* ModuleMetadataJoinAccssedData Data Endpoint */
+	routers.ModuleJoinAccessRouter(r)
+	/*----------------------------*/
+	/* Category Data Endpoint */
+	routers.CategoryDataRouter(r)
+	/*----------------------------*/
+	/* Duplicate Data Endpoint */
+	routers.DuplicateDataRouter(r)
+	/*----------------------------*/
+	/* Portal Data Endpoint */
+	routers.PortalDataRouter(r)
 	/*----------------------------*/
 	port := os.Getenv("PORT")
 	r.Run(":" + port) // listen and serve on 0.0.0.0:8080

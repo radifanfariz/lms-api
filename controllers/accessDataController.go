@@ -14,14 +14,17 @@ import (
 )
 
 type AccessDataBody struct {
-	ModuleMetaID int       `json:"module_meta_id"`
-	GlobalID     string    `json:"global_id"`
-	ArrayGradeID []int64   `json:"array_grade_id"`
-	ArrayUserID  []int64   `json:"array_user_id"`
-	CreatedBy    string    `json:"created_by"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedBy    string    `json:"updated_by"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	ModuleMetaID    int       `json:"module_meta_id"`
+	GlobalID        string    `json:"global_id"`
+	ArrayGradeID    []int64   `json:"array_grade_id"`
+	ArrayUserID     []int64   `json:"array_user_id"`
+	ArrayPositionID []int64   `json:"array_position_id"`
+	ArrayCompanyID  []int64   `json:"array_company_id"`
+	CompanyID       int       `json:"company_id"`
+	CreatedBy       string    `json:"created_by"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedBy       string    `json:"updated_by"`
+	UpdatedAt       time.Time `json:"updated_at"`
 }
 
 func AccessDataCreate(ctx *gin.Context) {
@@ -32,12 +35,15 @@ func AccessDataCreate(ctx *gin.Context) {
 	fmt.Println(&body)
 
 	post := models.AccessData{
-		GlobalID:     body.GlobalID,
-		ModuleMetaID: body.ModuleMetaID,
-		ArrayGradeID: body.ArrayGradeID,
-		ArrayUserID:  body.ArrayUserID,
-		CreatedBy:    body.CreatedBy,
-		CreatedAt:    body.CreatedAt,
+		GlobalID:        body.GlobalID,
+		ModuleMetaID:    body.ModuleMetaID,
+		ArrayGradeID:    body.ArrayGradeID,
+		ArrayUserID:     body.ArrayUserID,
+		ArrayPositionID: body.ArrayPositionID,
+		ArrayCompanyID:  body.ArrayCompanyID,
+		CompanyID:       body.CompanyID,
+		CreatedBy:       body.CreatedBy,
+		CreatedAt:       body.CreatedAt,
 	}
 	result := initializers.DB.Create(&post)
 
@@ -51,6 +57,53 @@ func AccessDataCreate(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Access Data created successfully.", "data": &post})
 }
 
+func AccessDataFindByParams(ctx *gin.Context) {
+	var gradeId int
+	if ctx.Query("grade_id") != "" {
+		gradeId, _ = strconv.Atoi(ctx.Query("grade_id"))
+	}
+	var userId int
+	if ctx.Query("user_id") != "" {
+		userId, _ = strconv.Atoi(ctx.Query("user_id"))
+	}
+	var positionId int
+	if ctx.Query("position_id") != "" {
+		positionId, _ = strconv.Atoi(ctx.Query("position_id"))
+	}
+	var companyId int
+	if ctx.Query("company_id") != "" {
+		companyId, _ = strconv.Atoi(ctx.Query("company_id"))
+	}
+
+	var accessData models.AccessData
+
+	/*actually preload is otional for this api */
+
+	findByIdResult := initializers.DB.
+		Preload("ModuleData").
+		Preload("ModuleData.Metadata").
+		Preload("ModuleData.UserData").
+		Preload("ModuleData.PreTestMetadata").
+		Preload("ModuleData.MateriMetadata").
+		Preload("ModuleData.PostTestMetadata").
+		Preload("ModuleData.PreTestData").
+		Preload("ModuleData.MateriData").
+		Preload("ModuleData.PostTestData").
+		Preload("ModuleData.PreTestData.Metadata").
+		Preload("ModuleData.MateriData.Metadata").
+		Preload("ModuleData.PostTestData.Metadata").
+		Where("? = ANY(n_array_grade_id) OR ? = ANY(n_array_user_id) OR ? = ANY(n_array_position_id) OR ? = ANY(n_array_company_id)", gradeId, userId, positionId, companyId).First(&accessData)
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Access Data not found.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": accessData})
+}
+
 func AccessDataFindById(ctx *gin.Context) {
 	var accessData models.AccessData
 
@@ -62,6 +115,28 @@ func AccessDataFindById(ctx *gin.Context) {
 	} else {
 		id := ctx.Param("id")
 		findByIdResult = initializers.DB.First(&accessData, "c_global_id = ?", id)
+	}
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Access Data not found.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": accessData})
+}
+func AccessDataFindAllById(ctx *gin.Context) {
+	var accessData []models.AccessData
+
+	var findByIdResult *gorm.DB
+
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		findByIdResult = initializers.DB.Find(&accessData, uint(id))
+	} else {
+		id := ctx.Param("id")
+		findByIdResult = initializers.DB.Find(&accessData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -98,12 +173,15 @@ func AccessDataUpdate(ctx *gin.Context) {
 	}
 
 	updates := models.AccessData{
-		GlobalID:     body.GlobalID,
-		ModuleMetaID: body.ModuleMetaID,
-		ArrayGradeID: body.ArrayGradeID,
-		ArrayUserID:  body.ArrayUserID,
-		UpdatedBy:    body.UpdatedBy,
-		UpdatedAt:    body.UpdatedAt,
+		GlobalID:        body.GlobalID,
+		ModuleMetaID:    body.ModuleMetaID,
+		ArrayGradeID:    body.ArrayGradeID,
+		ArrayUserID:     body.ArrayUserID,
+		ArrayPositionID: body.ArrayPositionID,
+		ArrayCompanyID:  body.ArrayCompanyID,
+		CompanyID:       body.CompanyID,
+		UpdatedBy:       body.UpdatedBy,
+		UpdatedAt:       body.UpdatedAt,
 	}
 
 	var current models.AccessData
@@ -144,12 +222,12 @@ func AccessDataUpdate(ctx *gin.Context) {
 
 	if findByIdResultAfterUpdate.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Access ResultData not found.(Something went wrong !)",
+			"message": "Access Data not found.(Something went wrong !)",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Data updated successfully.", "data": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Access Data updated successfully.", "data": &current})
 }
 
 func AccessDataUpsert(ctx *gin.Context) {
@@ -176,12 +254,15 @@ func AccessDataUpsert(ctx *gin.Context) {
 	if findByIdResult.Error != nil { /* create */ /* if url params is id then global_id can be provided in JSON Body Req */
 		if govalidator.IsNumeric(ctx.Param("id")) {
 			upsert := models.AccessData{
-				GlobalID:     body.GlobalID,
-				ModuleMetaID: body.ModuleMetaID,
-				ArrayGradeID: body.ArrayGradeID,
-				ArrayUserID:  body.ArrayUserID,
-				CreatedBy:    body.CreatedBy,
-				CreatedAt:    body.CreatedAt,
+				GlobalID:        body.GlobalID,
+				ModuleMetaID:    body.ModuleMetaID,
+				ArrayGradeID:    body.ArrayGradeID,
+				ArrayUserID:     body.ArrayUserID,
+				ArrayPositionID: body.ArrayPositionID,
+				ArrayCompanyID:  body.ArrayCompanyID,
+				CompanyID:       body.CompanyID,
+				CreatedBy:       body.CreatedBy,
+				CreatedAt:       body.CreatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -194,12 +275,15 @@ func AccessDataUpsert(ctx *gin.Context) {
 		} else { /* create */ /* if url params is global_id then global_id automatic get from url params, so dont need to provide in JSON Body req */
 			id := ctx.Param("id")
 			upsert := models.AccessData{
-				GlobalID:     id,
-				ModuleMetaID: body.ModuleMetaID,
-				ArrayGradeID: body.ArrayGradeID,
-				ArrayUserID:  body.ArrayUserID,
-				CreatedBy:    body.CreatedBy,
-				CreatedAt:    body.CreatedAt,
+				GlobalID:        id,
+				ModuleMetaID:    body.ModuleMetaID,
+				ArrayGradeID:    body.ArrayGradeID,
+				ArrayUserID:     body.ArrayUserID,
+				ArrayPositionID: body.ArrayPositionID,
+				ArrayCompanyID:  body.ArrayCompanyID,
+				CompanyID:       body.CompanyID,
+				CreatedBy:       body.CreatedBy,
+				CreatedAt:       body.CreatedAt,
 			}
 			upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 			if upsertResult.Error != nil {
@@ -212,13 +296,16 @@ func AccessDataUpsert(ctx *gin.Context) {
 		}
 	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
 		upsert := models.AccessData{
-			ID:           current.ID,
-			GlobalID:     body.GlobalID,
-			ModuleMetaID: body.ModuleMetaID,
-			ArrayGradeID: body.ArrayGradeID,
-			ArrayUserID:  body.ArrayUserID,
-			UpdatedBy:    body.UpdatedBy,
-			UpdatedAt:    body.UpdatedAt,
+			ID:              current.ID,
+			GlobalID:        body.GlobalID,
+			ModuleMetaID:    body.ModuleMetaID,
+			ArrayGradeID:    body.ArrayGradeID,
+			ArrayUserID:     body.ArrayUserID,
+			ArrayPositionID: body.ArrayPositionID,
+			ArrayCompanyID:  body.ArrayCompanyID,
+			CompanyID:       body.CompanyID,
+			UpdatedBy:       body.UpdatedBy,
+			UpdatedAt:       body.UpdatedAt,
 		}
 		upsertResult = initializers.DB.Model(&current).Omit("ID").Save(&upsert)
 
@@ -270,6 +357,6 @@ func AccessDataDelete(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Data deleted successfully.", "deletedData": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Access Data deleted successfully.", "deletedData": &current})
 
 }

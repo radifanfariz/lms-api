@@ -144,12 +144,12 @@ func PostTestDataUpdate(ctx *gin.Context) {
 
 	if findByIdResultAfterUpdate.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "PostTest ResultData not found.(Something went wrong !)",
+			"message": "PostTest Data not found.(Something went wrong !)",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Data updated successfully.", "data": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Posttest Data updated successfully.", "data": &current})
 }
 
 func PostTestDataUpsert(ctx *gin.Context) {
@@ -273,6 +273,6 @@ func PostTestDataDelete(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Preteset Data deleted successfully.", "deletedData": &current})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Posttest Data deleted successfully.", "deletedData": &current})
 
 }
