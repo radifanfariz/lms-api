@@ -112,10 +112,10 @@ func PreTestResultDataFindById(ctx *gin.Context) {
 
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		findByIdResult = initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&preTestResultData, uint(id))
+		findByIdResult = initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id desc").Find(&preTestResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
-		findByIdResult = initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&preTestResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id desc").Find(&preTestResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -133,7 +133,7 @@ func PreTestResultDataFindByUserId(ctx *gin.Context) {
 	var findByIdResult *gorm.DB
 
 	userId := ctx.Param("user_id")
-	findByIdResult = initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&preTestResultData, "n_user_id = ?", userId)
+	findByIdResult = initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id desc").Find(&preTestResultData, "n_user_id = ?", userId)
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -152,11 +152,11 @@ func PreTestResultDataFindByIdAndUserId(ctx *gin.Context) {
 	if govalidator.IsNumeric(ctx.Param("id")) {
 		id, _ := strconv.Atoi(ctx.Param("id"))
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&preTestResultData, uint(id))
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id desc").Find(&preTestResultData, uint(id))
 	} else {
 		id := ctx.Param("id")
 		userId, _ := strconv.Atoi(ctx.Param("user_id"))
-		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&preTestResultData, "c_global_id = ?", id)
+		findByIdResult = initializers.DB.Where("n_user_id = ?", userId).Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id desc").Find(&preTestResultData, "c_global_id = ?", id)
 	}
 
 	if findByIdResult.Error != nil {
@@ -170,7 +170,7 @@ func PreTestResultDataFindByIdAndUserId(ctx *gin.Context) {
 }
 func PreTestResultDataFindAll(ctx *gin.Context) {
 	var preTestResultData []models.PreTestResultData
-	result := initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Find(&preTestResultData)
+	result := initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id desc").Find(&preTestResultData)
 
 	// fmt.Println(preTestResultData)
 
