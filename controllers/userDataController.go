@@ -32,10 +32,11 @@ type BodyDataSSO struct {
 }
 
 type BodyDataPortal struct {
-	Message string                `json:"message"`
-	Status  string                `json:"status"`
-	Data    models.UserDataPortal `json:"data"`
-	Reff    string                `json:"reff"`
+	Message   string                `json:"message"`
+	Status    string                `json:"status"`
+	Data      models.UserDataPortal `json:"data"`
+	Reff      string                `json:"reff"`
+	UserToken *string               `json:"userToken"`
 }
 
 type UserDataBody struct {
@@ -291,6 +292,85 @@ func UserDataLoginThroughPortal(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": jsonResult.Message, "status": jsonResult.Status, "reff": jsonResult.Reff})
+
+}
+func UserDataLoginThroughPortalWithUserBu(ctx *gin.Context) {
+	portalUrl := os.Getenv("PORTAL_URL")
+	portalBasicAuthUsername := os.Getenv("PORTAL_BASIC_AUTH_USERNAME")
+	portalBasicAuthPassword := os.Getenv("PORTAL_BASIC_AUTH_PASSWORD")
+
+	var userData models.UserData
+	var credentials struct {
+		UserBU   *string `json:"userBu"`
+		NIK      *string `json:"nik"`
+		Password *string `json:"password"`
+	}
+
+	ctx.Bind(&credentials)
+
+	values := map[string]*string{"userBu": credentials.UserBU, "nik": credentials.NIK, "password": credentials.Password}
+	if credentials.UserBU == nil || *credentials.UserBU == "" {
+		values = map[string]*string{"nik": credentials.NIK, "password": credentials.Password}
+	}
+
+	jsonData, err := json.Marshal(values)
+	if err != nil {
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+	}
+
+	req, err := http.NewRequest(http.MethodPost, portalUrl+"/auth/login", bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+	}
+
+	// // appending to existing query args
+	// q := req.URL.Query()
+	// q.Add("foo", "bar")
+
+	// // assign encoded query string to http request
+	// req.URL.RawQuery = q.Encode()
+
+	client := &http.Client{
+		CheckRedirect: utils.RedirectPolicyFunc,
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Basic "+utils.BasicAuth(portalBasicAuthUsername, portalBasicAuthPassword))
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Errored when sending request to the server")
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+		return
+	}
+
+	defer resp.Body.Close()
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
+	}
+
+	var jsonResult BodyDataPortal
+	json.Unmarshal([]byte(responseBody), &jsonResult)
+
+	// fmt.Println(resp.Status)
+	// fmt.Println(jsonResult)
+	fmt.Println(string(responseBody))
+
+	if strings.ToLower(jsonResult.Status) == "success" {
+		findByIdResult := initializers.DB.Where("c_nik = ?", credentials.NIK).First(&userData)
+
+		if findByIdResult.Error != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Invalid credentials !",
+			})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": "Login successful !", "data": userData, "dataFromPortal": jsonResult.Data})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": jsonResult.Message, "status": jsonResult.Status, "reff": jsonResult.Reff, "userToken": &jsonResult.UserToken})
 
 }
 

@@ -11,6 +11,7 @@ func UserDataRouter(r *gin.Engine) {
 	r.POST(UserDataEndpoint+"/login", controllers.UserDataLogin)
 	r.POST(UserDataEndpoint+"/login/through-sso", controllers.UserDataLoginThroughSSO)
 	r.POST(UserDataEndpoint+"/login/through-portal", controllers.UserDataLoginThroughPortal)
+	r.POST(UserDataEndpoint+"/login/through-portal-with-userbu", controllers.UserDataLoginThroughPortalWithUserBu)
 	r.GET(UserDataEndpoint+"/paging", controllers.UserDataFindByPaging)
 	r.GET(UserDataEndpoint+"/:id", controllers.UserDataFindById)
 	r.POST(UserDataEndpoint+"/employeeId", controllers.UserDataFindByEmployeeIds)
