@@ -4,6 +4,7 @@ import "time"
 
 type CategoryData struct {
 	ID        int       `gorm:"primaryKey;column:n_id" json:"id"`
+	Domain    string    `gorm:"column:c_domain" json:"domain"`
 	Label     string    `gorm:"column:c_label" json:"label"`
 	Value     string    `gorm:"column:c_value" json:"value"`
 	Seq       int       `gorm:"column:n_seq" json:"seq"`

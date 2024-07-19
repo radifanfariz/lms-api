@@ -12,6 +12,7 @@ import (
 )
 
 type CategoryDataBody struct {
+	Domain    string    `json:"domain"`
 	Label     string    `json:"label"`
 	Value     string    `json:"value"`
 	Seq       int       `json:"seq"`
@@ -27,6 +28,7 @@ func CategoryDataCreate(ctx *gin.Context) {
 	ctx.Bind(&body)
 
 	post := models.CategoryData{
+		Domain:    body.Domain,
 		Label:     body.Label,
 		Value:     body.Value,
 		Seq:       body.Seq,
@@ -52,6 +54,23 @@ func CategoryDataFindById(ctx *gin.Context) {
 
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	findByIdResult = initializers.DB.First(&CategoryData, uint(id))
+
+	if findByIdResult.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Category Data not found.",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": CategoryData})
+}
+func CategoryDataFindByDomain(ctx *gin.Context) {
+	var CategoryData []models.CategoryData
+
+	var findByIdResult *gorm.DB
+
+	label := ctx.Param("domain")
+	findByIdResult = initializers.DB.First(&CategoryData, "c_domain ILIKE ?", label)
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -104,6 +123,7 @@ func CategoryDataUpdate(ctx *gin.Context) {
 	}
 
 	updates := models.CategoryData{
+		Domain:    body.Domain,
 		Label:     body.Label,
 		Value:     body.Value,
 		Seq:       body.Seq,
@@ -164,6 +184,7 @@ func CategoryDataUpsert(ctx *gin.Context) {
 
 	if findByIdResult.Error != nil {
 		upsert := models.CategoryData{
+			Domain:    body.Domain,
 			Label:     body.Label,
 			Value:     body.Value,
 			Seq:       body.Seq,
@@ -181,6 +202,7 @@ func CategoryDataUpsert(ctx *gin.Context) {
 	} else { /* update */ /* update in upsert cannot update global_id, so dont need to provide global_id in JSON Body req */
 		upsert := models.CategoryData{
 			ID:        current.ID,
+			Domain:    body.Domain,
 			Label:     body.Label,
 			Value:     body.Value,
 			Seq:       body.Seq,
