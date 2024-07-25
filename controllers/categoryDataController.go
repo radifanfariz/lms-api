@@ -206,6 +206,8 @@ func CategoryDataUpsert(ctx *gin.Context) {
 			Label:     body.Label,
 			Value:     body.Value,
 			Seq:       body.Seq,
+			CreatedBy: current.CreatedBy,
+			CreatedAt: current.CreatedAt,
 			UpdatedBy: body.UpdatedBy,
 			UpdatedAt: body.UpdatedAt,
 		}

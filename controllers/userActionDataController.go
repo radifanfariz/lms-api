@@ -275,6 +275,8 @@ func UserActionDataUpsert(ctx *gin.Context) {
 			PretestAccessed:  body.PretestAccessed,
 			MateriAccessed:   body.MateriAccessed,
 			PosttestAccessed: body.PosttestAccessed,
+			CreatedBy:        current.CreatedBy,
+			CreatedAt:        current.CreatedAt,
 			UpdatedBy:        body.UpdatedBy,
 			UpdatedAt:        body.UpdatedAt,
 		}

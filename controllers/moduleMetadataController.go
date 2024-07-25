@@ -286,6 +286,8 @@ func ModuleMetadataUpsert(ctx *gin.Context) {
 			LearningJourney: body.LearningJourney,
 			Category:        body.Category,
 			MaxMonth:        body.MaxMonth,
+			CreatedBy:       current.CreatedBy,
+			CreatedAt:       current.CreatedAt,
 			UpdatedBy:       body.UpdatedBy,
 			UpdatedAt:       body.UpdatedAt,
 		}

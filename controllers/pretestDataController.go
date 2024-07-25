@@ -221,6 +221,8 @@ func PreTestDataUpsert(ctx *gin.Context) {
 			PreTestMetaID: body.PreTestMetaID,
 			Question:      body.Question,
 			IsPublished:   body.IsPublished,
+			CreatedBy:     current.CreatedBy,
+			CreatedAt:     current.CreatedAt,
 			UpdatedBy:     body.UpdatedBy,
 			UpdatedAt:     body.UpdatedAt,
 		}

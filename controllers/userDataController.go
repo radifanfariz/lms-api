@@ -807,8 +807,8 @@ func UserDataUpsert(ctx *gin.Context) {
 			},
 			AlternativeID: body.AlternativeID,
 			Password:      body.Password,
-			CreatedBy:     body.CreatedBy,
-			CreatedAt:     body.CreatedAt,
+			CreatedBy:     current.CreatedBy,
+			CreatedAt:     current.CreatedAt,
 			UpdatedBy:     body.UpdatedBy,
 			UpdatedAt:     body.UpdatedAt,
 		}

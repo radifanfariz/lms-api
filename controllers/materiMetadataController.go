@@ -217,6 +217,8 @@ func MateriMetadataUpsert(ctx *gin.Context) {
 			Name:        body.Name,
 			Description: body.Description,
 			Src:         body.Src,
+			CreatedBy:   current.CreatedBy,
+			CreatedAt:   current.CreatedAt,
 			UpdatedBy:   body.UpdatedBy,
 			UpdatedAt:   body.UpdatedAt,
 		}

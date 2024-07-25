@@ -238,6 +238,8 @@ func MateriDataUpsert(ctx *gin.Context) {
 			Type:         body.Type,
 			Src:          body.Src,
 			IsPublished:  body.IsPublished,
+			CreatedBy:    current.CreatedBy,
+			CreatedAt:    current.CreatedAt,
 			UpdatedBy:    body.UpdatedBy,
 			UpdatedAt:    body.UpdatedAt,
 		}

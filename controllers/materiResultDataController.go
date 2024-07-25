@@ -403,6 +403,8 @@ func MateriResultDataUpsert(ctx *gin.Context) {
 			Start:     body.Start,
 			End:       body.End,
 			Duration:  body.Duration,
+			CreatedBy: current.CreatedBy,
+			CreatedAt: current.CreatedAt,
 			UpdatedBy: body.UpdatedBy,
 			UpdatedAt: body.UpdatedAt,
 		}
@@ -529,6 +531,8 @@ func MateriResultDataAutotimeUpsert(ctx *gin.Context) {
 			Start:     startTime,
 			End:       endTime,
 			Duration:  durationTime,
+			CreatedBy: current.CreatedBy,
+			CreatedAt: current.CreatedAt,
 			UpdatedBy: body.UpdatedBy,
 			UpdatedAt: body.UpdatedAt,
 		}

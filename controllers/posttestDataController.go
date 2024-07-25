@@ -220,6 +220,8 @@ func PostTestDataUpsert(ctx *gin.Context) {
 			PostTestMetaID: body.PostTestMetaID,
 			Question:       body.Question,
 			IsPublished:    body.IsPublished,
+			CreatedBy:      current.CreatedBy,
+			CreatedAt:      current.CreatedAt,
 			UpdatedBy:      body.UpdatedBy,
 			UpdatedAt:      body.UpdatedAt,
 		}

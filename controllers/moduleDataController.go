@@ -356,6 +356,8 @@ func ModuleDataUpsert(ctx *gin.Context) {
 			UserID:         body.UserID,
 			GradeID:        body.GradeID,
 			IsPublished:    body.IsPublished,
+			CreatedBy:      current.CreatedBy,
+			CreatedAt:      current.CreatedAt,
 			UpdatedBy:      body.UpdatedBy,
 			UpdatedAt:      body.UpdatedAt,
 		}
