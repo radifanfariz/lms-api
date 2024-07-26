@@ -90,6 +90,9 @@ func main() {
 	/* ModuleMetadataJoinAccssedData Data Endpoint */
 	routers.ModuleJoinAccessRouter(r)
 	/*----------------------------*/
+	/* ModuleMetadataJoinAccssedData V2 Data Endpoint */
+	routers.ModuleJoinAccessRouterV2(r)
+	/*----------------------------*/
 	/* Category Data Endpoint */
 	routers.CategoryDataRouter(r)
 	/*----------------------------*/
