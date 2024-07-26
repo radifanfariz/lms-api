@@ -304,6 +304,8 @@ func AccessDataUpsert(ctx *gin.Context) {
 			ArrayPositionID: body.ArrayPositionID,
 			ArrayCompanyID:  body.ArrayCompanyID,
 			CompanyID:       body.CompanyID,
+			CreatedBy:       current.CreatedBy,
+			CreatedAt:       current.CreatedAt,
 			UpdatedBy:       body.UpdatedBy,
 			UpdatedAt:       body.UpdatedAt,
 		}

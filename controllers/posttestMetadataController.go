@@ -226,6 +226,8 @@ func PostTestMetadataUpsert(ctx *gin.Context) {
 			Description: body.Description,
 			MaxAccess:   body.MaxAccess,
 			MinScore:    body.MinScore,
+			CreatedBy:   current.CreatedBy,
+			CreatedAt:   current.CreatedAt,
 			UpdatedBy:   body.UpdatedBy,
 			UpdatedAt:   body.UpdatedAt,
 		}

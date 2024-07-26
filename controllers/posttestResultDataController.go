@@ -419,6 +419,8 @@ func PostTestResultDataUpsert(ctx *gin.Context) {
 			Duration:         body.Duration,
 			Answer:           body.Answer,
 			QuestionAnswered: body.QuestionAnswered,
+			CreatedBy:        current.CreatedBy,
+			CreatedAt:        current.CreatedAt,
 			UpdatedBy:        body.UpdatedBy,
 			UpdatedAt:        body.UpdatedAt,
 		}
@@ -551,6 +553,8 @@ func PostTestResultDataAutotimeUpsert(ctx *gin.Context) {
 			Duration:         durationTime,
 			Answer:           body.Answer,
 			QuestionAnswered: body.QuestionAnswered,
+			CreatedBy:        current.CreatedBy,
+			CreatedAt:        current.CreatedAt,
 			UpdatedBy:        body.UpdatedBy,
 			UpdatedAt:        body.UpdatedAt,
 		}

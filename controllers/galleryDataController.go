@@ -231,6 +231,8 @@ func GalleryDataUpsert(ctx *gin.Context) {
 			UserID:    body.UserID,
 			Name:      body.Name,
 			Src:       body.Src,
+			CreatedBy: current.CreatedBy,
+			CreatedAt: current.CreatedAt,
 			UpdatedBy: body.UpdatedBy,
 			UpdatedAt: body.UpdatedAt,
 		}
