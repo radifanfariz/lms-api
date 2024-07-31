@@ -359,7 +359,7 @@ func UserDataLoginThroughPortalWithUserBu(ctx *gin.Context) {
 	fmt.Println(string(responseBody))
 
 	if strings.ToLower(jsonResult.Status) == "success" {
-		findByIdResult := initializers.DB.Where("c_nik = ?", credentials.NIK).First(&userData)
+		findByIdResult := initializers.DB.Where("n_employee_id = ?", jsonResult.Data.HRISID).First(&userData)
 
 		if findByIdResult.Error != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
