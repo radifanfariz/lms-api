@@ -145,8 +145,19 @@ func ModuleDataFindPaging(ctx *gin.Context) {
 
 	/* this to get total all data (total all rows) and total pages in pagination */
 	if learningJourney != "" {
-		var userData []models.ModuleData
-		totalRows := initializers.DB.Where("c_learning_journey"+" ILIKE ?", "%"+learningJourney+"%").Find(&userData).RowsAffected
+		var moduleData []models.ModuleData
+		totalRows := initializers.DB.Joins("inner join t_module_metadata on t_module_data.n_module_meta_id = t_module_metadata.n_id").
+			Preload("Metadata").
+			Preload("UserData").
+			Preload("PreTestMetadata").
+			Preload("MateriMetadata").
+			Preload("PostTestMetadata").
+			Preload("PreTestData").
+			Preload("MateriData").
+			Preload("PostTestData").
+			Where("b_ispublished = ?", true).
+			Where("c_learning_journey ILIKE ?", "%"+learningJourney+"%").
+			Find(&moduleData).RowsAffected
 		params.TotalData = totalRows
 		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
 		if params.Limit < 0 {
@@ -155,8 +166,8 @@ func ModuleDataFindPaging(ctx *gin.Context) {
 			params.TotalPages = totalPages
 		}
 	} else {
-		var userData []models.ModuleData
-		totalRows := initializers.DB.Find(&userData).RowsAffected
+		var moduleData []models.ModuleData
+		totalRows := initializers.DB.Find(&moduleData).RowsAffected
 		params.TotalData = totalRows
 		totalPages := int(math.Ceil(float64(totalRows) / float64(params.Limit)))
 		if params.Limit < 0 {
