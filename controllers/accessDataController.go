@@ -337,11 +337,18 @@ func AccessDataUpsert(ctx *gin.Context) {
 	}
 }
 
+// capable deleting using global id or id (considered to implement in all delete api)
 func AccessDataDelete(ctx *gin.Context) {
 	var current models.AccessData
+	var findByIdResult *gorm.DB
 
-	id, _ := strconv.Atoi(ctx.Param("id"))
-	findByIdResult := initializers.DB.First(&current, uint(id))
+	if govalidator.IsNumeric(ctx.Param("id")) {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		findByIdResult = initializers.DB.First(&current, uint(id))
+	} else {
+		id := ctx.Param("id")
+		findByIdResult = initializers.DB.First(&current, "c_global_id = ?", id)
+	}
 
 	if findByIdResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -350,7 +357,7 @@ func AccessDataDelete(ctx *gin.Context) {
 		return
 	}
 
-	deleteResult := initializers.DB.Delete(&current, uint(id))
+	deleteResult := initializers.DB.Delete(&current, uint(current.ID))
 
 	if deleteResult.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{

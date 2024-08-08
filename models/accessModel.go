@@ -19,5 +19,5 @@ type AccessData struct {
 	UpdatedBy       string        `gorm:"column:c_updated_by" json:"updated_by"`
 	CreatedAt       time.Time     `gorm:"default:now();column:d_created_at" json:"created_at"`
 	UpdatedAt       time.Time     `gorm:"default:now();column:d_updated_at" json:"updated_at"`
-	ModuleData      ModuleData    `gorm:"foreignKey:ModuleMetaID;references:ModuleMetaID" json:"module_metadata"`
+	// ModuleData      ModuleData    `gorm:"foreignKey:ModuleMetaID;references:ModuleMetaID" json:"module_metadata"`
 }

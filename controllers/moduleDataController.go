@@ -82,6 +82,7 @@ func ModuleDataFindById(ctx *gin.Context) {
 			Preload("PreTestData").
 			Preload("MateriData").
 			Preload("PostTestData").
+			Preload("AccessData").
 			Where("b_ispublished = ?", true).
 			Find(&moduleData, uint(id))
 	} else {
@@ -95,6 +96,7 @@ func ModuleDataFindById(ctx *gin.Context) {
 			Preload("PreTestData").
 			Preload("MateriData").
 			Preload("PostTestData").
+			Preload("AccessData").
 			Where("b_ispublished = ?", true).
 			Find(&moduleData, "c_global_id = ?", id)
 	}

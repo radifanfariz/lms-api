@@ -88,6 +88,8 @@ func UploadFileCreate(ctx *gin.Context) {
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println("Errored when sending request to the server")
+		fmt.Println(resp)
+		fmt.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Something went wrong !"})
 		return
 	}

@@ -38,6 +38,7 @@ type ModuleData struct {
 	PreTestData      PreTestData      `gorm:"foreignKey:GlobalID;references:GlobalID" json:"pretest_data"`
 	MateriData       []MateriData     `gorm:"foreignKey:GlobalID;references:GlobalID" json:"materi_data"`
 	PostTestData     PostTestData     `gorm:"foreignKey:GlobalID;references:GlobalID" json:"posttest_data"`
+	AccessData       []AccessData     `gorm:"foreignKey:GlobalID;references:GlobalID" json:"access_data"`
 	IsPublished      *bool            `gorm:"column:b_ispublished" json:"is_published"`
 	CreatedBy        string           `gorm:"column:c_created_by" json:"created_by"`
 	UpdatedBy        string           `gorm:"column:c_updated_by" json:"updated_by"`
