@@ -8,6 +8,7 @@ import (
 func ModuleMetadataRouter(r *gin.Engine) {
 	ModuleMetadataEndpoint := "/api/module/metadata"
 	r.POST(ModuleMetadataEndpoint+"/create", controllers.ModuleMetadataCreate)
+	r.POST(ModuleMetadataEndpoint+"/withaccess/create", controllers.ModuleMetadataCreateAndAccessCreate)
 	r.GET(ModuleMetadataEndpoint+"/:id", controllers.ModuleMetadataFindById)
 	r.GET(ModuleMetadataEndpoint+"/all", controllers.ModuleMetadataFindAll)
 	r.GET(ModuleMetadataEndpoint+"/paging", controllers.ModuleMetadataFindPaging)
