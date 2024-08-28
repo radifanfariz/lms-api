@@ -12,4 +12,4 @@ CREATE VIEW v_posttest_result_data (n_id, n_user_id, n_score, d_start, d_end, d_
     t_posttest_result_data.d_updated_at,
     t_posttest_result_data.c_global_id
    FROM t_posttest_result_data
-  WHERE ((t_posttest_result_data.d_start IS NOT NULL) AND (t_posttest_result_data.d_end IS NOT NULL));
+  WHERE (((t_posttest_result_data.d_start IS NOT NULL) AND (t_posttest_result_data.d_end IS NULL)) OR ((t_posttest_result_data.d_start IS NOT NULL) AND (t_posttest_result_data.d_end IS NOT NULL)));

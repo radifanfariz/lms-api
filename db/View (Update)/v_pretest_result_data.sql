@@ -12,5 +12,4 @@ CREATE VIEW v_pretest_result_data (n_id, n_user_id, n_score, d_start, d_end, d_d
     t_pretest_result_data.d_updated_at,
     t_pretest_result_data.c_global_id
    FROM t_pretest_result_data
-  WHERE ((t_pretest_result_data.d_start IS NOT NULL) AND (t_pretest_result_data.d_end IS NOT NULL));
-COMMENT ON VIEW v_pretest_result_data IS 'this is view for filtering invalid date in t_pretest_result';
+  WHERE (((t_pretest_result_data.d_start IS NOT NULL) AND (t_pretest_result_data.d_end IS NULL)) OR ((t_pretest_result_data.d_start IS NOT NULL) AND (t_pretest_result_data.d_end IS NOT NULL)));

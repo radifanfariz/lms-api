@@ -10,4 +10,4 @@ CREATE VIEW v_materi_result_data (n_id, n_user_id, c_global_id, d_start, d_end, 
     t_materi_result_data.d_updated_at,
     t_materi_result_data.n_materi_id
    FROM t_materi_result_data
-  WHERE ((t_materi_result_data.d_start IS NOT NULL) AND (t_materi_result_data.d_end IS NOT NULL));
+  WHERE (((t_materi_result_data.d_start IS NOT NULL) AND (t_materi_result_data.d_end IS NULL)) OR ((t_materi_result_data.d_start IS NOT NULL) AND (t_materi_result_data.d_end IS NOT NULL)));
