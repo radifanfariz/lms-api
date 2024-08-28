@@ -100,7 +100,7 @@ func MateriResultDataAutotimeCreate(ctx *gin.Context) {
 }
 
 func MateriResultDataFindById(ctx *gin.Context) {
-	var MateriResultData []models.MateriResultData
+	var MateriResultData []models.ViewMateriResultData
 
 	var findByIdResult *gorm.DB
 
@@ -122,7 +122,7 @@ func MateriResultDataFindById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"data": MateriResultData})
 }
 func MateriResultDataFindByUserId(ctx *gin.Context) {
-	var MateriResultData []models.MateriResultData
+	var MateriResultData []models.ViewMateriResultData
 
 	var findByIdResult *gorm.DB
 
@@ -139,7 +139,7 @@ func MateriResultDataFindByUserId(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"data": MateriResultData})
 }
 func MateriResultDataFindByIdAndUserId(ctx *gin.Context) {
-	var MateriResultData []models.MateriResultData
+	var MateriResultData []models.ViewMateriResultData
 
 	var findByIdResult *gorm.DB
 
@@ -163,7 +163,7 @@ func MateriResultDataFindByIdAndUserId(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"data": MateriResultData})
 }
 func MateriResultDataFindAll(ctx *gin.Context) {
-	var MateriResultData []models.MateriResultData
+	var MateriResultData []models.ViewMateriResultData
 	result := initializers.DB.Preload("UserData").Preload("MateriData.Metadata").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id").Find(&MateriResultData)
 
 	// fmt.Println(MateriResultData)

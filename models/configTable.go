@@ -19,6 +19,11 @@ func (PreTestResultData) TableName() string {
 	return "t_pretest_result_data"
 }
 
+// TableName overrides the table name used by PreTestResultData to `t_pretest_result_data`
+func (ViewPreTestResultData) TableName() string {
+	return "v_pretest_result_data"
+}
+
 // TableName overrides the table name used by MateriMetadata to `t_materi_metadata`
 func (MateriMetadata) TableName() string {
 	return "t_materi_metadata"
@@ -34,6 +39,11 @@ func (MateriResultData) TableName() string {
 	return "t_materi_result_data"
 }
 
+// TableName overrides the table name used by MateriData to `t_materi_data`
+func (ViewMateriResultData) TableName() string {
+	return "v_materi_result_data"
+}
+
 // TableName overrides the table name used by PostTestMetadata to `t_posttest_metadata`
 func (PostTestMetadata) TableName() string {
 	return "t_posttest_metadata"
@@ -47,6 +57,11 @@ func (PostTestData) TableName() string {
 // TableName overrides the table name used by PostTestResultData to `t_posttest_result_data`
 func (PostTestResultData) TableName() string {
 	return "t_posttest_result_data"
+}
+
+// TableName overrides the table name used by PostTestResultData to `t_posttest_result_data`
+func (ViewPostTestResultData) TableName() string {
+	return "v_posttest_result_data"
 }
 
 // TableName overrides the table name used by ModuleMetadata to `t_module_metadata`
