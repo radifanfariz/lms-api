@@ -106,7 +106,7 @@ func PreTestResultDataCreate(ctx *gin.Context) {
 }
 
 func PreTestResultDataFindById(ctx *gin.Context) {
-	var preTestResultData []models.ViewPreTestResultData
+	var preTestResultData []models.PreTestResultData
 
 	var findByIdResult *gorm.DB
 
@@ -128,7 +128,7 @@ func PreTestResultDataFindById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"data": preTestResultData})
 }
 func PreTestResultDataFindByUserId(ctx *gin.Context) {
-	var preTestResultData []models.ViewPreTestResultData
+	var preTestResultData []models.PreTestResultData
 
 	var findByIdResult *gorm.DB
 
@@ -145,7 +145,7 @@ func PreTestResultDataFindByUserId(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"data": preTestResultData})
 }
 func PreTestResultDataFindByIdAndUserId(ctx *gin.Context) {
-	var preTestResultData []models.ViewPreTestResultData
+	var preTestResultData []models.PreTestResultData
 
 	var findByIdResult *gorm.DB
 
@@ -169,7 +169,7 @@ func PreTestResultDataFindByIdAndUserId(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"data": preTestResultData})
 }
 func PreTestResultDataFindAll(ctx *gin.Context) {
-	var preTestResultData []models.ViewPreTestResultData
+	var preTestResultData []models.PreTestResultData
 	result := initializers.DB.Preload("UserData").Preload("ModuleData.Metadata").Preload("ModuleData.UserData").Preload("ModuleData.PreTestData.Metadata").Preload("ModuleData.MateriData.Metadata").Preload("ModuleData.PostTestData.Metadata").Order("n_id desc").Find(&preTestResultData)
 
 	// fmt.Println(preTestResultData)
