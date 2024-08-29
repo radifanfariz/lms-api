@@ -54,7 +54,8 @@ func ModuleMetadataJoinAccessDataFindPagingV2(ctx *gin.Context) {
 
 	limit, _ := strconv.Atoi(ctx.Query("per_page"))
 	page, _ := strconv.Atoi(ctx.Query("page"))
-	sort := ctx.Query("sort")
+	// sort := ctx.Query("sort")
+	sort := "n_seq asc"
 	var gradeId int
 	if ctx.Query("grade_id") != "" {
 		gradeId, _ = strconv.Atoi(ctx.Query("grade_id"))
@@ -180,7 +181,8 @@ func ModuleDataJoinAccessDataFindPagingV2(ctx *gin.Context) {
 
 	limit, _ := strconv.Atoi(ctx.Query("per_page"))
 	page, _ := strconv.Atoi(ctx.Query("page"))
-	sort := ctx.Query("sort")
+	// sort := ctx.Query("sort")
+	sort := "n_seq asc"
 	var gradeId int
 	if ctx.Query("grade_id") != "" {
 		gradeId, _ = strconv.Atoi(ctx.Query("grade_id"))

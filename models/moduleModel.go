@@ -11,6 +11,7 @@ type ModuleMetadata struct {
 	LearningJourney string    `gorm:"column:c_learning_journey" json:"learning_journey"`
 	Category        string    `gorm:"column:c_category" json:"category"`
 	MaxMonth        int       `gorm:"column:n_max_month" json:"max_month"`
+	Seq             int       `gorm:"column:n_seq" json:"n_seq"`
 	CreatedBy       string    `gorm:"column:c_created_by" json:"created_by"`
 	UpdatedBy       string    `gorm:"column:c_updated_by" json:"updated_by"`
 	CreatedAt       time.Time `gorm:"column:d_created_at" json:"created_at"`
