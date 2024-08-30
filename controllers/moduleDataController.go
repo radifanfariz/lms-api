@@ -115,7 +115,8 @@ func ModuleDataFindById(ctx *gin.Context) {
 func ModuleDataFindPaging(ctx *gin.Context) {
 	limit, _ := strconv.Atoi(ctx.Query("per_page"))
 	page, _ := strconv.Atoi(ctx.Query("page"))
-	sort := ctx.Query("sort")
+	// sort := ctx.Query("sort")
+	sort := "n_seq asc"
 	learningJourney := ctx.Query("learning_journey")
 	params := utils.Pagination{
 		Limit: limit,

@@ -23,6 +23,7 @@ type ModuleMetadataBody struct {
 	LearningJourney string    `json:"learning_journey" binding:"required"`
 	Category        string    `json:"category" binding:"required"`
 	MaxMonth        int       `json:"max_month" binding:"required"`
+	Seq             int       `json:"seq"`
 	CreatedBy       string    `json:"created_by"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedBy       string    `json:"updated_by"`
@@ -42,6 +43,7 @@ func ModuleMetadataCreate(ctx *gin.Context) {
 		LearningJourney: body.LearningJourney,
 		Category:        body.Category,
 		MaxMonth:        body.MaxMonth,
+		Seq:             body.Seq,
 		CreatedBy:       body.CreatedBy,
 		CreatedAt:       body.CreatedAt,
 	}
@@ -80,6 +82,7 @@ func ModuleMetadataCreateAndAccessCreate(ctx *gin.Context) {
 		LearningJourney: body.ModuleMetadataBody.LearningJourney,
 		Category:        body.ModuleMetadataBody.Category,
 		MaxMonth:        body.ModuleMetadataBody.MaxMonth,
+		Seq:             body.ModuleMetadataBody.Seq,
 		CreatedBy:       body.ModuleMetadataBody.CreatedBy,
 		CreatedAt:       body.ModuleMetadataBody.CreatedAt,
 	}
@@ -237,6 +240,7 @@ func ModuleMetadataUpdate(ctx *gin.Context) {
 		LearningJourney: body.LearningJourney,
 		Category:        body.Category,
 		MaxMonth:        body.MaxMonth,
+		Seq:             body.Seq,
 		UpdatedBy:       body.UpdatedBy,
 		UpdatedAt:       body.UpdatedAt,
 	}
@@ -318,6 +322,7 @@ func ModuleMetadataUpsert(ctx *gin.Context) {
 				LearningJourney: body.LearningJourney,
 				Category:        body.Category,
 				MaxMonth:        body.MaxMonth,
+				Seq:             body.Seq,
 				CreatedBy:       body.CreatedBy,
 				CreatedAt:       body.CreatedAt,
 			}
@@ -339,6 +344,7 @@ func ModuleMetadataUpsert(ctx *gin.Context) {
 				LearningJourney: body.LearningJourney,
 				Category:        body.Category,
 				MaxMonth:        body.MaxMonth,
+				Seq:             body.Seq,
 				CreatedBy:       body.CreatedBy,
 				CreatedAt:       body.CreatedAt,
 			}
@@ -361,6 +367,7 @@ func ModuleMetadataUpsert(ctx *gin.Context) {
 			LearningJourney: body.LearningJourney,
 			Category:        body.Category,
 			MaxMonth:        body.MaxMonth,
+			Seq:             body.Seq,
 			CreatedBy:       current.CreatedBy,
 			CreatedAt:       current.CreatedAt,
 			UpdatedBy:       body.UpdatedBy,
