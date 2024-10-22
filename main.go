@@ -15,12 +15,18 @@ func init() {
 }
 
 func main() {
-	/*----------------------------*/
-	/* for production */
-	// gin.SetMode(gin.ReleaseMode)
-	/*----------------------------*/
 
 	r := gin.Default()
+
+	/*----------------------------*/
+	// - using env:   export GIN_MODE=release
+	// - using code:  gin.SetMode(gin.ReleaseMode)
+	/* for production */
+	ginMode := os.Getenv("GIN_MODE")
+	if ginMode == "release" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+	/*----------------------------*/
 
 	// CORS middleware with custom settings
 	corsConfig := cors.DefaultConfig()
@@ -101,6 +107,9 @@ func main() {
 	/*----------------------------*/
 	/* Portal Data Endpoint */
 	routers.PortalDataRouter(r)
+	/*----------------------------*/
+	/* Insight Data Endpoint */
+	routers.InsightDataRouter(r)
 	/*----------------------------*/
 	port := os.Getenv("PORT")
 	r.Run(":" + port) // listen and serve on 0.0.0.0:8080
