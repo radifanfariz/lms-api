@@ -102,6 +102,9 @@ func main() {
 	/* Portal Data Endpoint */
 	routers.PortalDataRouter(r)
 	/*----------------------------*/
+	/* Insight Data Endpoint */
+	routers.InsightDataRouter(r)
+	/*----------------------------*/
 	port := os.Getenv("PORT")
 	r.Run(":" + port) // listen and serve on 0.0.0.0:8080
 }
