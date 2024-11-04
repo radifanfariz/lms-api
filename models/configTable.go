@@ -83,3 +83,13 @@ func (GalleryData) TableName() string {
 func (CategoryData) TableName() string {
 	return "t_category_data"
 }
+
+// TableName overrides the table name used by Category Data to `t_certificate_master_data`
+func (CertificateMasterData) TableName() string {
+	return "t_certificate_master_data"
+}
+
+// TableName overrides the table name used by Category Data to `t_certificate_user_data`
+func (CertificateUserData) TableName() string {
+	return "t_certificate_user_data"
+}

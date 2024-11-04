@@ -111,6 +111,12 @@ func main() {
 	/* Insight Data Endpoint */
 	routers.InsightDataRouter(r)
 	/*----------------------------*/
+	/* Certificate Master Data Endpoint */
+	routers.CertificateMasterDataRouter(r)
+	/*----------------------------*/
+	/* Certificate User Data Endpoint */
+	routers.CertificateUserDataRouter(r)
+	/*----------------------------*/
 	port := os.Getenv("PORT")
 	r.Run(":" + port) // listen and serve on 0.0.0.0:8080
 }
